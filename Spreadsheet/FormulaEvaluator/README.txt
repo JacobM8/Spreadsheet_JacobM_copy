@@ -1,5 +1,5 @@
 ﻿Author:     Jacob Morrison
-Partner:    [Partner Name or None]
+Partner:    None
 Date:       January 9, 2019
 Course:     CS 3500, University of Utah, School of Computing
 Assignment: Assignment #1 - FormulaEvaluator
@@ -22,8 +22,13 @@ Any additional feedback or write up required by the assignment.
 List any peers (or other people) in the class (or outside for that matter) that you talked with 
 about the project for more than one minute.
 
+Logan Terry (TA)
+
 4. References:
 
-    1. Title of page - URL
+    1. Stack <T> Class - https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1?view=netframework-4.8
     2. Title of page - URL
     3. Title of page - URL
+
+5. Estimated Time: 12 hours total
+6. Acutal Time:
