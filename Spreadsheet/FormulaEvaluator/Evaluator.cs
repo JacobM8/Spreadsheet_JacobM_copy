@@ -22,7 +22,6 @@ namespace FormulaEvaluator
             string[] substrings = Regex.Split(expression, "(\\()|(\\))|(-)|(\\+)|(\\*)|(/)");
             
             // for loop through substrings
-            
             foreach (string token in substrings)
             {
                 // trim whitespaces off front and back of the token
@@ -58,9 +57,35 @@ namespace FormulaEvaluator
                 {
                     IsInt(variableEvaluator(token).ToString());
                 }
-
-                // just finished top table in instructions
             }
+
+            // operatorStack is now empty
+            if (operatorStack.Count == 0)
+            {
+                //Value stack should contain a single number
+                //Pop it and report as the value of the expression
+                finalValue = valueStack.Pop();
+            }
+            // operatorStack has one item left
+            else
+            {
+                // There should be exactly one operator on the operator stack, and it should be either + or -.There 
+                // should be exactly two values on the value stack.Apply the operator to the two values and report 
+                // the result as the value of the expression.
+                int vSFinalValue1 = valueStack.Pop();
+                int vSFinalValue2 = valueStack.Pop();
+
+                if (operatorStack.Peek() == "+")
+                {
+                    finalValue = vSFinalValue1 + vSFinalValue2;
+                }
+                else
+                {
+                    finalValue = vSFinalValue1 - vSFinalValue2;
+                }
+
+            }
+
             return finalValue;
         }
 

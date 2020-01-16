@@ -32,6 +32,7 @@ James Gibb (Peer)
     1. Stack <T> Class - https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1?view=netframework-4.8
     2. C# | Boolean.Equals(Boolean) Method - https://www.geeksforgeeks.org/c-sharp-boolean-equalsboolean-method/
     3. How to correctly add documentation in my c# code (similar to javadoc) - https://stackoverflow.com/questions/56082307/how-to-correctly-add-documentation-in-my-c-sharp-code-similar-to-javadoc
+    4. First look at the Visual Studio Debugger - https://docs.microsoft.com/en-us/visualstudio/debugger/debugger-feature-tour?view=vs-2019
 
 5. Estimated Time: 12 hours total
 6. Acutal Time:
