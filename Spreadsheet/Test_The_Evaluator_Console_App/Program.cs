@@ -19,7 +19,7 @@ namespace Test_The_Evaluator_Console_App
             // stack could be empty so maybe it's a bad formula
             // be specific in exception details
 
-            /*
+            
             // Test single number only
             if (Evaluator.Evaluate("2", null) == 2)
             {
@@ -38,7 +38,6 @@ namespace Test_The_Evaluator_Console_App
                 Console.WriteLine("Subtration only works");
             }
             
-            
             // Test only multiplication
             if (Evaluator.Evaluate("2*2", null) == 4)
             {
@@ -50,13 +49,13 @@ namespace Test_The_Evaluator_Console_App
             {
                 Console.WriteLine("Division only works");
             }
-            */
+            
             // Test simple parenthesis additon
-            if (Evaluator.Evaluate("5 + (6/2)", null) == 3)
+            if (Evaluator.Evaluate("(1+1)", null) == 2)
             {
-                Console.WriteLine("Simple Parenthesis with division works");
+                Console.WriteLine("Simple Parenthesis with addition works");
             }
-
+            
         }
     }
 }

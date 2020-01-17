@@ -18,14 +18,15 @@ namespace FormulaEvaluator
         static Stack<int> valueStack = new Stack<int>();
         static Stack<string> operatorStack = new Stack<string>();
 
-        // tokenValue will be set value of token in TryPase below
+        // tokenValue will be set to the value of token when it's an int in TryPase below
         static int tokenValue = 0;
+        static int finalValue = 0;
 
         public delegate int Lookup(String variable_name);
 
         public static int Evaluate(String expression, Lookup variableEvaluator)
         {
-            int finalValue = 0;
+            
             // substrings holds tokens from given expression
             string[] substrings = Regex.Split(expression, "(\\()|(\\))|(-)|(\\+)|(\\*)|(/)");
             
@@ -35,10 +36,15 @@ namespace FormulaEvaluator
                 // trim whitespaces off front and back of the token
                 token.Trim();
 
+                if (token == "")
+                {
+                    continue;
+                }
+
                 // if token is an integer
                 if (int.TryParse(token, out tokenValue))
                 {
-                    IsInt(token);
+                    IsInt(tokenValue);
                 }
                 // if token is a "+" or "-"
                 else if (token == "+" || token == "-")
@@ -65,43 +71,25 @@ namespace FormulaEvaluator
                 {
                     // need to check to make sure it is a variable and throw an exception if not
                     // example could get an "@" symbol
-                    IsInt(variableEvaluator(token).ToString());
+                    //IsInt(variableEvaluator(token).ToString());
                 }
             }
 
             // operatorStack is now empty
             if (operatorStack.Count == 0)
             {
-                //Value stack should contain a single number
-                //Pop it and report as the value of the expression
-                finalValue = valueStack.Pop();
+                OpStackEmpty();
             }
             // operatorStack has one item left
             else
             {
-                // There should be exactly one operator on the operator stack, and it should be either + or -.There 
-                // should be exactly two values on the value stack.Apply the operator to the two values and report 
-                // the result as the value of the expression.
-                int vSFinalValue1 = valueStack.Pop();
-                int vSFinalValue2 = valueStack.Pop();
-
-                if (operatorStack.Peek() == "+")
-                {
-                    operatorStack.Pop();
-                    finalValue = vSFinalValue2 + vSFinalValue1;
-                }
-                else
-                {
-                    operatorStack.Pop();
-                    finalValue = vSFinalValue2 - vSFinalValue1;
-                }
+                OpStackOneRemaining();
             }
 
             return finalValue;
         }
 
         // helper methods
-
         /// <summary>
         /// Determines if token is an integer and does the following:
         /// If * or / is at the top of the operator stack, pop the value stack, pop the operator stack, 
@@ -110,7 +98,7 @@ namespace FormulaEvaluator
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        private static void IsInt(string token)
+        private static void IsInt(int tokenValue)
         {
             // If * or / is at the top of the operator stack, pop the value stack, pop the operator stack, 
             // and apply the popped operator to the popped number and tokenValue. Push the result onto the value 
@@ -133,7 +121,7 @@ namespace FormulaEvaluator
                 {
                     if (tokenValue == 0)
                     {
-                        throw new ArgumentException(String.Format("Can not divide by zero"));
+                        throw new ArgumentException(String.Format("Invalid formula, Cannot divide by zero"));
                     }
                         valueStack.Push(operand / tokenValue);
                 }
@@ -217,46 +205,122 @@ namespace FormulaEvaluator
         /// <param name="token"></param>
         private static void IsRightParenthesis(string token)
         {
-            // If + or - is at the top of the operator stack, pop the value stack twice and the operator stack 
-            // once. Apply the popped operator to the popped numbers. Push the result onto the value stack.
+            // If + or - is at the top of the operator stack, pop the value stack twice and the operator stack once
+            // Apply the popped operator to the popped numbers. Push the result onto the value stack.
             if (operatorStack.hasOnTop("+", "-"))
             {
+                if (valueStack.Count < 2)
+                {
+                    throw new ArgumentException(String.Format("Invalid formula, valueStack.Count > 2 when using IsRightParenthesis"));
+                }
                 //exact same code as when checking for + or -, find way to reduce repetitive code
                 int operand1 = valueStack.Pop();
                 int operand2 = valueStack.Pop();
-                if (operatorStack.Pop() == "+")
+                string currOperator1 = operatorStack.Pop();
+                if (currOperator1 == "+")
                 {
-                    operatorStack.Pop();
                     valueStack.Push(operand1 + operand2);
                 }
                 else
                 {
-                    operatorStack.Pop();
                     valueStack.Push(operand1 - operand2);
                 }
                 // Next, the top of the operator stack should be a '('.Pop it.
-                operatorStack.Pop();
+                
+                if (operatorStack.Peek() != "(")
+                {
+                    throw new ArgumentException(String.Format("Invalid formula, '(' is not in the correct spot"));
+                }
+                string currOperator2 = operatorStack.Pop();
 
                 // Finally, if * or / is at the top of the operator stack, pop the value stack twice and the 
                 // operator stack once. Apply the popped operator to the popped numbers. Push the result onto 
                 // the value stack.
-                int operand3 = valueStack.Pop();
-                int operand4 = valueStack.Pop();
-                if (operatorStack.Pop() == "*")
+                if (operatorStack.hasOnTop("*", "/"))
                 {
-                    operatorStack.Pop();
-                    valueStack.Push(operand3 * operand4);
+                    if (valueStack.Count < 2)
+                    {
+                        throw new ArgumentException(String.Format("Invalid formula, valueStack.Count < 2 when using IsRightParenthesis"));
+                    }
+                    int operand3 = valueStack.Pop();
+                    int operand4 = valueStack.Pop();
+                    string currOperator3 = operatorStack.Pop();
+                    if (currOperator3 == "*")
+                    {
+                        valueStack.Push(operand3 * operand4);
+                    }
+                    else
+                    {
+                        if (operand4 == 0)
+                        {
+                            throw new ArgumentException(String.Format("Invalid formula, cannot divide by zero."));
+                        }
+                        valueStack.Push(operand3 / operand4);
+                    }
                 }
-                else
-                {
-                    operatorStack.Pop();
-                    valueStack.Push(operand3 / operand4);
-                }
+                
             }
         }
 
-        // extensions
+        /// <summary>
+        /// Value stack should contain a single number, pop it and report as the value of the expression
+        /// </summary>
+        /// <returns> returns finalValue of formula </returns>
+        private static int OpStackEmpty()
+        {
+            //Value stack should contain a single number
+            if (valueStack.Count != 1)
+            {
+                throw new ArgumentException(String.Format("Invalid formula, valueStack.Count != 1"));
+            }
+            //Pop it and report as the value of the expression
+            finalValue = valueStack.Pop();
 
+            return finalValue;
+        }
+
+        /// <summary>
+        /// There should be exactly one operator on the operator stack, and it should be either + or -. 
+        /// There should be exactly two values on the value stack. Apply the operator to the two values and 
+        /// report the result as the value of the expression.
+        /// </summary>
+        /// <returns> returns finalValue of formula </returns>
+        private static int OpStackOneRemaining()
+        {
+            // There should be exactly one operator on the operator stack, and it should be either + or -. There 
+            // should be exactly two values on the value stack.
+            if (operatorStack.Count != 1)
+            {
+                throw new ArgumentException(String.Format("Invalid formula, operatorStack.Count != 1"));
+            }
+            else if (valueStack.Count != 2)
+            {
+                throw new ArgumentException(String.Format("Invalid formula, valueStack.Count != 2"));
+            }
+            if (!operatorStack.hasOnTop("+", "-"))
+            {
+                throw new ArgumentException(String.Format("Invalid formula, operatorStack does not have '+' or '-' as last token"));
+            }
+
+            // Apply the operator to the two values and report the result as the value of the expression.
+            int vSFinalValue1 = valueStack.Pop();
+            int vSFinalValue2 = valueStack.Pop();
+
+            if (operatorStack.Peek() == "+")
+            {
+                operatorStack.Pop();
+                finalValue = vSFinalValue2 + vSFinalValue1;
+            }
+            else
+            {
+                operatorStack.Pop();
+                finalValue = vSFinalValue2 - vSFinalValue1;
+            }
+
+            return finalValue;
+        }
+        
+        // extensions
         /// <summary>
         /// Checks to see what is on top of the stack.
         /// </summary>

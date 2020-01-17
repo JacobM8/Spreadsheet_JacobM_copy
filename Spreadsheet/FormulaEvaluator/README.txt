@@ -36,6 +36,7 @@ James Gibb (Peer)
     4. First look at the Visual Studio Debugger - https://docs.microsoft.com/en-us/visualstudio/debugger/debugger-feature-tour?view=vs-2019
     5. Argument Exception Class - https://docs.microsoft.com/en-us/dotnet/api/system.argumentexception?view=netframework-4.8
     6. Extension Methods (C# Programming Guide) - https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/extension-methods
+    7. How do I skip an iteration of a `foreach` loop - https://stackoverflow.com/questions/654113/how-do-i-skip-an-iteration-of-a-foreach-loop
 
 5. Estimated Time: 12 hours total
 6. Acutal Time:
