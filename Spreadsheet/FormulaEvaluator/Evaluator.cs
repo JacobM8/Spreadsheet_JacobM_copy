@@ -1,4 +1,11 @@
-﻿using System;
+﻿///
+/// <summary>
+///     Author: Jacob Morrison
+///     Date: 1/17/2020
+///     This code recieves a string and determines if it is a formula and evaluates it.
+///     I pledge that I did the work myself.
+/// </summary>
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -55,6 +62,8 @@ namespace FormulaEvaluator
                 // if token is a variable
                 else
                 {
+                    // need to check to make sure it is a variable and throw an exception if not
+                    // example could get an "@" symbol
                     IsInt(variableEvaluator(token).ToString());
                 }
             }
@@ -77,11 +86,13 @@ namespace FormulaEvaluator
 
                 if (operatorStack.Peek() == "+")
                 {
-                    finalValue = vSFinalValue1 + vSFinalValue2;
+                    operatorStack.Pop();
+                    finalValue = vSFinalValue2 + vSFinalValue1;
                 }
                 else
                 {
-                    finalValue = vSFinalValue1 - vSFinalValue2;
+                    operatorStack.Pop();
+                    finalValue = vSFinalValue2 - vSFinalValue1;
                 }
 
             }
@@ -105,6 +116,8 @@ namespace FormulaEvaluator
             // and apply the popped operator to the popped number and tokenValue. Push the result onto the value 
             // stack.
 
+            // need to create an extension to simplify this code
+            // ex. operatorStack.hasOnTop('x', '/'), see slides from 1/16 lecture, can do it with generics
             if (operatorStack.Count > 0 && (operatorStack.Peek() == "*" || operatorStack.Peek() == "/"))
             {
                 int operand = valueStack.Pop();
@@ -140,7 +153,7 @@ namespace FormulaEvaluator
             {
                 int operand1 = valueStack.Pop();
                 int operand2 = valueStack.Pop();
-                if (operatorStack.Pop() == "+")
+                if (operatorStack.Peek() == "+")
                 {
                     operatorStack.Pop();
                     valueStack.Push(operand1 + operand2);
@@ -225,5 +238,6 @@ namespace FormulaEvaluator
                 }
             }
         }
+
     }
 }
