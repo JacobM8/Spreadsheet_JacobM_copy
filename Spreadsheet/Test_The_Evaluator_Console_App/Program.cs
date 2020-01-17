@@ -19,7 +19,7 @@ namespace Test_The_Evaluator_Console_App
             // stack could be empty so maybe it's a bad formula
             // be specific in exception details
 
-            
+            /*
             // Test single number only
             if (Evaluator.Evaluate("2", null) == 2)
             {
@@ -50,7 +50,7 @@ namespace Test_The_Evaluator_Console_App
             {
                 Console.WriteLine("Division only works");
             }
-
+            */
             // Test simple parenthesis additon
             if (Evaluator.Evaluate("5 + (6/2)", null) == 3)
             {
