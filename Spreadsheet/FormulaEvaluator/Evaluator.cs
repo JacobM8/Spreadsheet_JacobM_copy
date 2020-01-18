@@ -1,5 +1,4 @@
-﻿///
-/// <summary>
+﻿/// <summary>
 ///     Author: Jacob Morrison
 ///     Date: 1/17/2020
 ///     This code recieves a string and determines if it is a formula and evaluates it.
@@ -24,9 +23,14 @@ namespace FormulaEvaluator
 
         public delegate int Lookup(String variable_name);
 
+        /// <summary>
+        /// Evaluate takes in a formula and if it is a valid formula returns the value as an integer.
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="variableEvaluator"></param>
+        /// <returns> returns value of formula </returns>
         public static int Evaluate(String expression, Lookup variableEvaluator)
         {
-            
             // substrings holds tokens from given expression
             string[] substrings = Regex.Split(expression, "(\\()|(\\))|(-)|(\\+)|(\\*)|(/)");
             
@@ -36,6 +40,7 @@ namespace FormulaEvaluator
                 // trim whitespaces off front and back of the token
                 token.Trim();
 
+                // if token is blank
                 if (token == "")
                 {
                     continue;
@@ -86,12 +91,12 @@ namespace FormulaEvaluator
                 }
             }
 
-            // operatorStack is now empty
+            // if operatorStack is empty
             if (operatorStack.Count == 0)
             {
                 OpStackEmpty();
             }
-            // operatorStack has one item left
+            // if operatorStack has one item left
             else
             {
                 OpStackOneRemaining();
@@ -107,13 +112,12 @@ namespace FormulaEvaluator
         /// and apply the popped operator to the popped number and t. Push the result onto the value stack.
         /// Otherwise, pushes token onto the value stack.
         /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
+        /// <param name="s"> integer </param>
         private static void IsInt(int tokenValue)
         {
             // If * or / is at the top of the operator stack, pop the value stack, pop the operator stack, 
-            // and apply the popped operator to the popped number and tokenValue. Push the result onto the value 
-            // stack.
+            // and apply the popped operator to the popped number and tokenValue. 
+            // Push the result onto the value stack.
 
             if (operatorStack.hasOnTop("*", "/"))
             {
@@ -150,7 +154,7 @@ namespace FormulaEvaluator
         /// then apply the popped operator to the popped numbers, then push the result onto the value stack.
         /// Otherwise, Pushes token onto the operator stack
         /// </summary>
-        /// <param name="token"></param>
+        /// <param name="token"> string </param>
         private static void IsPlusOrMinus(string token)
         {
             //If + or - is at the top of the operator stack, pop the value stack twice and the operator stack 
@@ -187,7 +191,7 @@ namespace FormulaEvaluator
         /// <summary>
         ///  Determines if token is "*" or "/" and does the following: Push token onto the operator stack.
         /// </summary>
-        /// <param name="token"></param>
+        /// <param name="token"> string </param>
         private static void IsMultiplyOrDivide(string token)
         {
             // Push token onto the operator stack
@@ -197,7 +201,7 @@ namespace FormulaEvaluator
         /// <summary>
         /// Determines if token is "(" and does the following: Push t onto the operator stack.
         /// </summary>
-        /// <param name="token"></param>
+        /// <param name="token"> string </param>
         private static void IsLeftParenthesis(string token)
         {
             // Push token onto the operator stack
@@ -214,7 +218,7 @@ namespace FormulaEvaluator
         /// Finally, if * or / is at the top of the operator stack, pop the value stack twice and the operator 
         /// stack once. Apply the popped operator to the popped numbers. Push the result onto the value stack.
         /// </summary>
-        /// <param name="token"></param>
+        /// <param name="token"> string </param>
         private static void IsRightParenthesis(string token)
         {
             // If + or - is at the top of the operator stack, pop the value stack twice and the operator stack once
@@ -334,8 +338,8 @@ namespace FormulaEvaluator
         /// <summary>
         /// Checks to see what is on top of the stack.
         /// </summary>
-        /// <param name="s1"></param>
-        /// <param name="s2"></param>
+        /// <param name="s1"> generic type T </param>
+        /// <param name="s2"> generic type T </param>
         /// <returns> returns true if s1 or s2 is on top of the stack </returns>
         public static bool hasOnTop<T>(this Stack<T> stack, T oper1, T oper2)
         {

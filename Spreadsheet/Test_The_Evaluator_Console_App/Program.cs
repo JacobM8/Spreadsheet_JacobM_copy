@@ -1,5 +1,4 @@
-﻿///
-/// <summary>
+﻿/// <summary>
 ///     Author: Jacob Morrison
 ///     Date: 1/17/2020
 ///     This code tests Evaluator.cs.
@@ -14,13 +13,7 @@ namespace Test_The_Evaluator_Console_App
     class Program
     {
         static void Main(string[] args)
-        {
-            // need to define variables when testing them, tester needs to throw exception if variables aren't defined
-            // need to be ready for all possible erros, could be divide by zero so throw an exception
-            // stack could be empty so maybe it's a bad formula
-            // be specific in exception details
-
-            
+        {            
             // Test single number only
             if (Evaluator.Evaluate("2", null) == 2)
             {
@@ -122,7 +115,6 @@ namespace Test_The_Evaluator_Console_App
             {
                 Console.WriteLine("nested parenthesis works");
             }
-
             
             // test variables with addition
             Lookup delegateLookup = new Lookup(assignVariables);
@@ -144,8 +136,6 @@ namespace Test_The_Evaluator_Console_App
             {
                 Console.WriteLine(Evaluator.Evaluate("x1* 10", delegateLookup));
             }
-
-
         }
 
         // helper method for variables
