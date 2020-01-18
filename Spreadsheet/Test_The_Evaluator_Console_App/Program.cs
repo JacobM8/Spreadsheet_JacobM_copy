@@ -7,6 +7,7 @@
 /// </summary>
 using System;
 using FormulaEvaluator;
+using static FormulaEvaluator.Evaluator;
 
 namespace Test_The_Evaluator_Console_App
 {
@@ -55,7 +56,106 @@ namespace Test_The_Evaluator_Console_App
             {
                 Console.WriteLine("Simple Parenthesis with addition works");
             }
+
+            // test trimming whitespace
+            if (Evaluator.Evaluate(" 1 + 1", null) == 2)
+            {
+                Console.WriteLine("trimming whitespace works");
+            }
+
+            // test addition and subraction
+            if (Evaluator.Evaluate("2+2-1", null) == 3)
+            {
+                Console.WriteLine("addition and subraction works");
+            }
+
+            // test addition and multiplication
+            if (Evaluator.Evaluate("2+2*2", null) == 6)
+            {
+                Console.WriteLine("addition and multiplicaiton works");
+            }
+
+            // test addition and division
+            if (Evaluator.Evaluate("2+2/2", null) == 3)
+            {
+                Console.WriteLine("addition and division works");
+            }
+
+            // test substraction and multiplication
+            if (Evaluator.Evaluate("10-2*2", null) == 6)
+            {
+                Console.WriteLine("subtraction and multiplication works");
+            }
+
+            // test subtraction and division
+            if (Evaluator.Evaluate("4-2/2", null) == 3)
+            {
+                Console.WriteLine("subtraction and division works");
+            }
+
+            // test addition, subtraction and multiplication
+            if (Evaluator.Evaluate("2+2*2 -1", null) == 5)
+            {
+                Console.WriteLine("addition, subtraction and multiplicaiton works");
+            }
+
+            // test addition, subtraction and division
+            if (Evaluator.Evaluate("2+2/2 -1", null) == 2)
+            {
+                Console.WriteLine("addition, subtraction and division works");
+            }
+
+            // test addition, subtraction, multiplication and division
+            if (Evaluator.Evaluate("2+2*2-2/2", null) == 5)
+            {
+                Console.WriteLine("addition, subtraction, multiplication and division works");
+            }
+
+            // test addition, subtraction, multiplication, division and parenthesis
+            if (Evaluator.Evaluate("(2+2)*2-2/2", null) == 7)
+            {
+                Console.WriteLine("addition, subtraction, multiplication, division and parenthesis works");
+            }
+
+            // test nested parenthesis
+            if (Evaluator.Evaluate("(2*(3+2)+2)", null) == 12)
+            {
+                Console.WriteLine("nested parenthesis works");
+            }
+
             
+            // test variables with addition
+            Lookup delegateLookup = new Lookup(assignVariables);
+            if (Evaluator.Evaluate("x1+y1", delegateLookup) == 5)
+            {
+                Console.WriteLine("variable additon works");
+            }
+            else
+            {
+                Console.WriteLine(Evaluator.Evaluate("x1+ y1", delegateLookup));
+            }
+
+            // test variables with addition and mulitiplication
+            if (Evaluator.Evaluate("x1*10 + 3", delegateLookup) == 23)
+            {
+                Console.WriteLine("variable with additon and multiplication works");
+            }
+            else
+            {
+                Console.WriteLine(Evaluator.Evaluate("x1* 10", delegateLookup));
+            }
+
+
+        }
+
+        // helper method for variables
+        public static int assignVariables(string s1)
+        {
+            if (s1.Equals("x1"))
+            {
+                return 2;
+            }
+            return 3;
         }
     }
 }

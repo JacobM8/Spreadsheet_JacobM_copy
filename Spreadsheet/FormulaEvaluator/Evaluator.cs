@@ -69,9 +69,20 @@ namespace FormulaEvaluator
                 // if token is a variable
                 else
                 {
-                    // need to check to make sure it is a variable and throw an exception if not
-                    // example could get an "@" symbol
-                    //IsInt(variableEvaluator(token).ToString());
+                    // checks to see if token is a valid variable
+                    if (Regex.IsMatch(token, @"[a-zA-Z]+\d+"))
+                    {
+                        // try catch will catch an exception when there is one from Program.cs
+                        try
+                        {
+                            int variableValue = variableEvaluator(token);
+                            IsInt(variableValue);
+                        }
+                        catch
+                        {
+                            throw new ArgumentException(String.Format("Lookup function threw exception."));
+                        }   
+                    }
                 }
             }
 
@@ -145,24 +156,25 @@ namespace FormulaEvaluator
             //If + or - is at the top of the operator stack, pop the value stack twice and the operator stack 
             // once, then apply the popped operator to the popped numbers, then push the result onto the value 
             // stack.
-            if (operatorStack.Count > 0 && (operatorStack.Peek() == "+" || operatorStack.Peek() == "-"))
+            if (operatorStack.hasOnTop("+", "-"))
             {
-                if(valueStack.Count > 2)
+                if(valueStack.Count < 2)
                 {
                     throw new ArgumentException(String.Format("Invalid formula, ValueStack has less than 2 tokens."));
                 }
 
                 int operand1 = valueStack.Pop();
                 int operand2 = valueStack.Pop();
-                if (operatorStack.Peek() == "+")
+                string currOperator = operatorStack.Pop();
+                if (currOperator == "+")
                 {
-                    operatorStack.Pop();
                     valueStack.Push(operand1 + operand2);
+                    operatorStack.Push(token);
                 }
                 else
                 {
-                    operatorStack.Pop();
                     valueStack.Push(operand1 - operand2);
+                    operatorStack.Push(token);
                 }
             }
             // Push token onto the operator stack
@@ -213,25 +225,24 @@ namespace FormulaEvaluator
                 {
                     throw new ArgumentException(String.Format("Invalid formula, valueStack.Count > 2 when using IsRightParenthesis"));
                 }
-                //exact same code as when checking for + or -, find way to reduce repetitive code
                 int operand1 = valueStack.Pop();
                 int operand2 = valueStack.Pop();
                 string currOperator1 = operatorStack.Pop();
                 if (currOperator1 == "+")
                 {
-                    valueStack.Push(operand1 + operand2);
+                    valueStack.Push(operand1 + operand2);                    
                 }
                 else
                 {
                     valueStack.Push(operand1 - operand2);
                 }
                 // Next, the top of the operator stack should be a '('.Pop it.
-                
-                if (operatorStack.Peek() != "(")
+                string currOperator2 = operatorStack.Pop();
+                if (currOperator2 != "(")
                 {
                     throw new ArgumentException(String.Format("Invalid formula, '(' is not in the correct spot"));
                 }
-                string currOperator2 = operatorStack.Pop();
+                
 
                 // Finally, if * or / is at the top of the operator stack, pop the value stack twice and the 
                 // operator stack once. Apply the popped operator to the popped numbers. Push the result onto 
@@ -258,7 +269,6 @@ namespace FormulaEvaluator
                         valueStack.Push(operand3 / operand4);
                     }
                 }
-                
             }
         }
 

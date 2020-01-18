@@ -27,6 +27,7 @@ Jolie Uk (TA)
 Michael (TA)
 Jay Morrison (Dad) - Software Engineer
 James Gibb (Peer)
+Piazza
 
 4. References:
 
@@ -37,6 +38,9 @@ James Gibb (Peer)
     5. Argument Exception Class - https://docs.microsoft.com/en-us/dotnet/api/system.argumentexception?view=netframework-4.8
     6. Extension Methods (C# Programming Guide) - https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/extension-methods
     7. How do I skip an iteration of a `foreach` loop - https://stackoverflow.com/questions/654113/how-do-i-skip-an-iteration-of-a-foreach-loop
+    8. Regular-expressions.info - https://www.regular-expressions.info/
+    9. Regex.Match Method - https://docs.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.regex.match?view=netframework-4.8
+    10. Regular Expressions 101 - https://regex101.com/
 
 5. Estimated Time: 12 hours total
 6. Acutal Time:
