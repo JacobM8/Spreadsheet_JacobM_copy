@@ -1,13 +1,12 @@
 ﻿/// <summary>
 ///     Author: Jacob Morrison
 ///     Date: 1/17/2020
-///     This code recieves a string and determines if it is a formula and evaluates it.
+///     This code receives a formula as a string, evaluates it, then returns the final value
+///     as an interger if it is a valid formula.
 ///     I pledge that I did the work myself.
 /// </summary>
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace FormulaEvaluator
