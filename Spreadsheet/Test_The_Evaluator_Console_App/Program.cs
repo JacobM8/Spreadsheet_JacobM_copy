@@ -136,6 +136,17 @@ namespace Test_The_Evaluator_Console_App
             {
                 Console.WriteLine(Evaluator.Evaluate("x1* 10", delegateLookup));
             }
+
+            // test divide by 0
+            try
+            {
+                bool result = Evaluator.Evaluate("10 / 0", null) == 0;
+                Console.WriteLine(result);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"divide by 0 throws exception: {ex}");
+            }
         }
 
         // helper method for variables
