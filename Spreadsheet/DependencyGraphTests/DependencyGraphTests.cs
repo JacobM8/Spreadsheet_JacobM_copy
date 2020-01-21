@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 
-// it was giving me an error with all DependencyGraph t = new DependencyGraph(); so I added changes from the lightbulb
-
 namespace DevelopmentTests
 {
     /// <summary>  

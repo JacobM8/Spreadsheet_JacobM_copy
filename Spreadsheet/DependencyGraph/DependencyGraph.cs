@@ -7,8 +7,7 @@
 /// <summary>
 ///     Author: Jacob Morrison
 ///     Date: 1/24/2020
-///     TODO: update this lineThis code receives a formula as a string, evaluates it, then returns the final value
-///     as an interger if it is a valid formula.
+///     This code determines which variables need to be evaluated first in the Spreadsheet
 ///     I pledge that I did the work myself.
 /// </summary>
 
@@ -56,7 +55,15 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public DependencyGraph()
         {
-            DependencyGraph DG = new DependencyGraph();
+            // initialize member variables (global variables) for this class here in constructor
+            // initialize adjencecy list as a dictionary
+            // need a dictionary for dependents and another one for dependees
+            // dependents will return it's dependees (which cells can't be solved until it is)
+            // dependees will return it's dependents (which cells need to be solved before it)
+
+            Dictionary<int, string> DependentGraph = new Dictionary<int, string>();
+            Dictionary<string, int> DependeeGraph = new Dictionary<string, int>();
+            
         }
 
         /// <summary>    
