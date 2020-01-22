@@ -7,6 +7,7 @@
 /// </summary>
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace FormulaEvaluator
@@ -51,24 +52,24 @@ namespace FormulaEvaluator
                     IsInt(tokenValue);
                 }
                 // if token is a "+" or "-"
-                else if (token == "+" || token == "-")
+                else if(token == "+" || token == "-")
                 { 
                     IsPlusOrMinus(token);
                 }
                 // if token is a "*" or "/"
-                else if (token == "*" || token == "/")
+                else if(token == "*" || token == "/")
                 {
                     IsMultiplyOrDivide(token);
                 }
                 // if token is left parenthesis "("
-                else if (token == "(")
+                else if(token == "(")
                 {
                     IsLeftParenthesis(token);
                 }
                 // if token is right parenthesis
                 else if(token == ")")
                 {
-                    IsRightParenthesis(token);
+                    IsRightParenthesis();
                 }
                 // if token is a variable
                 else
@@ -96,7 +97,7 @@ namespace FormulaEvaluator
                 OpStackEmpty();
             }
             // if operatorStack has one item left
-            else
+            else if (operatorStack.Count == 1)
             {
                 OpStackOneRemaining();
             }
@@ -117,33 +118,39 @@ namespace FormulaEvaluator
             // If * or / is at the top of the operator stack, pop the value stack, pop the operator stack, 
             // and apply the popped operator to the popped number and tokenValue. 
             // Push the result onto the value stack.
-
-            if (operatorStack.hasOnTop("*", "/"))
+            try
             {
-                if (valueStack.Count == 0)
+                if (operatorStack.HasOnTop("*", "/"))
                 {
-                    throw new ArgumentException(String.Format("Invalid formula, valueStack is empty"));
-                }
-                int operand = valueStack.Pop();
-                string op = operatorStack.Pop();
+                    if (valueStack.Count == 0)
+                    {
+                        throw new ArgumentException(String.Format("Invalid formula, valueStack is empty"));
+                    }
+                    int operand = valueStack.Pop();
+                    string op = operatorStack.Pop();
 
-                if (op == "*")
-                {
-                    valueStack.Push(operand * tokenValue);
+                    if (op == "*")
+                    {
+                        valueStack.Push(operand * tokenValue);
+                    }
+                    else
+                    {
+                        if (tokenValue == 0)
+                        {
+                            throw new ArgumentException(String.Format("Invalid formula, Cannot divide by zero"));
+                        }
+                        valueStack.Push(operand / tokenValue);
+                    }
                 }
+                // Otherwise, push tokenValue onto the value stack.
                 else
                 {
-                    if (tokenValue == 0)
-                    {
-                        throw new ArgumentException(String.Format("Invalid formula, Cannot divide by zero"));
-                    }
-                        valueStack.Push(operand / tokenValue);
+                    valueStack.Push(tokenValue);
                 }
             }
-            // Otherwise, push tokenValue onto the value stack.
-            else
+            catch (Exception ex)
             {
-                valueStack.Push(tokenValue);
+                Debug.WriteLine(ex.Message);
             }
         }
 
@@ -159,7 +166,7 @@ namespace FormulaEvaluator
             //If + or - is at the top of the operator stack, pop the value stack twice and the operator stack 
             // once, then apply the popped operator to the popped numbers, then push the result onto the value 
             // stack.
-            if (operatorStack.hasOnTop("+", "-"))
+            if (operatorStack.HasOnTop("+", "-"))
             {
                 if(valueStack.Count < 2)
                 {
@@ -218,11 +225,11 @@ namespace FormulaEvaluator
         /// stack once. Apply the popped operator to the popped numbers. Push the result onto the value stack.
         /// </summary>
         /// <param name="token"> string </param>
-        private static void IsRightParenthesis(string token)
+        private static void IsRightParenthesis()
         {
             // If + or - is at the top of the operator stack, pop the value stack twice and the operator stack once
             // Apply the popped operator to the popped numbers. Push the result onto the value stack.
-            if (operatorStack.hasOnTop("+", "-"))
+            if (operatorStack.HasOnTop("+", "-"))
             {
                 if (valueStack.Count < 2)
                 {
@@ -250,7 +257,7 @@ namespace FormulaEvaluator
                 // Finally, if * or / is at the top of the operator stack, pop the value stack twice and the 
                 // operator stack once. Apply the popped operator to the popped numbers. Push the result onto 
                 // the value stack.
-                if (operatorStack.hasOnTop("*", "/"))
+                if (operatorStack.HasOnTop("*", "/"))
                 {
                     if (valueStack.Count < 2)
                     {
@@ -279,7 +286,7 @@ namespace FormulaEvaluator
         /// Value stack should contain a single number, pop it and report as the value of the expression
         /// </summary>
         /// <returns> returns finalValue of formula </returns>
-        private static int OpStackEmpty()
+        private static void OpStackEmpty()
         {
             //Value stack should contain a single number
             if (valueStack.Count != 1)
@@ -289,7 +296,7 @@ namespace FormulaEvaluator
             //Pop it and report as the value of the expression
             finalValue = valueStack.Pop();
 
-            return finalValue;
+            // return finalValue;
         }
 
         /// <summary>
@@ -298,7 +305,7 @@ namespace FormulaEvaluator
         /// report the result as the value of the expression.
         /// </summary>
         /// <returns> returns finalValue of formula </returns>
-        private static int OpStackOneRemaining()
+        private static void OpStackOneRemaining()
         {
             // There should be exactly one operator on the operator stack, and it should be either + or -. There 
             // should be exactly two values on the value stack.
@@ -310,7 +317,7 @@ namespace FormulaEvaluator
             {
                 throw new ArgumentException(String.Format("Invalid formula, valueStack.Count != 2"));
             }
-            if (!operatorStack.hasOnTop("+", "-"))
+            if (!operatorStack.HasOnTop("+", "-"))
             {
                 throw new ArgumentException(String.Format("Invalid formula, operatorStack does not have '+' or '-' as last token"));
             }
@@ -330,7 +337,7 @@ namespace FormulaEvaluator
                 finalValue = vSFinalValue2 - vSFinalValue1;
             }
 
-            return finalValue;
+            // return finalValue;
         }
         
         // extensions
@@ -340,7 +347,7 @@ namespace FormulaEvaluator
         /// <param name="s1"> generic type T </param>
         /// <param name="s2"> generic type T </param>
         /// <returns> returns true if s1 or s2 is on top of the stack </returns>
-        public static bool hasOnTop<T>(this Stack<T> stack, T oper1, T oper2)
+        public static bool HasOnTop<T>(this Stack<T> stack, T oper1, T oper2)
         {
             if(stack.Count > 0)
             {
