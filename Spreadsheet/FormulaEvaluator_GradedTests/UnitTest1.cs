@@ -115,7 +115,7 @@ namespace FormulaEvaluator
             Assert.AreEqual(50, Evaluator.Evaluate("2+(3+5*9)", s => 0));
         }
 
-        [TestMethod()]//, Timeout(5000)]
+        [TestMethod(), Timeout(5000)]
         public void TestOperatorAfterParens()
         {
             Assert.AreEqual(0, Evaluator.Evaluate("(1*1)-2/2", s => 0));

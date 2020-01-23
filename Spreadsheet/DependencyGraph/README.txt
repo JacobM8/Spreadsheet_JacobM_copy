@@ -2,7 +2,7 @@
 Partner:    None
 Date:       January 24, 2020
 Course:     CS 3500, University of Utah, School of Computing
-Assignment: Assignment # - DependencyGraph
+Assignment: Assignment #2 - DependencyGraph
 Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use in Academic Coursework.
 
 1. Comments to Evaluators:
@@ -32,7 +32,7 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 
 5. Estimated Time: PS2 - 15 hours     
 6. Acutal Time:    PS2:                     
-    Learning:       2 hours              
-    Programming:    .5 hours
+    Learning:       4 hours              
+    Programming:    1.25 hours
     Debugging:      
     Total:          
