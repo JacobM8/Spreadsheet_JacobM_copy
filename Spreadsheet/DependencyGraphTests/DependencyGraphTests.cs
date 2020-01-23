@@ -16,10 +16,13 @@ namespace DevelopmentTests
         ///Empty graph should contain nothing    
         ///</summary>    
         [TestMethod()]
+        
         public void SimpleEmptyTest()
         {
+            Console.WriteLine("test");
             DependencyGraph t = new DependencyGraph();
             Assert.AreEqual(0, t.Size);
+            Console.WriteLine("test size: " + t.Size);
         }
 
         /// <summary>    

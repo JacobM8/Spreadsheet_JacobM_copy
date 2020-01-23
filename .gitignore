@@ -26,6 +26,10 @@ build/
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
+# Coverlet Code Coverage and Report Generator files
+coveragereport
+coverage.opencover.xml
+
 # NUnit
 *.VisualState.xml
 TestResult.xml

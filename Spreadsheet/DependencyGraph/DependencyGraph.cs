@@ -7,7 +7,8 @@
 /// <summary>
 ///     Author: Jacob Morrison
 ///     Date: 1/24/2020
-///     This code determines which variables need to be evaluated first in the Spreadsheet
+///     This code determines the dependents and dependees of the variables in the spreadsheet and 
+///     which need to be evaluated first.
 ///     I pledge that I did the work myself.
 /// </summary>
 
@@ -50,6 +51,9 @@ namespace SpreadsheetUtilities
     /// </summary>  
     public class DependencyGraph
     {
+        Dictionary<string, HashSet<string>> DependentGraph;
+        Dictionary<string, HashSet<string>> DependeeGraph;
+        private int size = 0;
         /// <summary>    
         /// Creates an empty DependencyGraph.    
         /// </summary>    
@@ -61,8 +65,8 @@ namespace SpreadsheetUtilities
             // dependents will return it's dependees (which cells can't be solved until it is)
             // dependees will return it's dependents (which cells need to be solved before it)
 
-            Dictionary<int, string> DependentGraph = new Dictionary<int, string>();
-            Dictionary<string, int> DependeeGraph = new Dictionary<string, int>();
+            DependentGraph = new Dictionary<string, HashSet<string>>();
+            DependeeGraph  = new Dictionary<string, HashSet<string>>();
             
         }
 
@@ -71,7 +75,7 @@ namespace SpreadsheetUtilities
         /// </summary>
         public int Size
         {
-            get { return 0; }
+            get { return size; }
         }
 
         /// <summary>    
@@ -83,7 +87,8 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public int this[string s]
         {
-            get { return 0; }
+            
+            get { return s.Count(); }
         }
 
         /// <summary>    
@@ -91,6 +96,10 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public bool HasDependents(string s)
         {
+            if (s.Count() != 0)
+            {
+                return true;
+            }
             return false;
         }
 
@@ -99,6 +108,10 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public bool HasDependees(string s)
         {
+            if (s.Count() != 0)
+            {
+                return true;
+            }
             return false;
         }
 
@@ -130,6 +143,7 @@ namespace SpreadsheetUtilities
         /// <param name="t"> t cannot be evaluated until s is</param>        
         public void AddDependency(string s, string t)
         {
+            size++;
         }
 
         /// <summary>    
@@ -139,6 +153,7 @@ namespace SpreadsheetUtilities
         /// <param name="t"></param>    
         public void RemoveDependency(string s, string t)
         {
+            size--;
         }
 
         /// <summary>    
