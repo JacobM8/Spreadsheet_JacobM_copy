@@ -87,7 +87,6 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public int this[string s]
         {
-            
             get { return s.Count(); }
         }
 
@@ -120,7 +119,13 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public IEnumerable<string> GetDependents(string s)
         {
-            return null;
+            // if depentGraph contains "s" return the set associated with "s"
+            if (DependentGraph.ContainsKey(s))
+            {
+                return DependentGraph[s];
+            }
+            // if no set is associated with "s" return an empty hashset because there is no set associated with that value
+            return new HashSet<String>();
         }
 
         /// <summary>    
@@ -128,7 +133,13 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public IEnumerable<string> GetDependees(string s)
         {
-            return null;
+            // if depeneGraph contains "s" return the set associated with "s"
+            if (DependeeGraph.ContainsKey(s))
+            {
+                return DependeeGraph[s];
+            }
+            // if no set is associated with "s" return an empty hashset because there is no set associated with that value
+            return new HashSet<String>();
         }
 
         /// <summary>    
@@ -143,6 +154,15 @@ namespace SpreadsheetUtilities
         /// <param name="t"> t cannot be evaluated until s is</param>        
         public void AddDependency(string s, string t)
         {
+            // added this and tests started failing that were previously passing
+            // check to see if dependency exists
+            // add if it doesn't
+            if (DependentGraph[s].Contains(t))
+            {
+                throw new ArgumentException("Ordered pair (s,t) already exsists as a dependency so it can't be added.");
+            }
+            DependentGraph[s].Add(t);
+            DependeeGraph[t].Add(s);
             size++;
         }
 
@@ -153,7 +173,13 @@ namespace SpreadsheetUtilities
         /// <param name="t"></param>    
         public void RemoveDependency(string s, string t)
         {
-            size--;
+            if (DependentGraph[s].Contains(t))
+            {
+                DependentGraph[s].Remove(t);
+                DependeeGraph[t].Remove(s);
+                size--;
+            }
+            throw new ArgumentException("Ordered pair (s,t) doesn't exsists as a dependency so it can't be removed.");
         }
 
         /// <summary>    
