@@ -19,7 +19,6 @@ using System.Text;
 
 namespace SpreadsheetUtilities
 {
-
     /// <summary>  
     /// (s1,t1) is an ordered pair of strings  
     /// t1 depends on s1; s1 must be evaluated before t1  
@@ -59,15 +58,8 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public DependencyGraph()
         {
-            // initialize member variables (global variables) for this class here in constructor
-            // initialize adjencecy list as a dictionary
-            // need a dictionary for dependents and another one for dependees
-            // dependents will return it's dependees (which cells can't be solved until it is)
-            // dependees will return it's dependents (which cells need to be solved before it)
-
             DependentGraph = new Dictionary<string, HashSet<string>>();
             DependeeGraph  = new Dictionary<string, HashSet<string>>();
-            
         }
 
         /// <summary>    
@@ -119,12 +111,12 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public IEnumerable<string> GetDependents(string s)
         {
-            // if depentGraph contains "s" return the set associated with "s"
+            // if DepentGraph contains "s" return the set associated with "s"
             if (DependentGraph.ContainsKey(s))
             {
                 return DependentGraph[s];
             }
-            // if no set is associated with "s" return an empty hashset because there is no set associated with that value
+            // new HashSet because 's' because DependentGraph[s] is empty
             return new HashSet<String>();
         }
 
@@ -133,12 +125,12 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public IEnumerable<string> GetDependees(string s)
         {
-            // if depeneeGraph contains "s" return the set associated with "s"
+            // if DepeneeGraph contains "s" return the set associated with "s"
             if (DependeeGraph.ContainsKey(s))
             {
                 return DependeeGraph[s];
             }
-            // if no set is associated with "s" return an empty hashset because there is no set associated with that value
+            // new HashSet because 's' because DependeeGraph[s] is empty            
             return new HashSet<String>();
         }
 
@@ -154,7 +146,7 @@ namespace SpreadsheetUtilities
         /// <param name="t"> t cannot be evaluated until s is</param>        
         public void AddDependency(string s, string t)
         {
-            // check if s exists, if it does check for t, if t doesn't exist add t
+            // check if s exists, if it does check for t, if t does not exist add t
             if (DependentGraph.ContainsKey(s))
             {
                 if (!DependentGraph[s].Contains(t))
@@ -166,6 +158,7 @@ namespace SpreadsheetUtilities
                         DependeeGraph[t].Add(s);
                         size++;
                     }
+                    // if 't' doesn't exist in DependeeGraph, create new HashSet and add
                     else
                     {
                         HashSet<string> DependeeValue = new HashSet<string>();
@@ -173,8 +166,7 @@ namespace SpreadsheetUtilities
                         DependeeGraph[t].Add(s);
                         size++;
                     }
-                }
-                
+                } 
             }
             // if s does not exist add dependency
             else
@@ -197,7 +189,6 @@ namespace SpreadsheetUtilities
                     DependeeGraph[t].Add(s);
                     size++;
                 }
-                
             }
         }
 
@@ -208,6 +199,7 @@ namespace SpreadsheetUtilities
         /// <param name="t"></param>    
         public void RemoveDependency(string s, string t)
         {
+            // check for dependency then remove appropriately from both graphs
             if (DependentGraph[s].Contains(t))
             {
                 DependentGraph[s].Remove(t);
@@ -220,25 +212,27 @@ namespace SpreadsheetUtilities
         /// Removes all existing ordered pairs of the form (s,r).  Then, for each    
         /// t in newDependents, adds the ordered pair (s,t).    
         /// </summary>     
-
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
+            // if DependeeGraph does not contain 's' create a new HashSet and add it to DependeeGraph
             if (!DependentGraph.ContainsKey(s))
             {
                 HashSet<string> newHash = new HashSet<string>(DependeeGraph[s]);
                 DependentGraph.Add(s, newHash);
             }
+            // if DependentGraph does contain 's' iterate through DependentGraph[s] and remove all dependencys
             else
             {
                 if (DependentGraph.ContainsKey(s))
                 {
+                    // create a copy because items are removed during the iteration
                     HashSet<string> copy1 = new HashSet<string>(DependentGraph[s]);
                     foreach (string el in copy1)
                     {
                         RemoveDependency(s, el);
                     }
                 }
-
+                // add newDependents to DependentGraph
                 foreach (string element in newDependents)
                 {
                     AddDependency(s, element);
@@ -252,21 +246,25 @@ namespace SpreadsheetUtilities
         /// </summary>     
         public void ReplaceDependees(string s, IEnumerable<string> newDependees)
         {
+            // if DependeeGraph does not contain 's' create a new HashSet and add it to DependeeGraph
             if (!DependeeGraph.ContainsKey(s))
             {
                 HashSet<string> newHash = new HashSet<string>(DependeeGraph[s]);
                 DependeeGraph.Add(s, newHash);
             }
+            // if DependeeGraph does contain 's' iterate through DependeeGraph[s] and remove all dependencys
             else
             {
                 if (DependeeGraph.ContainsKey(s))
                 {
+                    // create a copy because items are removed during the iteration
                     HashSet<string> copy1 = new HashSet<string>(DependeeGraph[s]);
                     foreach (string el in copy1)
                     {
                         RemoveDependency(el, s);
                     }
                 }
+                // add newDependees to the DependeeGraph
                 foreach (string el in newDependees)
                 {
                     AddDependency(el, s);

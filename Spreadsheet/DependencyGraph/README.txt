@@ -7,11 +7,15 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 
 1. Comments to Evaluators:
 
-    add comments
+    I overestimated the amount of time this assignment would take. I spent more time than the previous
+    assignment learning new topics such as Dictionarys and their methods. Overall, really enjoyed this
+    assignment and thinking deeply about dependents and dependees
 
 2. Assignment Specific Topics:
 
-    add topics
+    Dependency Graphs (Dictionaries)
+    APIs
+    Good Software Engineering Practices
 
 3. Consulted Peers:
 
@@ -34,8 +38,8 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     6. C# IEnumerable Examples - http://www.dotnetperls.com/ienumerable
 
 5. Estimated Time: PS2 - 15 hours     
-6. Acutal Time:    PS2:                     
+6. Acutal Time:    PS2 - 10 hours                     
     Learning:       4 hours              
-    Programming:    1.25 hours
-    Debugging:      
-    Total:          
+    Programming:    1 hours
+    Debugging:      5 hours
+    Total:          10 hours
