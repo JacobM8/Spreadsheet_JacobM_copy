@@ -18,8 +18,10 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     Varun (TA)
     Jolie (TA)
     Logan (TA)
+    Michael (TA)
     Hailey (peer)
     James (peer)
+    Corbin Gurnee(peer)
     Piazza
 
 4. References:

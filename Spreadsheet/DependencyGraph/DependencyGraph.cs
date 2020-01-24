@@ -133,7 +133,7 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public IEnumerable<string> GetDependees(string s)
         {
-            // if depeneGraph contains "s" return the set associated with "s"
+            // if depeneeGraph contains "s" return the set associated with "s"
             if (DependeeGraph.ContainsKey(s))
             {
                 return DependeeGraph[s];
@@ -154,16 +154,51 @@ namespace SpreadsheetUtilities
         /// <param name="t"> t cannot be evaluated until s is</param>        
         public void AddDependency(string s, string t)
         {
-            // added this and tests started failing that were previously passing
-            // check to see if dependency exists
-            // add if it doesn't
-            if (DependentGraph[s].Contains(t))
+            // check if s exists, if it does check for t, if t doesn't exist add t
+            if (DependentGraph.ContainsKey(s))
             {
-                throw new ArgumentException("Ordered pair (s,t) already exsists as a dependency so it can't be added.");
+                if (!DependentGraph[s].Contains(t))
+                {
+                    // apply add to both graphs to keep them synced
+                    DependentGraph[s].Add(t);
+                    if (DependeeGraph.ContainsKey(t))
+                    {
+                        DependeeGraph[t].Add(s);
+                        size++;
+                    }
+                    else
+                    {
+                        HashSet<string> DependeeValue = new HashSet<string>();
+                        DependeeGraph.Add(t, DependeeValue);
+                        DependeeGraph[t].Add(s);
+                        size++;
+                    }
+                }
+                
             }
-            DependentGraph[s].Add(t);
-            DependeeGraph[t].Add(s);
-            size++;
+            // if s does not exist add dependency
+            else
+            {
+                // add new HashSet to DependentGraph, then add 't' to the new HashSet
+                HashSet<string> DependentValue = new HashSet<string>();
+                DependentGraph.Add(s, DependentValue);
+                DependentGraph[s].Add(t);
+                // add to DependeeGraph if 't' is already created
+                if (DependeeGraph.ContainsKey(t))
+                {
+                    DependeeGraph[t].Add(s);
+                    size++;
+                }
+                // add new HashSet to DependeeGraph then add 's' to the new HashSet
+                else
+                {
+                    HashSet<string> DependeeValue = new HashSet<string>();
+                    DependeeGraph.Add(t, DependeeValue);
+                    DependeeGraph[t].Add(s);
+                    size++;
+                }
+                
+            }
         }
 
         /// <summary>    
@@ -179,7 +214,6 @@ namespace SpreadsheetUtilities
                 DependeeGraph[t].Remove(s);
                 size--;
             }
-            throw new ArgumentException("Ordered pair (s,t) doesn't exsists as a dependency so it can't be removed.");
         }
 
         /// <summary>    
@@ -189,6 +223,27 @@ namespace SpreadsheetUtilities
 
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
+            if (!DependentGraph.ContainsKey(s))
+            {
+                HashSet<string> newHash = new HashSet<string>(DependeeGraph[s]);
+                DependentGraph.Add(s, newHash);
+            }
+            else
+            {
+                if (DependentGraph.ContainsKey(s))
+                {
+                    HashSet<string> copy1 = new HashSet<string>(DependentGraph[s]);
+                    foreach (string el in copy1)
+                    {
+                        RemoveDependency(s, el);
+                    }
+                }
+
+                foreach (string element in newDependents)
+                {
+                    AddDependency(s, element);
+                }
+            }
         }
 
         /// <summary>    
@@ -197,6 +252,26 @@ namespace SpreadsheetUtilities
         /// </summary>     
         public void ReplaceDependees(string s, IEnumerable<string> newDependees)
         {
+            if (!DependeeGraph.ContainsKey(s))
+            {
+                HashSet<string> newHash = new HashSet<string>(DependeeGraph[s]);
+                DependeeGraph.Add(s, newHash);
+            }
+            else
+            {
+                if (DependeeGraph.ContainsKey(s))
+                {
+                    HashSet<string> copy1 = new HashSet<string>(DependeeGraph[s]);
+                    foreach (string el in copy1)
+                    {
+                        RemoveDependency(el, s);
+                    }
+                }
+                foreach (string el in newDependees)
+                {
+                    AddDependency(el, s);
+                }
+            }
         }
     }
 }
