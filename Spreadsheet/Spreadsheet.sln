@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormulaEvaluator_GradedTests", "FormulaEvaluator_GradedTests\FormulaEvaluator_GradedTests.csproj", "{67B04E8D-D01E-43E8-9760-D35FA26F6D10}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Formula", "Formula\Formula.csproj", "{08D16602-431F-489C-88A0-590965F1637B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{67B04E8D-D01E-43E8-9760-D35FA26F6D10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67B04E8D-D01E-43E8-9760-D35FA26F6D10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67B04E8D-D01E-43E8-9760-D35FA26F6D10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08D16602-431F-489C-88A0-590965F1637B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08D16602-431F-489C-88A0-590965F1637B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08D16602-431F-489C-88A0-590965F1637B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08D16602-431F-489C-88A0-590965F1637B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
