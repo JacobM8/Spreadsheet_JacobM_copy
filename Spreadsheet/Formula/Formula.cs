@@ -56,7 +56,7 @@ namespace SpreadsheetUtilities
         public Formula(String formula) :
             this(formula, s => s, s => true)
         {
-            // this constructor takes the String formula parameter and passes it into the 
+            // this constructor takes the 'String formula' parameter and passes it into the 
             // other constructor that has two func's as parameters
         }
 
@@ -84,12 +84,71 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
+            // 9.1 in assignment rules
             string normalForm = normalize(formula);
             bool isValidForm = isValid(normalForm);
-            // double check this goes here
+            // If formula is not a valid form throw the appropriate exception
             if (!isValidForm)
             {
-                throw new FormulaFormatException("put message here");
+                double number;
+                String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
+                int invalidTokenCount = 0;
+                int leftParenCount = 0;
+                int rightParenCount = 0;
+                string[] invalidtokens = new string[GetTokens(normalForm).Count()];
+                
+                foreach (string s in GetTokens(normalForm)){
+                    invalidtokens[invalidTokenCount] = s;
+                    
+
+                    if (!isValid(s))
+                    {
+                        throw new FormulaFormatException("the only valid tokens are (, ), +, -, *, /, " +
+                            "variables, and decimal real numbers (including scientific notation)");
+                    }
+                    if (s == "(")
+                    {
+                        leftParenCount++;
+                    }
+                    if (s == ")")
+                    {
+                        rightParenCount++;
+                    }
+                    if (rightParenCount > leftParenCount)
+                    {
+                        throw new FormulaFormatException("When reading tokens from left to right, at " +
+                            "no point should the number of closing parentheses seen so far be greater " +
+                            "than the number of opening parentheses seen so far.");
+                    }
+                    if (invalidtokens[0] != "(" || !double.TryParse(s, out number) || 
+                        invalidtokens[0] != varPattern)
+                    {
+                        throw new FormulaFormatException("The first token of an expression must be a number," +
+                            " a variable, or an opening parenthesis.");
+                    }
+                    if (invalidtokens.op)
+
+                    invalidTokenCount++;
+                }
+                // these execeptions are checked outside of the loop because the loops need to be completed
+                // before they can be checked.
+                if (invalidTokenCount < 1)
+                {
+                    throw new FormulaFormatException("There must be at least one token");
+                }
+                if (leftParenCount != rightParenCount)
+                {
+                    throw new FormulaFormatException("The total number of opening parentheses must " +
+                        "equal the total number of closing parentheses.");
+                }
+                if (invalidtokens[invalidTokenCount] != ")" || 
+                    !double.TryParse(invalidtokens[invalidTokenCount], out number) || 
+                    invalidtokens[0] != varPattern)
+                {
+                    throw new FormulaFormatException("The last token of an expression must be a number," +
+                        " a variable, or an closing parenthesis.");
+                }
+
             }
 
         }
@@ -117,6 +176,7 @@ namespace SpreadsheetUtilities
         /// </summary>  
         public object Evaluate(Func<string, double> lookup)
         {
+            // see section 10.2 in assignment
             // the object in the method header is saying it is a method that will return an object
             // if I had 'return lookup' it would lookup the value associated with the string and return it as a double
 
@@ -212,7 +272,7 @@ namespace SpreadsheetUtilities
         /// <summary>    
         /// Given an expression, enumerates the tokens that compose it.  Tokens are left paren;    
         /// right paren; one of the four operator symbols; a string consisting of a letter or underscore    
-        /// followed by zero or more letters, digits, or underscores; a double literal;and anything that doesn't    
+        /// followed by zero or more letters, digits, or underscores; a double literal; and anything that doesn't    
         /// match one of those patterns.  There are no empty tokens, and no token contains white space.    
         /// </summary>    
         private static IEnumerable<string> GetTokens(String formula)
@@ -273,6 +333,38 @@ namespace SpreadsheetUtilities
         public string Reason
         {
             get; private set;
+        }
+
+        // extensions
+        /// <summary>
+        /// Parenthesis/Operator Following Rule - Any token that immediately follows an opening 
+        /// parenthesis or an operator must be either a number, a variable, or an opening parenthesis.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="leftParen"></param>
+        /// <param name="plus"></param>
+        /// <param name="minus"></param>
+        /// <param name="multiply"></param>
+        /// <param name="divide"></param>
+        /// <returns> true or false </returns>
+        public static bool OpenPerenOrOperator(this string[] s, string leftParen, string plus, 
+            string minus, string multiply, string divide)
+        {
+            // used to check for a numbrer
+            double number;
+            // used to check for a variable
+            String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
+            for (int i = 0; i < s.Length - 1; i++)
+            {
+                // Parenthesis/Operator Following Rule - Any token that immediately follows an opening 
+                // parenthesis or an operator must be either a number, a variable, or an opening parenthesis.
+                if ((s[i] == leftParen || s[i] == plus || s[i] == minus || s[i] == multiply || s[i] == divide)
+                    && (double.TryParse(s[i + 1], out number) || s[i + 1] == varPattern || s[i + 1] == leftParen)){
+
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

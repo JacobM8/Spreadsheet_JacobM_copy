@@ -1,5 +1,42 @@
 Author:     Jacob Morrison
 Partner:    None
+Date:       January 31, 2020
+Course:     CS 3500, University of Utah, School of Computing
+Assignment: Assignment #3 - Formula
+Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use in Academic Coursework.
+
+1. Comments to Evaluators:
+
+    
+
+2. Assignment Specific Topics:
+
+    
+
+3. Consulted Peers:
+
+    Logan (TA)
+    Jay Morrison (Dad)
+
+
+4. References:
+
+    1. yield (C# Reference) - https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/yield
+    2. C# | Array Of Strings - https://www.geeksforgeeks.org/c-sharp-arrays-of-strings/
+    3. How can I check if a string is a number - https://stackoverflow.com/questions/6733652/how-can-i-check-if-a-string-is-a-number
+
+
+5. Estimated Time: PS3 - 15 hours     
+6. Acutal Time:    PS3 -                     
+    Learning:            .5 hours            
+    Programming:         .5 hours
+    Debugging:      
+    Total:          
+
+------------------------------------------------------------------------------------------------------
+
+Author:     Jacob Morrison
+Partner:    None
 Date:       January 24, 2020
 Course:     CS 3500, University of Utah, School of Computing
 Assignment: Assignment #2 - DependencyGraph
