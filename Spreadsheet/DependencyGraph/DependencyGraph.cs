@@ -79,7 +79,7 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public int this[string s]
         {
-            get { return s.Count(); }
+            get { return DependeeGraph[s].Count(); }
         }
 
         /// <summary>    

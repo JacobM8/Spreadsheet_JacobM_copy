@@ -29,7 +29,7 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 5. Estimated Time: PS3 - 15 hours     
 6. Acutal Time:    PS3 -                     
     Learning:            .5 hours            
-    Programming:         .5 hours
+    Programming:         2.5 hours
     Debugging:      
     Total:          
 
@@ -61,7 +61,7 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     Logan (TA)
     Michael (TA)
     Hailey (peer)
-    James (peer)
+    James Gibb(peer)
     Corbin Gurnee(peer)
     Piazza
 

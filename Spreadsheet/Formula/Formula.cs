@@ -84,7 +84,6 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
-            // 9.1 in assignment rules
             string normalForm = normalize(formula);
             bool isValidForm = isValid(normalForm);
             // If formula is not a valid form throw the appropriate exception
@@ -99,7 +98,6 @@ namespace SpreadsheetUtilities
                 
                 foreach (string s in GetTokens(normalForm)){
                     invalidtokens[invalidTokenCount] = s;
-                    
 
                     if (!isValid(s))
                     {
@@ -126,7 +124,17 @@ namespace SpreadsheetUtilities
                         throw new FormulaFormatException("The first token of an expression must be a number," +
                             " a variable, or an opening parenthesis.");
                     }
-                    if (invalidtokens.op)
+                    if (!invalidtokens.WhenOpenPerenOrOperator())
+                    {
+                        throw new FormulaFormatException("Any token that immediately follows an opening parenthesis " +
+                            "or an operator must be either a number, a variable, or an opening parenthesis.");
+                    }
+
+                    if (!invalidtokens.WhenNumOrVarOrCloseParen())
+                    {
+                        throw new FormulaFormatException("Any token that immediately follows a number, a variable, or " +
+                            "a closing parenthesis must be either an operator or a closing parenthesis.");
+                    }
 
                     invalidTokenCount++;
                 }
@@ -176,9 +184,16 @@ namespace SpreadsheetUtilities
         /// </summary>  
         public object Evaluate(Func<string, double> lookup)
         {
-            // see section 10.2 in assignment
             // the object in the method header is saying it is a method that will return an object
             // if I had 'return lookup' it would lookup the value associated with the string and return it as a double
+
+            // The Evaluate method should use the evaluation algorithm from the first assignment, 
+            // modified to deal with double-precision floating point numbers instead of integers and 
+            // to take account of the normalization delegate (see below).
+            //
+            // Because the constructor throws an exception when it encounters a syntactically incorrect 
+            // formula, the only problems that the Evaluate method needs to worry about are undefined 
+            // variables and division by zero.
 
             return null;
         }
