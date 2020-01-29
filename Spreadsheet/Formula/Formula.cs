@@ -29,7 +29,7 @@ namespace SpreadsheetUtilities
     /// <summary>  
     /// Represents formulas written in standard infix notation using standard precedence  
     /// rules. The allowed symbols are non-negative numbers written using double-precision   
-    /// floating-point syntax (without unary preceeding '-' or '+');   
+    /// doubleing-point syntax (without unary preceeding '-' or '+');   
     /// variables that consist of a letter or underscore followed by   
     /// zero or more letters, underscores, or digits; parentheses; and the four operator   
     /// symbols +, -, *, and /.    
@@ -45,6 +45,17 @@ namespace SpreadsheetUtilities
     /// </summary>  
     public class Formula
     {
+        static Stack<double> valueStack;
+        static Stack<string> operatorStack;
+
+        // tokenValue will be set to the value of token when it's a doubleing point value in TryPase below
+        static double tokenValue = 0;
+        // Final value of formula
+        static double finalValue = 0;
+        // master formula
+        public string[] masterFormula;
+
+        public delegate int Lookup(String variable_name);
         /// <summary>    
         /// Creates a Formula from a string that consists of an infix expression written as    
         /// described in the class comment.  If the expression is syntactically invalid,    
@@ -84,81 +95,98 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
+            masterFormula = Regex.Split(formula, "(\\()|(\\))|(-)|(\\+)|(\\*)|(/)");
             string normalForm = normalize(formula);
             bool isValidForm = isValid(normalForm);
-            // If formula is not a valid form throw the appropriate exception
-            if (!isValidForm)
+            
+            double number = 0;
+            String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
+            // variables are incremented apprppiately to check for exceptions
+            int invalidTokenCount = 0;
+            int leftParenCount = 0;
+            int rightParenCount = 0;
+            string[] invalidtokens = new string[GetTokens(normalForm).Count()];
+            if (invalidtokens.Length < 1)
             {
-                double number;
-                String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
-                int invalidTokenCount = 0;
-                int leftParenCount = 0;
-                int rightParenCount = 0;
-                string[] invalidtokens = new string[GetTokens(normalForm).Count()];
-                
-                foreach (string s in GetTokens(normalForm)){
-                    invalidtokens[invalidTokenCount] = s;
+                throw new FormulaFormatException("Formula does have at least one item");
+            }
 
+            
+
+            // check each token to ensure it is a valid formula
+            // these checks will not catch errors like divide by 0
+            foreach (string s in GetTokens(normalForm)){
+                invalidtokens[invalidTokenCount] = s;
+
+                if (s == "(")
+                {
+                    leftParenCount++;
+                }
+                if (s == ")")
+                {
+                    rightParenCount++;
+                }
+                if (rightParenCount > leftParenCount)
+                {
+                    throw new FormulaFormatException("When reading tokens from left to right, at " +
+                        "no point should the number of closing parentheses seen so far be greater " +
+                        "than the number of opening parentheses seen so far.");
+                }
+                
+                // need help on these two
+                if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
+                {
                     if (!isValid(s))
                     {
                         throw new FormulaFormatException("the only valid tokens are (, ), +, -, *, /, " +
                             "variables, and decimal real numbers (including scientific notation)");
                     }
-                    if (s == "(")
-                    {
-                        leftParenCount++;
-                    }
-                    if (s == ")")
-                    {
-                        rightParenCount++;
-                    }
-                    if (rightParenCount > leftParenCount)
-                    {
-                        throw new FormulaFormatException("When reading tokens from left to right, at " +
-                            "no point should the number of closing parentheses seen so far be greater " +
-                            "than the number of opening parentheses seen so far.");
-                    }
-                    if (invalidtokens[0] != "(" || !double.TryParse(s, out number) || 
-                        invalidtokens[0] != varPattern)
-                    {
-                        throw new FormulaFormatException("The first token of an expression must be a number," +
-                            " a variable, or an opening parenthesis.");
-                    }
-                    if (!invalidtokens.WhenOpenPerenOrOperator())
-                    {
-                        throw new FormulaFormatException("Any token that immediately follows an opening parenthesis " +
-                            "or an operator must be either a number, a variable, or an opening parenthesis.");
-                    }
-
-                    if (!invalidtokens.WhenNumOrVarOrCloseParen())
-                    {
-                        throw new FormulaFormatException("Any token that immediately follows a number, a variable, or " +
-                            "a closing parenthesis must be either an operator or a closing parenthesis.");
-                    }
-
-                    invalidTokenCount++;
-                }
-                // these execeptions are checked outside of the loop because the loops need to be completed
-                // before they can be checked.
-                if (invalidTokenCount < 1)
-                {
-                    throw new FormulaFormatException("There must be at least one token");
-                }
-                if (leftParenCount != rightParenCount)
-                {
-                    throw new FormulaFormatException("The total number of opening parentheses must " +
-                        "equal the total number of closing parentheses.");
-                }
-                if (invalidtokens[invalidTokenCount] != ")" || 
-                    !double.TryParse(invalidtokens[invalidTokenCount], out number) || 
-                    invalidtokens[0] != varPattern)
-                {
-                    throw new FormulaFormatException("The last token of an expression must be a number," +
-                        " a variable, or an closing parenthesis.");
                 }
 
+                invalidTokenCount++;
             }
-
+            // these execeptions are checked outside of the loop because the loops need to be completed
+            // before they can be checked.
+            if (!invalidtokens.WhenOpenPerenOrOperator())
+            {
+                throw new FormulaFormatException("Any token that immediately follows an opening parenthesis " +
+                    "or an operator must be either a number, a variable, or an opening parenthesis.");
+            }
+            if (!invalidtokens.WhenNumOrVarOrCloseParen())
+            {
+                throw new FormulaFormatException("Any token that immediately follows a number, a variable, or " +
+                    "a closing parenthesis must be either an operator or a closing parenthesis.");
+            }
+            if (!double.TryParse(invalidtokens[0], out number))
+            {
+                // test
+            }
+            if (Check(invalidtokens[0]))
+            {
+                // test
+            }
+            if (!invalidtokens[0].Equals("("))
+            {
+                // test
+            }
+             // write helper method for Starting Token Rule
+            
+            if (invalidTokenCount < 1)
+            {
+                throw new FormulaFormatException("There must be at least one token");
+            }
+            if (leftParenCount != rightParenCount)
+            {
+                throw new FormulaFormatException("The total number of opening parentheses must " +
+                    "equal the total number of closing parentheses.");
+            }
+            if (invalidtokens[invalidTokenCount] != ")" || 
+                !double.TryParse(invalidtokens[invalidTokenCount], out number) || 
+                invalidtokens[0] != varPattern)
+            {
+                throw new FormulaFormatException("The last token of an expression must be a number," +
+                    " a variable, or an closing parenthesis.");
+            }
         }
 
         /// <summary>    
@@ -184,18 +212,99 @@ namespace SpreadsheetUtilities
         /// </summary>  
         public object Evaluate(Func<string, double> lookup)
         {
+            // example of lookup being used is lookup("string"), it will lookup the string and see if it 
+            // can convert it into a double.
+
             // the object in the method header is saying it is a method that will return an object
             // if I had 'return lookup' it would lookup the value associated with the string and return it as a double
 
             // The Evaluate method should use the evaluation algorithm from the first assignment, 
-            // modified to deal with double-precision floating point numbers instead of integers and 
+            // modified to deal with double-precision doubleing point numbers instead of integers and 
             // to take account of the normalization delegate (see below).
             //
             // Because the constructor throws an exception when it encounters a syntactically incorrect 
             // formula, the only problems that the Evaluate method needs to worry about are undefined 
             // variables and division by zero.
+            
+            valueStack = new Stack<double>();
+            operatorStack = new Stack<string>();
 
-            return null;
+            // for loop through masterFormula
+            foreach (string token in masterFormula)
+            {
+                // if token is blank
+                if (token.Equals(""))
+                {
+                    continue;
+                }
+
+                // trim whitespaces off front and back of the token
+                token.Trim();
+
+                // if token is an doubleing point
+                if (double.TryParse(token, out tokenValue))
+                {
+                    IsDouble(tokenValue);
+                }
+
+                // ***if token is in scientific notation
+                // use regex to see if it's a double
+                // convert to foat with Double.TryParse("scientific notation number", System.Globalization.NumberStyles.double, out Mydouble);
+                // then call Isdouble()
+
+
+                // if token is a "+" or "-"
+                else if (token == "+" || token == "-")
+                {
+                    IsPlusOrMinus(token);
+                }
+                // if token is a "*" or "/"
+                else if (token == "*" || token == "/")
+                {
+                    IsMultiplyOrDivide(token);
+                }
+                // if token is left parenthesis "("
+                else if (token == "(")
+                {
+                    IsLeftParenthesis(token);
+                }
+                // if token is right parenthesis
+                else if (token == ")")
+                {
+                    IsRightParenthesis();
+                }
+                // if token is a variable
+                else
+                {
+                    // checks to see if token is a valid variable
+                    if (Regex.IsMatch(token, @"[a-zA-Z]+\d+"))
+                    {
+                        // try catch will catch an exception when there is one from Program.cs
+                        try
+                        {
+                            double variableValue = lookup(token);
+                            IsDouble(variableValue);
+                        }
+                        catch
+                        {
+                            throw new ArgumentException("Lookup function threw exception.");
+                        }
+                    }
+                }
+            }
+
+            // if operatorStack is empty
+            if (operatorStack.Count == 0)
+            {
+                OpStackEmpty();
+            }
+            // if operatorStack has one item left
+            else if (operatorStack.Count == 1)
+            {
+                OpStackOneRemaining();
+            }
+
+            return finalValue;
         }
 
         /// <summary>    
@@ -211,6 +320,16 @@ namespace SpreadsheetUtilities
         /// </summary> 
         public IEnumerable<String> GetVariables()
         {
+            /*
+            string[] form = new string[GetVariables().Count()];
+            string[] normForm;
+            // return the items that were enumerated
+            for (int i = 0; i < GetVariables().Count(); i++)
+            {
+                form[i] = GetVariables().GetEnumerator(i);
+            }
+            
+            */
             return null;
         }
 
@@ -238,7 +357,7 @@ namespace SpreadsheetUtilities
         /// except for numeric tokens and variable tokens.    
         /// Numeric tokens are considered equal if they are equal after being "normalized"     
         /// by C#'s standard conversion from string to double, then back to string. This     
-        /// eliminates any inconsistencies due to limited floating point precision.    
+        /// eliminates any inconsistencies due to limited doubleing point precision.    
         /// Variable tokens are considered equal if their normalized forms are equal, as     
         /// defined by the provided normalizer.    
         ///     
@@ -297,6 +416,7 @@ namespace SpreadsheetUtilities
             String rpPattern = @"\)";
             String opPattern = @"[\+\-*/]";
             String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
+            // *** is this checking for scientific notation??
             String doublePattern = @"(?: \d+\.\d* | \d*\.\d+ | \d+ ) (?: [eE][\+-]?\d+)?";
             String spacePattern = @"\s+";
             // Overall pattern      
@@ -311,7 +431,268 @@ namespace SpreadsheetUtilities
                 }
             }
         }
-    }
+        // helper methods
+        /// <summary>
+        /// Determines if token is an integer and does the following:
+        /// If * or / is at the top of the operator stack, pop the value stack, pop the operator stack, 
+        /// and apply the popped operator to the popped number and t. Push the result onto the value stack.
+        /// Otherwise, pushes token onto the value stack.
+        /// </summary>
+        /// <param name="s"> integer </param>
+        private static void IsDouble(double tokenValue)
+        {
+            // If * or / is at the top of the operator stack, pop the value stack, pop the operator stack, 
+            // and apply the popped operator to the popped number and tokenValue. 
+            // Push the result onto the value stack.
+            if (operatorStack.HasOnTop("*", "/"))
+            {
+                if (valueStack.Count == 0)
+                {
+                    throw new ArgumentException("Invalid formula, valueStack is empty");
+                }
+                double operand = valueStack.Pop();
+                string op = operatorStack.Pop();
+
+                if (op == "*")
+                {
+                    valueStack.Push(operand * tokenValue);
+                }
+                else
+                {
+                    if (tokenValue == 0)
+                    {
+                        throw new ArgumentException("Invalid formula, Cannot divide by zero");
+                    }
+                    valueStack.Push(operand / tokenValue);
+                }
+            }
+            // Otherwise, push tokenValue onto the value stack.
+            else
+            {
+                valueStack.Push(tokenValue);
+            }
+
+        }
+
+        /// <summary>
+        /// Determines if token is "+" or "-" and does the following:
+        /// If + or - is at the top of the operator stack, pop the value stack twice and the operator stack once, 
+        /// then apply the popped operator to the popped numbers, then push the result onto the value stack.
+        /// Otherwise, Pushes token onto the operator stack
+        /// </summary>
+        /// <param name="token"> string </param>
+        private static void IsPlusOrMinus(string token)
+        {
+            //If + or - is at the top of the operator stack, pop the value stack twice and the operator stack 
+            // once, then apply the popped operator to the popped numbers, then push the result onto the value 
+            // stack.
+            if (operatorStack.HasOnTop("+", "-"))
+            {
+                if (valueStack.Count < 2)
+                {
+                    throw new ArgumentException("Invalid formula, ValueStack has less than 2 tokens.");
+                }
+
+                double operand1 = valueStack.Pop();
+                double operand2 = valueStack.Pop();
+                string currOperator = operatorStack.Pop();
+                if (currOperator == "+")
+                {
+                    valueStack.Push(operand1 + operand2);
+                    operatorStack.Push(token);
+                }
+                else
+                {
+                    valueStack.Push(operand2 - operand1);
+                    operatorStack.Push(token);
+                }
+            }
+            // Push token onto the operator stack
+            else
+            {
+                operatorStack.Push(token);
+            }
+        }
+
+        /// <summary>
+        ///  Determines if token is "*" or "/" and does the following: Push token onto the operator stack.
+        /// </summary>
+        /// <param name="token"> string </param>
+        private static void IsMultiplyOrDivide(string token)
+        {
+            // Push token onto the operator stack
+            operatorStack.Push(token);
+        }
+
+        /// <summary>
+        /// Determines if token is "(" and does the following: Push t onto the operator stack.
+        /// </summary>
+        /// <param name="token"> string </param>
+        private static void IsLeftParenthesis(string token)
+        {
+            // Push token onto the operator stack
+            operatorStack.Push(token);
+        }
+
+        /// <summary>
+        /// Dermines if token is ")" and does the following: If + or - is at the top of the operator stack, pop the 
+        /// value stack twice and the operator stack once. Apply the popped operator to the popped numbers. Push the 
+        /// result onto the value stack.
+        /// 
+        /// Next, the top of the operator stack should be a '('. Pop it.
+        /// 
+        /// Finally, if * or / is at the top of the operator stack, pop the value stack twice and the operator 
+        /// stack once. Apply the popped operator to the popped numbers. Push the result onto the value stack.
+        /// </summary>
+        /// <param name="token"> string </param>
+        private static void IsRightParenthesis()
+        {
+            if (valueStack.Count < 2 && !operatorStack.Contains("("))
+            {
+                throw new ArgumentException("Invalid formula, valueStack.Count > 2 when using IsRightParenthesis");
+            }
+            // If + or - is at the top of the operator stack, pop the value stack twice and the operator stack once
+            // Apply the popped operator to the popped numbers. Push the result onto the value stack.
+            if (operatorStack.HasOnTop("+", "-"))
+            {
+                double operand1 = valueStack.Pop();
+                double operand2 = valueStack.Pop();
+                string currOperator1 = operatorStack.Pop();
+                if (currOperator1 == "+")
+                {
+                    valueStack.Push(operand1 + operand2);
+                }
+                else
+                {
+                    valueStack.Push(operand2 - operand1);
+                }
+
+                // in order to calculate correctly the operatorStack should not be empty and
+                // it needs to have "(" on top.
+                if (operatorStack.Count == 0 || operatorStack.Peek() != "(")
+                {
+                    throw new ArgumentException("Invalid formula, '(' is not in the correct spot");
+                }
+            }
+            // The top of the operator stack should be a '('. Pop it.
+            string currOperator2 = operatorStack.Pop();
+
+            // Finally, if * or / is at the top of the operator stack, pop the value stack twice and the 
+            // operator stack once. Apply the popped operator to the popped numbers. Push the result onto 
+            // the value stack.
+            if (operatorStack.HasOnTop("*", "/"))
+            {
+                if (valueStack.Count < 2)
+                {
+                    throw new ArgumentException("Invalid formula, valueStack.Count < 2 when using IsRightParenthesis");
+                }
+                double operand3 = valueStack.Pop();
+                double operand4 = valueStack.Pop();
+                string currOperator3 = operatorStack.Pop();
+                if (currOperator3 == "*")
+                {
+                    valueStack.Push(operand3 * operand4);
+                }
+                else
+                {
+                    if (operand4 == 0)
+                    {
+                        throw new ArgumentException("Invalid formula, cannot divide by zero.");
+                    }
+                    valueStack.Push(operand3 / operand4);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Value stack should contain a single number, pop it and report as the value of the expression
+        /// </summary>
+        /// <returns> returns finalValue of formula </returns>
+        private static void OpStackEmpty()
+        {
+            //Value stack should contain a single number
+            if (valueStack.Count != 1)
+            {
+                throw new ArgumentException("Invalid formula, valueStack.Count != 1");
+            }
+            //Pop it and report as the value of the expression
+            finalValue = valueStack.Pop();
+        }
+
+        /// <summary>
+        /// There should be exactly one operator on the operator stack, and it should be either + or -. 
+        /// There should be exactly two values on the value stack. Apply the operator to the two values and 
+        /// report the result as the value of the expression.
+        /// </summary>
+        /// <returns> returns finalValue of formula </returns>
+        private static void OpStackOneRemaining()
+        {
+            // There should be exactly one operator on the operator stack, and it should be either + or -. There 
+            // should be exactly two values on the value stack.
+            if (operatorStack.Count != 1)
+            {
+                throw new ArgumentException("Invalid formula, operatorStack.Count != 1");
+            }
+            else if (valueStack.Count != 2)
+            {
+                throw new ArgumentException("Invalid formula, valueStack.Count != 2");
+            }
+            if (!operatorStack.HasOnTop("+", "-"))
+            {
+                throw new ArgumentException("Invalid formula, operatorStack does not have '+' or '-' as last token");
+            }
+
+            // Apply the operator to the two values and report the result as the value of the expression.
+            double vSFinalValue1 = valueStack.Pop();
+            double vSFinalValue2 = valueStack.Pop();
+
+            if (operatorStack.Peek() == "+")
+            {
+                operatorStack.Pop();
+                finalValue = vSFinalValue2 + vSFinalValue1;
+            }
+            else
+            {
+                operatorStack.Pop();
+                finalValue = vSFinalValue2 - vSFinalValue1;
+            }
+        }
+
+        static bool CheckVariable(string s)
+        {
+            Regex regex = new Regex(@"[a-zA-Z]+\d+");
+            Match match = regex.Match(s);
+            return match.Success;
+        }
+
+        /*
+        if (!invalidtokens[0].Equals("(") || !double.TryParse(invalidtokens[0], out number) || Check(invalidtokens[0]))
+            {
+                throw new FormulaFormatException("The first token of an expression must be a number," +
+                    " a variable, or an opening parenthesis.");
+            }*/
+
+        static bool StartTokenRule(string s)
+        {
+            bool openParen = false;
+            bool num = false;
+            bool var = false;
+            double number = 0;
+            if (invalidTokens[0].Equals("("))
+            {
+                openParen = true;
+            }
+            if (double.TryParse(invalidtokens[0], out number))
+             {
+                num = true;
+            }
+            if (CheckVariable(invalidtokens[0]))
+            {
+                var = true;
+            }
+            if (//three bools are not true throw exceptions)
+        }
+}
 
     /// <summary>  
     /// Used to report syntactic errors in the argument to the Formula constructor.  
@@ -348,38 +729,6 @@ namespace SpreadsheetUtilities
         public string Reason
         {
             get; private set;
-        }
-
-        // extensions
-        /// <summary>
-        /// Parenthesis/Operator Following Rule - Any token that immediately follows an opening 
-        /// parenthesis or an operator must be either a number, a variable, or an opening parenthesis.
-        /// </summary>
-        /// <param name="s"></param>
-        /// <param name="leftParen"></param>
-        /// <param name="plus"></param>
-        /// <param name="minus"></param>
-        /// <param name="multiply"></param>
-        /// <param name="divide"></param>
-        /// <returns> true or false </returns>
-        public static bool OpenPerenOrOperator(this string[] s, string leftParen, string plus, 
-            string minus, string multiply, string divide)
-        {
-            // used to check for a numbrer
-            double number;
-            // used to check for a variable
-            String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
-            for (int i = 0; i < s.Length - 1; i++)
-            {
-                // Parenthesis/Operator Following Rule - Any token that immediately follows an opening 
-                // parenthesis or an operator must be either a number, a variable, or an opening parenthesis.
-                if ((s[i] == leftParen || s[i] == plus || s[i] == minus || s[i] == multiply || s[i] == divide)
-                    && (double.TryParse(s[i + 1], out number) || s[i + 1] == varPattern || s[i + 1] == leftParen)){
-
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }

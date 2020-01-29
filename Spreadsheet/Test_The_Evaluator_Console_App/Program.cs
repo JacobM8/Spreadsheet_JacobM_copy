@@ -5,6 +5,7 @@
 ///     I pledge that I did the work myself.
 /// </summary>
 using System;
+using System.Text.RegularExpressions;
 using FormulaEvaluator;
 using static FormulaEvaluator.Evaluator;
 
@@ -13,7 +14,29 @@ namespace Test_The_Evaluator_Console_App
     class Program
     {
         static void Main(string[] args)
-        {            
+        {
+            string s = "&6";
+            static bool Check(string s)
+            {
+                Regex regex = new Regex(@"[a-zA-Z]+\d+");
+                Match match = regex.Match(s);
+                return match.Success;
+            }
+            Console.WriteLine(Check(s));
+            
+            String varPattern = @"[a-zA-Z]+\d+";
+            var v = Regex.Match(s, varPattern);
+            Console.WriteLine(v);
+            if (Check(s))
+            {
+                Console.WriteLine("match");
+            }
+            if (!Check(s))
+            {
+                Console.WriteLine("no match");
+            }
+            
+
             // Test single number only
             if (Evaluator.Evaluate("2", null) == 2)
             {

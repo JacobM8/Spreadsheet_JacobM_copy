@@ -334,6 +334,7 @@ namespace FormulaEvaluator
             }
         }
         
+        
         // extensions
         /// <summary>
         /// Checks to see what is on top of the stack.
@@ -352,6 +353,5 @@ namespace FormulaEvaluator
                 return false;
             }
         }
-
     }
 }

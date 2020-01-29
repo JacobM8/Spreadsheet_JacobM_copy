@@ -25,7 +25,7 @@ namespace SpreadsheetUtilities
 			{
 				// Any token that immediately follows an opening parenthesis or an operator must be either 
 				// a number, a variable, or an opening parenthesis.
-				if ((s[i].IsOperator()) && (double.TryParse(s[i + 1], out number) || 
+				if ((s[i].Equals("(") || s[i].IsOperator()) && (double.TryParse(s[i + 1], out number) || 
 					s[i + 1].Equals(varPattern) || s[i + 1] == "("))
 				{
 
@@ -72,6 +72,24 @@ namespace SpreadsheetUtilities
 				return true;
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// Checks to see what is on top of the stack.
+		/// </summary>
+		/// <param name="s1"> generic type T </param>
+		/// <param name="s2"> generic type T </param>
+		/// <returns> returns true if s1 or s2 is on top of the stack </returns>
+		public static bool HasOnTop<T>(this Stack<T> stack, T oper1, T oper2)
+		{
+			if (stack.Count > 0)
+			{
+				return (stack.Peek().Equals(oper1) || stack.Peek().Equals(oper2));
+			}
+			else
+			{
+				return false;
+			}
 		}
 	}
 }

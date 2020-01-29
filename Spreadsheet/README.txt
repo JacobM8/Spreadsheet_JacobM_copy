@@ -16,6 +16,8 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 3. Consulted Peers:
 
     Logan (TA)
+    Jolie (TA)
+    Varun (TA)
     Jay Morrison (Dad)
 
 
@@ -24,13 +26,15 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     1. yield (C# Reference) - https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/yield
     2. C# | Array Of Strings - https://www.geeksforgeeks.org/c-sharp-arrays-of-strings/
     3. How can I check if a string is a number - https://stackoverflow.com/questions/6733652/how-can-i-check-if-a-string-is-a-number
+    4. Convert Scientific Notation String to Float C# - https://stackoverflow.com/questions/64639/convert-from-scientific-notation-string-to-float-in-c-sharp
+    5. How do I use Assert to verify that an exception has been thrown? - https://stackoverflow.com/questions/933613/how-do-i-use-assert-to-verify-that-an-exception-has-been-thrown
 
 
 5. Estimated Time: PS3 - 15 hours     
 6. Acutal Time:    PS3 -                     
     Learning:            .5 hours            
-    Programming:         2.5 hours
-    Debugging:      
+    Programming:         4 hours
+    Debugging:           2 hours
     Total:          
 
 ------------------------------------------------------------------------------------------------------
