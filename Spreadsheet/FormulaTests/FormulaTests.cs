@@ -26,7 +26,7 @@ namespace FormulaTests
         [ExpectedException(typeof(FormulaFormatException))]
         public void TestCanCatchInvalidChar()
         {
-            string formula = "2 + x&";
+            string formula = "2 + x^";
             Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
@@ -40,9 +40,52 @@ namespace FormulaTests
             Formula f = new Formula(formula, normalize, isValid);
         }
 
+        // test number with a decimal
+        [TestMethod]
+        public void TestSimpleAddWithDecimal()
+        {
+            // can create a helper method to get the value of the 
+            string formula = "2.2 + 2.2";
+            Console.WriteLine(formula);
+            Formula f = new Formula(formula, normalize, isValid);
+            Assert.AreEqual("4.4", f.Evaluate(s => 0));
+        }
+
+        // test scientific notation
+        [TestMethod]
+        public void TestSimpleAddWithScientificNotation()
+        {
+            string formula = "5e-5 + 5e-5";
+            Console.WriteLine(formula);
+            Formula f = new Formula(formula, normalize, isValid);
+            //Assert.Equals(".0001", f.Evaluate());
+        }
+
         [TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
-        public void TestRightParenRule()
+        public void TestSpecificTokenRuleFail()
+        {
+            // Specific Token Rule - the only valid tokens are (, ), +, -, *, /, variables, and 
+            // decimal real numbers (including scientific notation).
+            string formula = "(3! + 3 - 3)";
+            Console.WriteLine(formula);
+            // problem with regex to catch !
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+
+        [TestMethod]
+        public void TestSpecificTokenRulePass()
+        {
+            // Specific Token Rule - the only valid tokens are (, ), +, -, *, /, variables, and decimal 
+            // real numbers (including scientific notation).
+            string formula = "(3 + 3 - 3)";
+            Console.WriteLine(formula);
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestRightParenRuleFail()
         {
             // Right Parentheses Rule -  When reading tokens from left to right, at no point should 
             // the number of closing parentheses seen so far be greater than the number of opening 
@@ -54,8 +97,19 @@ namespace FormulaTests
         }
 
         [TestMethod]
+        public void TestRightParenRulePass()
+        {
+            // Right Parentheses Rule -  When reading tokens from left to right, at no point should 
+            // the number of closing parentheses seen so far be greater than the number of opening 
+            // parentheses seen so far.
+            string formula = "(3 + 3 - 3)";
+            Console.WriteLine(formula);
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
-        public void TestBalancedParenRule()
+        public void TestBalancedParenRuleFail()
         {
             // Balanced Parentheses Rule- The total number of opening parentheses must equal the total 
             // number of closing parentheses.
@@ -66,8 +120,18 @@ namespace FormulaTests
         }
 
         [TestMethod]
+        public void TestBalancedParenRulePass()
+        {
+            // Balanced Parentheses Rule- The total number of opening parentheses must equal the total 
+            // number of closing parentheses.
+            string formula = "(3 + 3) * (5 - 3)";
+            Console.WriteLine(formula);
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
-        public void TestStartingTokenRule()
+        public void TestStartingTokenRuleFail()
         {
             // Starting Token Rule - The first token of an expression must be a number, a variable, or 
             // an opening parenthesis.
@@ -76,8 +140,83 @@ namespace FormulaTests
             Formula f = new Formula(formula, normalize, isValid);
         }
 
+        [TestMethod]
+        public void TestStartingTokenRulePass()
+        {
+            // Starting Token Rule - The first token of an expression must be a number, a variable, or 
+            // an opening parenthesis.
+            string formula = "(3 + 3) * (5 - 3)";
+            Console.WriteLine(formula);
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestEndTokenRuleFail()
+        {
+            // Ending Token Rule- The last token of an expression must be a number, a variable, or a 
+            // closing parenthesis.
+            string formula = "(3 + 3) * (5 - 3+";
+            Console.WriteLine(formula);
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+
+        [TestMethod]
+        public void TestEndTokenRulePass()
+        {
+            // Ending Token Rule- The last token of an expression must be a number, a variable, or a 
+            // closing parenthesis.
+            string formula = "(3 + 3) * (5 - 3)";
+            Console.WriteLine(formula);
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestParenOperatorFollowRuleFail()
+        {
+            // Parenthesis/Operator Following Rule - Any token that immediately follows an opening 
+            // parenthesis or an operator must be either a number, a variable, or an opening parenthesis.
+            string formula = "(3 + ) 3) * (5 - 3)";
+            Console.WriteLine(formula);
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+
+        [TestMethod]
+        public void TestParenOperatorFollowRulePass()
+        {
+            // Parenthesis/Operator Following Rule - Any token that immediately follows an opening 
+            // parenthesis or an operator must be either a number, a variable, or an opening parenthesis.
+            string formula = "(3 + 3) * (5 - 3)";
+            Console.WriteLine(formula);
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestExtraFollowRuleFail()
+        {
+            // Extra Following Rule - Any token that immediately follows a number, a variable, or a 
+            // closing parenthesis must be either an operator or a closing parenthesis.
+
+            string formula = "(3 + 3 ( ) * (5 - 3)";
+            Console.WriteLine(formula);
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+
+        [TestMethod]
+        public void TestExtraFollowRulePass()
+        {
+            // Extra Following Rule - Any token that immediately follows a number, a variable, or a 
+            // closing parenthesis must be either an operator or a closing parenthesis.
+
+            string formula = "(3 + 3) * (5 - 3)";
+            Console.WriteLine(formula);
+            Formula f = new Formula(formula, normalize, isValid);
+        }
 
 
+        // Helper methods
         /// <summary>
         /// convert every char in "toTest" toUpper 
         /// </summary>

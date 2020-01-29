@@ -98,25 +98,19 @@ namespace SpreadsheetUtilities
             masterFormula = Regex.Split(formula, "(\\()|(\\))|(-)|(\\+)|(\\*)|(/)");
             string normalForm = normalize(formula);
             bool isValidForm = isValid(normalForm);
-            
+
             double number = 0;
             String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
             // variables are incremented apprppiately to check for exceptions
-            int invalidTokenCount = 0;
+            int tokenCount = 0;
             int leftParenCount = 0;
             int rightParenCount = 0;
-            string[] invalidtokens = new string[GetTokens(normalForm).Count()];
-            if (invalidtokens.Length < 1)
-            {
-                throw new FormulaFormatException("Formula does have at least one item");
-            }
+            string[] tokens = new string[GetTokens(normalForm).Count()];
 
-            
-
-            // check each token to ensure it is a valid formula
-            // these checks will not catch errors like divide by 0
+            // the following foreach loop and if statements will ensure there is a valid formula
+            // checks will not catch errors like divide by 0
             foreach (string s in GetTokens(normalForm)){
-                invalidtokens[invalidTokenCount] = s;
+                tokens[tokenCount] = s;
 
                 if (s == "(")
                 {
@@ -126,14 +120,14 @@ namespace SpreadsheetUtilities
                 {
                     rightParenCount++;
                 }
+                // ensures formula has correct ordering of parenthesis
                 if (rightParenCount > leftParenCount)
                 {
                     throw new FormulaFormatException("When reading tokens from left to right, at " +
                         "no point should the number of closing parentheses seen so far be greater " +
                         "than the number of opening parentheses seen so far.");
                 }
-                
-                // need help on these two
+                // checks token to ensure there is no invalid operand  
                 if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
                 {
                     if (!isValid(s))
@@ -143,49 +137,45 @@ namespace SpreadsheetUtilities
                     }
                 }
 
-                invalidTokenCount++;
+                tokenCount++;
             }
-            // these execeptions are checked outside of the loop because the loops need to be completed
+            // these execeptions are checked outside of the loop because the loop need to be completed
             // before they can be checked.
-            if (!invalidtokens.WhenOpenPerenOrOperator())
+
+            // ensures proper tokens follow a "(" or operator
+            if (!tokens.WhenOpenPerenOrOperator())
             {
                 throw new FormulaFormatException("Any token that immediately follows an opening parenthesis " +
                     "or an operator must be either a number, a variable, or an opening parenthesis.");
             }
-            if (!invalidtokens.WhenNumOrVarOrCloseParen())
+            // ensures proper token follow a number, variable, or ")"
+            if (!tokens.WhenNumOrVarOrCloseParen())
             {
                 throw new FormulaFormatException("Any token that immediately follows a number, a variable, or " +
                     "a closing parenthesis must be either an operator or a closing parenthesis.");
             }
-            if (!double.TryParse(invalidtokens[0], out number))
+            // ensures formula starts with correct tokens
+             if (!StartOrEndTokenRule(tokens[0], "("))
             {
-                // test
+                throw new FormulaFormatException("The first token of an expression must be a number, a " +
+                    "variable, or an opening parenthesis.");
             }
-            if (Check(invalidtokens[0]))
+            // ensures formula ends with correct tokens
+            if (!StartOrEndTokenRule(tokens[tokenCount - 1], ")"))
             {
-                // test
+                throw new FormulaFormatException("The last token of an expression must be a number," +
+                    " a variable, or an closing parenthesis.");
             }
-            if (!invalidtokens[0].Equals("("))
-            {
-                // test
-            }
-             // write helper method for Starting Token Rule
-            
-            if (invalidTokenCount < 1)
+            // ensures there is at least one valid token in formula
+            if (tokenCount < 1)
             {
                 throw new FormulaFormatException("There must be at least one token");
             }
+            // ensures formula has same number of open and close parenthesis
             if (leftParenCount != rightParenCount)
             {
                 throw new FormulaFormatException("The total number of opening parentheses must " +
                     "equal the total number of closing parentheses.");
-            }
-            if (invalidtokens[invalidTokenCount] != ")" || 
-                !double.TryParse(invalidtokens[invalidTokenCount], out number) || 
-                invalidtokens[0] != varPattern)
-            {
-                throw new FormulaFormatException("The last token of an expression must be a number," +
-                    " a variable, or an closing parenthesis.");
             }
         }
 
@@ -320,18 +310,21 @@ namespace SpreadsheetUtilities
         /// </summary> 
         public IEnumerable<String> GetVariables()
         {
-            /*
-            string[] form = new string[GetVariables().Count()];
-            string[] normForm;
+            string[] enumeratedTokens = new string[GetVariables().Count()];
+            string[] returnString = new string[GetVariables().Count()];
             // return the items that were enumerated
             for (int i = 0; i < GetVariables().Count(); i++)
             {
-                form[i] = GetVariables().GetEnumerator(i);
+                enumeratedTokens[i] = masterFormula[i];
+                if (!enumeratedTokens[i].ToUpper().Equals(masterFormula[i]))
+                {
+                    returnString[i] = NormalTime(enumeratedTokens[i]);
+                }
             }
-            
-            */
-            return null;
+
+            return returnString;
         }
+       
 
         /// <summary>    
         /// Returns a string containing no spaces which, if passed to the Formula    
@@ -345,6 +338,7 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public override string ToString()
         {
+            // create new 
             return null;
         }
 
@@ -658,6 +652,11 @@ namespace SpreadsheetUtilities
             }
         }
 
+        /// <summary>
+        /// Checks to see if given token is a valid variable
+        /// </summary>
+        /// <param name="s"> s is the token you want to check </param>
+        /// <returns> true if it is a valid variable</returns>
         static bool CheckVariable(string s)
         {
             Regex regex = new Regex(@"[a-zA-Z]+\d+");
@@ -665,34 +664,48 @@ namespace SpreadsheetUtilities
             return match.Success;
         }
 
-        /*
-        if (!invalidtokens[0].Equals("(") || !double.TryParse(invalidtokens[0], out number) || Check(invalidtokens[0]))
-            {
-                throw new FormulaFormatException("The first token of an expression must be a number," +
-                    " a variable, or an opening parenthesis.");
-            }*/
-
-        static bool StartTokenRule(string s)
+        /// <summary>
+        /// Starting Token Rule - The first token of an expression must be a number, a variable, or 
+        /// an opening parenthesis.
+        /// 
+        /// Ending Token Rule- The last token of an expression must be a number, a variable, or a 
+        /// closing parenthesis.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="r"> is "(" if checking Start Token Rule or ")" if checking End Token Rule</param>
+        /// <returns></returns>
+        static bool StartOrEndTokenRule(string s, string r)
         {
             bool openParen = false;
             bool num = false;
             bool var = false;
             double number = 0;
-            if (invalidTokens[0].Equals("("))
+
+            if (s.Equals(r))
             {
                 openParen = true;
             }
-            if (double.TryParse(invalidtokens[0], out number))
+            if (double.TryParse(s, out number))
              {
                 num = true;
             }
-            if (CheckVariable(invalidtokens[0]))
+            if (CheckVariable(s))
             {
                 var = true;
             }
-            if (//three bools are not true throw exceptions)
+            if (openParen == true || num == true || var == true)
+            {
+                return true;
+            }
+            return false;
         }
-}
+
+        private string NormalTime(string toTest)
+        {
+            toTest.ToUpper();
+            return toTest;
+        }
+    }
 
     /// <summary>  
     /// Used to report syntactic errors in the argument to the Formula constructor.  

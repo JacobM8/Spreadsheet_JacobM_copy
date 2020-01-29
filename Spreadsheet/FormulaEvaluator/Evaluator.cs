@@ -90,6 +90,10 @@ namespace FormulaEvaluator
                             throw new ArgumentException("Lookup function threw exception.");
                         }   
                     }
+                    else
+                    {
+                        throw new ArgumentException("Invalid variable name");
+                    }
                 }
             }
 

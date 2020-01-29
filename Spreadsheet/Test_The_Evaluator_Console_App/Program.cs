@@ -15,28 +15,6 @@ namespace Test_The_Evaluator_Console_App
     {
         static void Main(string[] args)
         {
-            string s = "&6";
-            static bool Check(string s)
-            {
-                Regex regex = new Regex(@"[a-zA-Z]+\d+");
-                Match match = regex.Match(s);
-                return match.Success;
-            }
-            Console.WriteLine(Check(s));
-            
-            String varPattern = @"[a-zA-Z]+\d+";
-            var v = Regex.Match(s, varPattern);
-            Console.WriteLine(v);
-            if (Check(s))
-            {
-                Console.WriteLine("match");
-            }
-            if (!Check(s))
-            {
-                Console.WriteLine("no match");
-            }
-            
-
             // Test single number only
             if (Evaluator.Evaluate("2", null) == 2)
             {
@@ -138,7 +116,17 @@ namespace Test_The_Evaluator_Console_App
             {
                 Console.WriteLine("nested parenthesis works");
             }
-            
+
+            // test nested invalid operations
+            try 
+            {
+                Evaluator.Evaluate("(2**(3+2)+2)", null);
+            }
+            catch (ArgumentException)
+            {
+                Console.WriteLine("invalid operations");
+            }
+
             // test variables with addition
             Lookup delegateLookup = new Lookup(assignVariables);
             if (Evaluator.Evaluate("x1+y1", delegateLookup) == 5)
@@ -148,6 +136,16 @@ namespace Test_The_Evaluator_Console_App
             else
             {
                 Console.WriteLine(Evaluator.Evaluate("x1+ y1", delegateLookup));
+            }
+
+            // test invalid variables with addition
+            try
+            {
+                Evaluator.Evaluate("&+y1", delegateLookup);
+            }
+            catch(ArgumentException)
+            {
+                Console.WriteLine("test succeeded, has invalid variable");
             }
 
             // test variables with addition and mulitiplication
@@ -163,12 +161,12 @@ namespace Test_The_Evaluator_Console_App
             // test divide by 0
             try
             {
-                bool result = Evaluator.Evaluate("10 / 0", null) == 0;
-                Console.WriteLine(result);
+                Evaluator.Evaluate("10 / 0", null);
+                
             }
-            catch(Exception ex)
+            catch(ArgumentException)
             {
-                Console.WriteLine($"divide by 0 throws exception: {ex}");
+                Console.WriteLine($"divide by 0 throws exception");
             }
         }
 
