@@ -223,7 +223,7 @@ namespace SpreadsheetUtilities
             foreach (string token in masterFormula)
             {
                 // if token is blank
-                if (token.Equals(""))
+                if (token.Equals("") || token.Equals(" "))
                 {
                     continue;
                 }
@@ -310,19 +310,23 @@ namespace SpreadsheetUtilities
         /// </summary> 
         public IEnumerable<String> GetVariables()
         {
-            string[] enumeratedTokens = new string[GetVariables().Count()];
-            string[] returnString = new string[GetVariables().Count()];
-            // return the items that were enumerated
-            for (int i = 0; i < GetVariables().Count(); i++)
+            List<string> enumeratedTokens = new List<string>();
+            List<string> returnList = new List<string>();
+            // check if each token is a variable, if it is compare to masterFormula, it it is lower case
+            // "normalize" it by converting to upper case.
+            for (int i = 0; i < masterFormula.Length; i++)
             {
-                enumeratedTokens[i] = masterFormula[i];
-                if (!enumeratedTokens[i].ToUpper().Equals(masterFormula[i]))
+                enumeratedTokens.Add(masterFormula[i]);
+                if (enumeratedTokens[i].CheckVariable())
                 {
-                    returnString[i] = NormalTime(enumeratedTokens[i]);
+                    if (!enumeratedTokens[i].Equals(masterFormula[i]))
+                    {
+                        returnList.Add(NormalTime(enumeratedTokens[i]));
+                    }
                 }
             }
-
-            return returnString;
+            // return the items that were enumerated
+            return returnList;
         }
        
 
@@ -593,7 +597,7 @@ namespace SpreadsheetUtilities
                     {
                         throw new ArgumentException("Invalid formula, cannot divide by zero.");
                     }
-                    valueStack.Push(operand3 / operand4);
+                    valueStack.Push(operand4 / operand3);
                 }
             }
         }
@@ -652,18 +656,19 @@ namespace SpreadsheetUtilities
             }
         }
 
+/*
         /// <summary>
         /// Checks to see if given token is a valid variable
         /// </summary>
         /// <param name="s"> s is the token you want to check </param>
         /// <returns> true if it is a valid variable</returns>
-        static bool CheckVariable(string s)
+        public static bool CheckVariable(string s)
         {
-            Regex regex = new Regex(@"[a-zA-Z]+\d+");
+            Regex regex = new Regex(@"[a-zA-Z_](?: [a-zA-Z_]|\d)*");
             Match match = regex.Match(s);
             return match.Success;
         }
-
+*/
         /// <summary>
         /// Starting Token Rule - The first token of an expression must be a number, a variable, or 
         /// an opening parenthesis.
@@ -689,7 +694,7 @@ namespace SpreadsheetUtilities
              {
                 num = true;
             }
-            if (CheckVariable(s))
+            if (s.CheckVariable())
             {
                 var = true;
             }

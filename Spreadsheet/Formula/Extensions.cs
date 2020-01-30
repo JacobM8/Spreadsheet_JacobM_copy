@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SpreadsheetUtilities
@@ -25,8 +26,8 @@ namespace SpreadsheetUtilities
 			{
 				// Any token that immediately follows an opening parenthesis or an operator must be either 
 				// a number, a variable, or an opening parenthesis.
-				if ((s[i].Equals("(") || s[i].IsOperator()) && (double.TryParse(s[i + 1], out number) || 
-					s[i + 1].Equals(varPattern) || s[i + 1] == "("))
+				if ((s[i].Equals("(") || s[i].IsOperator()) && (double.TryParse(s[i + 1], out number) ||
+					s[i + 1].CheckVariable() || s[i + 1] == "("))
 				{
 
 					return true;
@@ -51,7 +52,7 @@ namespace SpreadsheetUtilities
 			{
 				// Any token that immediately follows a number, a variable, or a closing 
 				// parenthesis must be either an operator or a closing parenthesis.
-				if ((double.TryParse(s[i], out number) || s.Equals(varPattern) || s.Equals(")")) 
+				if ((double.TryParse(s[i], out number) || s[i].CheckVariable() || s[i].Equals(")")) 
 					&& (s[i + 1].IsOperator() || s[i + 1].Equals(")")))
 				{
 						return true;
@@ -90,6 +91,18 @@ namespace SpreadsheetUtilities
 			{
 				return false;
 			}
+		}
+
+		/// <summary>
+		/// Checks to see if given token is a valid variable
+		/// </summary>
+		/// <param name="s"> s is the token you want to check </param>
+		/// <returns> true if it is a valid variable</returns>
+		public static bool CheckVariable(this string s)
+		{
+			Regex regex = new Regex(@"[a-zA-Z_](?: [a-zA-Z_]|\d)*");
+			Match match = regex.Match(s);
+			return match.Success;
 		}
 	}
 }

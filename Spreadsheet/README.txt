@@ -28,7 +28,7 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     3. How can I check if a string is a number - https://stackoverflow.com/questions/6733652/how-can-i-check-if-a-string-is-a-number
     4. Convert Scientific Notation String to Float C# - https://stackoverflow.com/questions/64639/convert-from-scientific-notation-string-to-float-in-c-sharp
     5. How do I use Assert to verify that an exception has been thrown? - https://stackoverflow.com/questions/933613/how-do-i-use-assert-to-verify-that-an-exception-has-been-thrown
-
+    6. C# Array vs List - https://www.educba.com/c-sharp-array-vs-list/
 
 5. Estimated Time: PS3 - 15 hours     
 6. Acutal Time:    PS3 -                     

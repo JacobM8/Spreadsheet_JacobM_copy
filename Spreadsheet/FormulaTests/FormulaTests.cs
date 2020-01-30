@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace FormulaTests
@@ -17,7 +18,6 @@ namespace FormulaTests
         public void TestConstructorIsNotNull()
         {
             string formula = "2 + 2";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
             Assert.IsNotNull(f);
         }
@@ -27,7 +27,6 @@ namespace FormulaTests
         public void TestCanCatchInvalidChar()
         {
             string formula = "2 + x^";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
 
@@ -36,27 +35,31 @@ namespace FormulaTests
         public void TestEmptyFormula()
         {
             string formula = "";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
 
-        // test number with a decimal
         [TestMethod]
         public void TestSimpleAddWithDecimal()
-        {
-            // can create a helper method to get the value of the 
+        {  
             string formula = "2.2 + 2.2";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
-            Assert.AreEqual("4.4", f.Evaluate(s => 0));
+            Assert.AreEqual(4.4, f.Evaluate(s => 0));
+        }
+
+        [TestMethod]
+        public void TestComplexWithDecimal()
+        {
+            string formula = "2.21 + ((6.35 + 2.65) / (7.32 - 4.32))";
+            Formula f = new Formula(formula, normalize, isValid);
+            Assert.AreEqual(5.21, f.Evaluate(s => 0));
         }
 
         // test scientific notation
+        // can create a helper method to get the value of the variable or use lambda
         [TestMethod]
         public void TestSimpleAddWithScientificNotation()
         {
             string formula = "5e-5 + 5e-5";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
             //Assert.Equals(".0001", f.Evaluate());
         }
@@ -68,7 +71,6 @@ namespace FormulaTests
             // Specific Token Rule - the only valid tokens are (, ), +, -, *, /, variables, and 
             // decimal real numbers (including scientific notation).
             string formula = "(3! + 3 - 3)";
-            Console.WriteLine(formula);
             // problem with regex to catch !
             Formula f = new Formula(formula, normalize, isValid);
         }
@@ -79,7 +81,6 @@ namespace FormulaTests
             // Specific Token Rule - the only valid tokens are (, ), +, -, *, /, variables, and decimal 
             // real numbers (including scientific notation).
             string formula = "(3 + 3 - 3)";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
 
@@ -91,7 +92,6 @@ namespace FormulaTests
             // the number of closing parentheses seen so far be greater than the number of opening 
             // parentheses seen so far.
             string formula = "(3 + 3) - 3)";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
             //f.leftParenCount;
         }
@@ -103,7 +103,6 @@ namespace FormulaTests
             // the number of closing parentheses seen so far be greater than the number of opening 
             // parentheses seen so far.
             string formula = "(3 + 3 - 3)";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
 
@@ -114,7 +113,6 @@ namespace FormulaTests
             // Balanced Parentheses Rule- The total number of opening parentheses must equal the total 
             // number of closing parentheses.
             string formula = "(3 + 3) * (5 - 3(";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
             //f.leftParenCount;
         }
@@ -125,7 +123,6 @@ namespace FormulaTests
             // Balanced Parentheses Rule- The total number of opening parentheses must equal the total 
             // number of closing parentheses.
             string formula = "(3 + 3) * (5 - 3)";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
 
@@ -136,7 +133,6 @@ namespace FormulaTests
             // Starting Token Rule - The first token of an expression must be a number, a variable, or 
             // an opening parenthesis.
             string formula = "*3 + 3) * (5 - 3)";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
 
@@ -146,7 +142,6 @@ namespace FormulaTests
             // Starting Token Rule - The first token of an expression must be a number, a variable, or 
             // an opening parenthesis.
             string formula = "(3 + 3) * (5 - 3)";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
 
@@ -157,7 +152,6 @@ namespace FormulaTests
             // Ending Token Rule- The last token of an expression must be a number, a variable, or a 
             // closing parenthesis.
             string formula = "(3 + 3) * (5 - 3+";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
 
@@ -167,7 +161,6 @@ namespace FormulaTests
             // Ending Token Rule- The last token of an expression must be a number, a variable, or a 
             // closing parenthesis.
             string formula = "(3 + 3) * (5 - 3)";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
 
@@ -178,7 +171,6 @@ namespace FormulaTests
             // Parenthesis/Operator Following Rule - Any token that immediately follows an opening 
             // parenthesis or an operator must be either a number, a variable, or an opening parenthesis.
             string formula = "(3 + ) 3) * (5 - 3)";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
 
@@ -188,7 +180,6 @@ namespace FormulaTests
             // Parenthesis/Operator Following Rule - Any token that immediately follows an opening 
             // parenthesis or an operator must be either a number, a variable, or an opening parenthesis.
             string formula = "(3 + 3) * (5 - 3)";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
 
@@ -200,7 +191,6 @@ namespace FormulaTests
             // closing parenthesis must be either an operator or a closing parenthesis.
 
             string formula = "(3 + 3 ( ) * (5 - 3)";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
         }
 
@@ -211,10 +201,47 @@ namespace FormulaTests
             // closing parenthesis must be either an operator or a closing parenthesis.
 
             string formula = "(3 + 3) * (5 - 3)";
-            Console.WriteLine(formula);
             Formula f = new Formula(formula, normalize, isValid);
+        }        
+
+        // Tests for IEnumerable GetVariables()
+        [TestMethod]
+        public void TestOnlyThreeVariables()
+        {
+            // new Formula("x+y*z", normalize, s => true).GetVariables() should enumerate "X", "Y", and "Z"    
+            string formula = "x+y*z";
+            Formula f = new Formula(formula, normalize, s => true);
+            List<string> result = new List<string>();
+            result.Add("X");
+            result.Add("Y");
+            result.Add("Z");
+            Assert.AreEqual(result.ToString(), f.GetVariables().ToString());
         }
 
+        [TestMethod]
+        public void TestTwoOfThreeVariables()
+        {
+            // new Formula("x+X*z", normalize, s => true).GetVariables() should enumerate "X" and "Z".    
+            string formula = "x+X*z";
+            Formula f = new Formula(formula, normalize, s => true);
+            List<string> result = new List<string>();
+            result.Add("X");
+            result.Add("Z");
+            Assert.AreEqual(result.ToString(), f.GetVariables().ToString());
+        }
+
+        [TestMethod]
+        public void TestEnumerateWithUpperAndLowercaseX()
+        {
+            // new Formula("x+X*z").GetVariables() should enumerate "x", "X", and "z".
+            string formula = "x+X*z";
+            Formula f = new Formula(formula, normalize, s => true);
+            List<string> result = new List<string>();
+            result.Add("x");
+            result.Add("X");
+            result.Add("z");
+            Assert.AreEqual(result.ToString(), f.GetVariables().ToString());
+        }
 
         // Helper methods
         /// <summary>

@@ -15,6 +15,10 @@ namespace Test_The_Evaluator_Console_App
     {
         static void Main(string[] args)
         {
+            String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
+            string a = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
+            Console.WriteLine(a.Equals(varPattern));
+/*
             // Test single number only
             if (Evaluator.Evaluate("2", null) == 2)
             {
@@ -167,7 +171,7 @@ namespace Test_The_Evaluator_Console_App
             catch(ArgumentException)
             {
                 Console.WriteLine($"divide by 0 throws exception");
-            }
+            }*/
         }
 
         // helper method for variables
