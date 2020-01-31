@@ -16,22 +16,20 @@ namespace SpreadsheetUtilities
 		/// </summary>
 		/// <param name="s"></param>
 		/// <returns> true or false </returns>
-		public static bool WhenOpenPerenOrOperator(this string[] s)
+		public static bool WhenOpenPerenOrOperator(this string formula)
 		{
 			// used to verify token is a number in TryParse
 			double number;
-			// used to verify token is a variable
-			String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
-			for (int i = 0; i < s.Length - 1; i++)
+			for (int i = 0; i < formula.Length - 1; i++)
 			{
 				// Any token that immediately follows an opening parenthesis or an operator must be either 
 				// a number, a variable, or an opening parenthesis.
-				if ((s[i].Equals("(") || s[i].IsOperator()) && (double.TryParse(s[i + 1], out number) ||
-					s[i + 1].CheckVariable() || s[i + 1] == "("))
+				if ((formula[i].ToString().Equals("(") || formula[i].ToString().IsOperator()) && (double.TryParse(formula[i + 1].ToString(), out number) ||
+					   Regex.IsMatch(formula[i + 1].ToString(), @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") || formula[i + 1].ToString().Equals("(")))
 				{
-
 					return true;
 				}
+
 			}
 			return false;
 		}
@@ -42,20 +40,19 @@ namespace SpreadsheetUtilities
 		/// </summary>
 		/// <param name="s"></param>
 		/// <returns> returns true if above statement is correct </returns>
-		public static bool WhenNumOrVarOrCloseParen(this string[] s)
+		public static bool WhenNumOrVarOrCloseParen(this string formula)
 		{
 			// used to verify token is variable in TryParse
 			double number = 0;
-			// used to verify token is a variable
-			String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
-			for (int i = 0; i < s.Length - 1; i++)
+			for (int i = 0; i < formula.Length - 1; i++)
 			{
 				// Any token that immediately follows a number, a variable, or a closing 
 				// parenthesis must be either an operator or a closing parenthesis.
-				if ((double.TryParse(s[i], out number) || s[i].CheckVariable() || s[i].Equals(")")) 
-					&& (s[i + 1].IsOperator() || s[i + 1].Equals(")")))
+				// s[i].CheckVariable() 
+				if ((double.TryParse(formula[i].ToString(), out number) || Regex.IsMatch(formula[i].ToString(), @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") ||
+					formula[i].ToString().Equals(")")) && (formula[i + 1].ToString().IsOperator() || formula[i + 1].ToString().Equals(")")))
 				{
-						return true;
+					return true;
 				}
 			}
 			return false;
@@ -64,9 +61,9 @@ namespace SpreadsheetUtilities
 		/// <summary>
 		/// Verifies if given string is either an operator ("*", "/", "+", or "-").
 		/// </summary>
-		/// <param name="s"></param>
+		/// <param name="s"> string needed to be checked </param>
 		/// <returns> returns true if above statement is correct </returns>
-		static bool IsOperator(this string s)
+		public static bool IsOperator(this string s)
 		{
 			if (s.Equals("*") || s.Equals("/") || s.Equals("+") || s.Equals("-"))
 			{
@@ -93,16 +90,6 @@ namespace SpreadsheetUtilities
 			}
 		}
 
-		/// <summary>
-		/// Checks to see if given token is a valid variable
-		/// </summary>
-		/// <param name="s"> s is the token you want to check </param>
-		/// <returns> true if it is a valid variable</returns>
-		public static bool CheckVariable(this string s)
-		{
-			Regex regex = new Regex(@"[a-zA-Z_](?: [a-zA-Z_]|\d)*");
-			Match match = regex.Match(s);
-			return match.Success;
-		}
+		
 	}
 }

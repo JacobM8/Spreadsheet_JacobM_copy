@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -53,9 +54,12 @@ namespace SpreadsheetUtilities
         // Final value of formula
         static double finalValue = 0;
         // master formula
-        public string[] masterFormula;
+        //public string[] masterFormula;
+        private string finalFormula;
 
         public delegate int Lookup(String variable_name);
+        //public Func<string, string> normalize = delegate (string s)
+        //    { return s.ToUpper(); };
         /// <summary>    
         /// Creates a Formula from a string that consists of an infix expression written as    
         /// described in the class comment.  If the expression is syntactically invalid,    
@@ -95,22 +99,21 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
-            masterFormula = Regex.Split(formula, "(\\()|(\\))|(-)|(\\+)|(\\*)|(/)");
-            string normalForm = normalize(formula);
-            bool isValidForm = isValid(normalForm);
-
-            double number = 0;
-            String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
-            // variables are incremented apprppiately to check for exceptions
+            if (formula.Equals("") || formula.Equals(null))
+            {
+                throw new FormulaFormatException("Formula cannot be empty or null");
+            }
+            // variables are incremented appropiately to check for exceptions
             int tokenCount = 0;
             int leftParenCount = 0;
             int rightParenCount = 0;
-            string[] tokens = new string[GetTokens(normalForm).Count()];
+            double scientificNum = 0;
 
             // the following foreach loop and if statements will ensure there is a valid formula
             // checks will not catch errors like divide by 0
-            foreach (string s in GetTokens(normalForm)){
-                tokens[tokenCount] = s;
+            foreach (string s in GetTokens(formula)){
+                string temp = s;
+                
 
                 if (s == "(")
                 {
@@ -127,6 +130,7 @@ namespace SpreadsheetUtilities
                         "no point should the number of closing parentheses seen so far be greater " +
                         "than the number of opening parentheses seen so far.");
                 }
+                
                 // checks token to ensure there is no invalid operand  
                 if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
                 {
@@ -135,7 +139,21 @@ namespace SpreadsheetUtilities
                         throw new FormulaFormatException("the only valid tokens are (, ), +, -, *, /, " +
                             "variables, and decimal real numbers (including scientific notation)");
                     }
+                    // if variable is in scientific notation convert to double then call ToString to add it to finalFormula
+                    //normalize if its a variable
+                    temp = normalize(s);
                 }
+                // convert scientific notation to regular number
+                if (!s.IsOperator())
+                {
+                    NumberFormatInfo info;
+                    info = NumberFormatInfo.CurrentInfo;
+                    Decimal num;
+                    Decimal.TryParse(s, System.Globalization.NumberStyles.Float, info, out num);
+                    temp = num.ToString();
+                }
+                // add to final formula
+                finalFormula += temp;
 
                 tokenCount++;
             }
@@ -143,25 +161,25 @@ namespace SpreadsheetUtilities
             // before they can be checked.
 
             // ensures proper tokens follow a "(" or operator
-            if (!tokens.WhenOpenPerenOrOperator())
+            if (!finalFormula.WhenOpenPerenOrOperator())
             {
                 throw new FormulaFormatException("Any token that immediately follows an opening parenthesis " +
                     "or an operator must be either a number, a variable, or an opening parenthesis.");
             }
             // ensures proper token follow a number, variable, or ")"
-            if (!tokens.WhenNumOrVarOrCloseParen())
+            if (!finalFormula.WhenNumOrVarOrCloseParen())
             {
                 throw new FormulaFormatException("Any token that immediately follows a number, a variable, or " +
                     "a closing parenthesis must be either an operator or a closing parenthesis.");
             }
             // ensures formula starts with correct tokens
-             if (!StartOrEndTokenRule(tokens[0], "("))
+             if (!StartOrEndTokenRule(finalFormula[0].ToString(), "("))
             {
                 throw new FormulaFormatException("The first token of an expression must be a number, a " +
                     "variable, or an opening parenthesis.");
             }
             // ensures formula ends with correct tokens
-            if (!StartOrEndTokenRule(tokens[tokenCount - 1], ")"))
+            if (!StartOrEndTokenRule(finalFormula[tokenCount - 1].ToString(), ")"))
             {
                 throw new FormulaFormatException("The last token of an expression must be a number," +
                     " a variable, or an closing parenthesis.");
@@ -220,7 +238,7 @@ namespace SpreadsheetUtilities
             operatorStack = new Stack<string>();
 
             // for loop through masterFormula
-            foreach (string token in masterFormula)
+            foreach (string token in GetTokens(finalFormula))
             {
                 // if token is blank
                 if (token.Equals("") || token.Equals(" "))
@@ -239,7 +257,7 @@ namespace SpreadsheetUtilities
 
                 // ***if token is in scientific notation
                 // use regex to see if it's a double
-                // convert to foat with Double.TryParse("scientific notation number", System.Globalization.NumberStyles.double, out Mydouble);
+                // convert to double with Double.TryParse("scientific notation number", System.Globalization.NumberStyles.double, out Mydouble);
                 // then call Isdouble()
 
 
@@ -310,20 +328,12 @@ namespace SpreadsheetUtilities
         /// </summary> 
         public IEnumerable<String> GetVariables()
         {
-            List<string> enumeratedTokens = new List<string>();
             List<string> returnList = new List<string>();
-            // check if each token is a variable, if it is compare to masterFormula, it it is lower case
+            // check if each token is a variable, if it is compare to masterFormula, if it is lower case
             // "normalize" it by converting to upper case.
-            for (int i = 0; i < masterFormula.Length; i++)
+            foreach (string s in GetTokens(finalFormula))
             {
-                enumeratedTokens.Add(masterFormula[i]);
-                if (enumeratedTokens[i].CheckVariable())
-                {
-                    if (!enumeratedTokens[i].Equals(masterFormula[i]))
-                    {
-                        returnList.Add(NormalTime(enumeratedTokens[i]));
-                    }
-                }
+                returnList.Add(s);
             }
             // return the items that were enumerated
             return returnList;
@@ -341,9 +351,8 @@ namespace SpreadsheetUtilities
         /// new Formula("x + Y").ToString() should return "x+Y"    
         /// </summary>    
         public override string ToString()
-        {
-            // create new 
-            return null;
+        { 
+            return finalFormula;
         }
 
         /// <summary>    
@@ -414,7 +423,6 @@ namespace SpreadsheetUtilities
             String rpPattern = @"\)";
             String opPattern = @"[\+\-*/]";
             String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
-            // *** is this checking for scientific notation??
             String doublePattern = @"(?: \d+\.\d* | \d*\.\d+ | \d+ ) (?: [eE][\+-]?\d+)?";
             String spacePattern = @"\s+";
             // Overall pattern      
@@ -656,19 +664,6 @@ namespace SpreadsheetUtilities
             }
         }
 
-/*
-        /// <summary>
-        /// Checks to see if given token is a valid variable
-        /// </summary>
-        /// <param name="s"> s is the token you want to check </param>
-        /// <returns> true if it is a valid variable</returns>
-        public static bool CheckVariable(string s)
-        {
-            Regex regex = new Regex(@"[a-zA-Z_](?: [a-zA-Z_]|\d)*");
-            Match match = regex.Match(s);
-            return match.Success;
-        }
-*/
         /// <summary>
         /// Starting Token Rule - The first token of an expression must be a number, a variable, or 
         /// an opening parenthesis.
@@ -691,10 +686,10 @@ namespace SpreadsheetUtilities
                 openParen = true;
             }
             if (double.TryParse(s, out number))
-             {
+            {
                 num = true;
             }
-            if (s.CheckVariable())
+            if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
             {
                 var = true;
             }
@@ -705,11 +700,7 @@ namespace SpreadsheetUtilities
             return false;
         }
 
-        private string NormalTime(string toTest)
-        {
-            toTest.ToUpper();
-            return toTest;
-        }
+        
     }
 
     /// <summary>  

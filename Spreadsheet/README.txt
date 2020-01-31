@@ -19,6 +19,7 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     Jolie (TA)
     Varun (TA)
     Jay Morrison (Dad)
+    James Gibb (peer)
 
 
 4. References:
@@ -29,12 +30,17 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     4. Convert Scientific Notation String to Float C# - https://stackoverflow.com/questions/64639/convert-from-scientific-notation-string-to-float-in-c-sharp
     5. How do I use Assert to verify that an exception has been thrown? - https://stackoverflow.com/questions/933613/how-do-i-use-assert-to-verify-that-an-exception-has-been-thrown
     6. C# Array vs List - https://www.educba.com/c-sharp-array-vs-list/
+    7. How to concatenate multiple strings (C# Guide) - https://docs.microsoft.com/en-us/dotnet/csharp/how-to/concatenate-multiple-strings
+    8. Trimming and Removing Characters from Strings in .NET - https://docs.microsoft.com/en-us/dotnet/standard/base-types/trimming
+    9. Convert char to int in C# - https://stackoverflow.com/questions/239103/convert-char-to-int-in-c-sharp
+    10. Double.Parse Method - https://docs.microsoft.com/en-us/dotnet/api/system.double.parse?view=netframework-4.8#System_Double_Parse_System_String_System_Globalization_NumberStyles_
+
 
 5. Estimated Time: PS3 - 15 hours     
 6. Acutal Time:    PS3 -                     
     Learning:            .5 hours            
-    Programming:         4 hours
-    Debugging:           2 hours
+    Programming:         4.5 hours
+    Debugging:           5 hours
     Total:          
 
 ------------------------------------------------------------------------------------------------------

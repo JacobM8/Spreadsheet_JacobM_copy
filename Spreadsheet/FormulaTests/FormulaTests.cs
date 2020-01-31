@@ -243,6 +243,28 @@ namespace FormulaTests
             Assert.AreEqual(result.ToString(), f.GetVariables().ToString());
         }
 
+        // the following tests ensure the .ToString() mehtod works correctly
+        [TestMethod]
+        public void TestToStringSimple()
+        {
+            // new Formula("x + y", normalize, s => true).ToString() should return "X+Y"  
+            string formula = "x + y";
+            Formula f = new Formula(formula, normalize, isValid);
+            //normalize(formula);
+            string result = "X+Y";
+            Assert.AreEqual(result, f.ToString());
+        }
+
+        [TestMethod]
+        public void TestToStringWithOutNormalize()
+        {
+            // new Formula("x + Y").ToString() should return "x+Y"  
+            string formula = "x + Y";
+            Formula f = new Formula(formula); //, normalize, isValid);
+            string result = "x+Y";
+            Assert.AreEqual(result, f.ToString());
+        }
+
         // Helper methods
         /// <summary>
         /// convert every char in "toTest" toUpper 
@@ -251,7 +273,7 @@ namespace FormulaTests
         /// <returns> toTest with all chars in upper case </returns>
         private string normalize(string toTest)
         {
-            toTest.ToUpper();
+            toTest = toTest.ToUpper();
             return toTest;
         }
 
