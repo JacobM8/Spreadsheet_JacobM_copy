@@ -144,7 +144,7 @@ namespace SpreadsheetUtilities
                     temp = normalize(s);
                 }
                 // convert scientific notation to regular number
-                if (!s.IsOperator())
+                if (Regex.IsMatch(s, @"-?.*\d*\.?\d+[eE][+-]?\d+"))
                 {
                     NumberFormatInfo info;
                     info = NumberFormatInfo.CurrentInfo;
@@ -154,7 +154,6 @@ namespace SpreadsheetUtilities
                 }
                 // add to final formula
                 finalFormula += temp;
-
                 tokenCount++;
             }
             // these execeptions are checked outside of the loop because the loop need to be completed

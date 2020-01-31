@@ -34,7 +34,7 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     8. Trimming and Removing Characters from Strings in .NET - https://docs.microsoft.com/en-us/dotnet/standard/base-types/trimming
     9. Convert char to int in C# - https://stackoverflow.com/questions/239103/convert-char-to-int-in-c-sharp
     10. Double.Parse Method - https://docs.microsoft.com/en-us/dotnet/api/system.double.parse?view=netframework-4.8#System_Double_Parse_System_String_System_Globalization_NumberStyles_
-
+    11. Convert scientific notation number to real number in c# - https://www.codeproject.com/Questions/761432/Convert-scientific-notation-number-to-real-number
 
 5. Estimated Time: PS3 - 15 hours     
 6. Acutal Time:    PS3 -                     

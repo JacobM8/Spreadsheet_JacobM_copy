@@ -26,7 +26,7 @@ namespace FormulaTests
         [ExpectedException(typeof(FormulaFormatException))]
         public void TestCanCatchInvalidChar()
         {
-            string formula = "2 + x^";
+            string formula = "$2 + x";
             Formula f = new Formula(formula, normalize, isValid);
         }
 
@@ -61,7 +61,7 @@ namespace FormulaTests
         {
             string formula = "5e-5 + 5e-5";
             Formula f = new Formula(formula, normalize, isValid);
-            //Assert.Equals(".0001", f.Evaluate());
+            Assert.AreEqual(0.0001, f.Evaluate(s => 0));
         }
 
         [TestMethod]
