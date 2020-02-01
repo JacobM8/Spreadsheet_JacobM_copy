@@ -44,9 +44,9 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 5. Estimated Time: PS3 - 15 hours     
 6. Acutal Time:    PS3 -                     
     Learning:            .5 hours            
-    Programming:         4.5 hours
-    Debugging:           5 hours
-    Total:          
+    Programming:         6.5 hours
+    Debugging:           11 hours
+    Total:              18 (assignment not passing all tests, more work to be done)
 
 ------------------------------------------------------------------------------------------------------
 
