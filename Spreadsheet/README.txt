@@ -7,10 +7,15 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 
 1. Comments to Evaluators:
 
+    This was a much more difficult assignment, and many of my test were provided from assignment and ownership
+    of those test do not belong to me and belong to Jim de St Germain and the University College of Engineering.
+    Those test are clearly marked in FormulaTests.cs
     
 
 2. Assignment Specific Topics:
 
+    Delegates
+    more
     
 
 3. Consulted Peers:
