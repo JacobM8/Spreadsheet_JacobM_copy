@@ -54,12 +54,10 @@ namespace SpreadsheetUtilities
         // Final value of formula
         static double finalValue = 0;
         // master formula
-        //public string[] masterFormula;
         private string finalFormula;
 
         public delegate int Lookup(String variable_name);
-        //public Func<string, string> normalize = delegate (string s)
-        //    { return s.ToUpper(); };
+       
         /// <summary>    
         /// Creates a Formula from a string that consists of an infix expression written as    
         /// described in the class comment.  If the expression is syntactically invalid,    
@@ -107,12 +105,13 @@ namespace SpreadsheetUtilities
             int tokenCount = 0;
             int leftParenCount = 0;
             int rightParenCount = 0;
-            double scientificNum = 0;
+            string[] formulaList = new string[GetTokens(formula).Count()];
 
             // the following foreach loop and if statements will ensure there is a valid formula
             // checks will not catch errors like divide by 0
             foreach (string s in GetTokens(formula)){
                 string temp = s;
+                formulaList[tokenCount] = temp;
                 
 
                 if (s == "(")
@@ -150,35 +149,40 @@ namespace SpreadsheetUtilities
                     info = NumberFormatInfo.CurrentInfo;
                     Decimal num;
                     Decimal.TryParse(s, System.Globalization.NumberStyles.Float, info, out num);
+                    // make helper to check sig figs 
                     temp = num.ToString();
                 }
+                //  //
+                
+                // //
                 // add to final formula
                 finalFormula += temp;
                 tokenCount++;
             }
+
             // these execeptions are checked outside of the loop because the loop need to be completed
             // before they can be checked.
-
             // ensures proper tokens follow a "(" or operator
-            if (!finalFormula.WhenOpenPerenOrOperator())
+            if (!formulaList.WhenOpenPerenOrOperator())
             {
                 throw new FormulaFormatException("Any token that immediately follows an opening parenthesis " +
                     "or an operator must be either a number, a variable, or an opening parenthesis.");
             }
             // ensures proper token follow a number, variable, or ")"
-            if (!finalFormula.WhenNumOrVarOrCloseParen())
+            if (!formulaList.WhenNumOrVarOrCloseParen())
             {
                 throw new FormulaFormatException("Any token that immediately follows a number, a variable, or " +
                     "a closing parenthesis must be either an operator or a closing parenthesis.");
             }
+
             // ensures formula starts with correct tokens
-             if (!StartOrEndTokenRule(finalFormula[0].ToString(), "("))
+            if (!StartOrEndTokenRule(finalFormula[0].ToString(), "("))
             {
                 throw new FormulaFormatException("The first token of an expression must be a number, a " +
                     "variable, or an opening parenthesis.");
             }
             // ensures formula ends with correct tokens
-            if (!StartOrEndTokenRule(finalFormula[tokenCount - 1].ToString(), ")"))
+            if (!StartOrEndTokenRule(GetTokens(formula).Count().ToString(), ")"))
             {
                 throw new FormulaFormatException("The last token of an expression must be a number," +
                     " a variable, or an closing parenthesis.");
@@ -236,81 +240,80 @@ namespace SpreadsheetUtilities
             valueStack = new Stack<double>();
             operatorStack = new Stack<string>();
 
-            // for loop through masterFormula
-            foreach (string token in GetTokens(finalFormula))
+            // try Evaluate method and return finalValue if there is an error return a FormulaError
+            try
             {
-                // if token is blank
-                if (token.Equals("") || token.Equals(" "))
+                // for loop through masterFormula
+                foreach (string token in GetTokens(finalFormula))
                 {
-                    continue;
-                }
-
-                // trim whitespaces off front and back of the token
-                token.Trim();
-
-                // if token is an doubleing point
-                if (double.TryParse(token, out tokenValue))
-                {
-                    IsDouble(tokenValue);
-                }
-
-                // ***if token is in scientific notation
-                // use regex to see if it's a double
-                // convert to double with Double.TryParse("scientific notation number", System.Globalization.NumberStyles.double, out Mydouble);
-                // then call Isdouble()
-
-
-                // if token is a "+" or "-"
-                else if (token == "+" || token == "-")
-                {
-                    IsPlusOrMinus(token);
-                }
-                // if token is a "*" or "/"
-                else if (token == "*" || token == "/")
-                {
-                    IsMultiplyOrDivide(token);
-                }
-                // if token is left parenthesis "("
-                else if (token == "(")
-                {
-                    IsLeftParenthesis(token);
-                }
-                // if token is right parenthesis
-                else if (token == ")")
-                {
-                    IsRightParenthesis();
-                }
-                // if token is a variable
-                else
-                {
-                    // checks to see if token is a valid variable
-                    if (Regex.IsMatch(token, @"[a-zA-Z]+\d+"))
+                    // if token is blank
+                    if (token.Equals("") || token.Equals(" "))
                     {
-                        // try catch will catch an exception when there is one from Program.cs
-                        try
+                        continue;
+                    }
+                    // trim whitespaces off front and back of the token
+                    token.Trim();
+                    // if token is an doubleing point
+                    if (double.TryParse(token, out tokenValue))
+                    {
+                        IsDouble(tokenValue); 
+                    }
+                    // if token is a "+" or "-"
+                    else if (token == "+" || token == "-")
+                    {
+                        IsPlusOrMinus(token);
+                    }
+                    // if token is a "*" or "/"
+                    else if (token == "*" || token == "/")
+                    {
+                        IsMultiplyOrDivide(token);
+                    }
+                    // if token is left parenthesis "("
+                    else if (token == "(")
+                    {
+                        IsLeftParenthesis(token);
+                    }
+                    // if token is right parenthesis
+                    else if (token == ")")
+                    {
+                        IsRightParenthesis();
+                    }
+                    // if token is a variable
+                    else
+                    {
+                        // checks to see if token is a valid variable
+                        if (Regex.IsMatch(token, @"[a-zA-Z]+\d+"))
                         {
-                            double variableValue = lookup(token);
-                            IsDouble(variableValue);
-                        }
-                        catch
-                        {
-                            throw new ArgumentException("Lookup function threw exception.");
+                            // try catch will catch an exception when there is one from Program.cs
+                            try
+                            {
+                                double variableValue = lookup(token);
+                                IsDouble(variableValue);
+                            }
+                            catch
+                            {
+                                return new FormulaError("lookup failed");
+                            }
                         }
                     }
                 }
-            }
 
-            // if operatorStack is empty
-            if (operatorStack.Count == 0)
-            {
-                OpStackEmpty();
+                // if operatorStack is empty
+                if (operatorStack.Count == 0)
+                {
+                    OpStackEmpty();
+                }
+                // if operatorStack has one item left
+                else if (operatorStack.Count == 1)
+                {
+                    OpStackOneRemaining();
+                }
             }
-            // if operatorStack has one item left
-            else if (operatorStack.Count == 1)
+            // throw FormulaError if Evaluate method doesn't work
+            catch (Exception e)
             {
-                OpStackOneRemaining();
+                return new FormulaError(e.Message);
             }
-
             return finalValue;
         }
 
@@ -376,7 +379,11 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public override bool Equals(object obj)
         {
-            return false;
+            if (object.ReferenceEquals(obj, null) || !obj.ToString().Equals(this.ToString()))
+            {
+                return false;
+            }
+            return obj.ToString().Equals(this.ToString());
         }
 
         /// <summary>    
@@ -386,6 +393,14 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public static bool operator ==(Formula f1, Formula f2)
         {
+            if (object.ReferenceEquals(f1, null) && object.ReferenceEquals(f2, null))
+            {
+                return true;
+            }
+            if ((object.ReferenceEquals(f1, null) && !object.ReferenceEquals(f2, null)) || (!object.ReferenceEquals(f1, null) && object.ReferenceEquals(f2, null)))
+            {
+                return false;
+            }
             return false;
         }
 
@@ -396,6 +411,14 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public static bool operator !=(Formula f1, Formula f2)
         {
+            if (object.ReferenceEquals(f1, null) && object.ReferenceEquals(f2, null))
+            {
+                return false;
+            }
+            if ((object.ReferenceEquals(f1, null) && !object.ReferenceEquals(f2, null)) || (!object.ReferenceEquals(f1, null) && object.ReferenceEquals(f2, null)))
+            {
+                return true;
+            }
             return false;
         }
 
@@ -406,7 +429,7 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public override int GetHashCode()
         {
-            return 0;
+            return finalFormula.GetHashCode();
         }
 
         /// <summary>    
@@ -436,6 +459,7 @@ namespace SpreadsheetUtilities
                 }
             }
         }
+        
         // helper methods
         /// <summary>
         /// Determines if token is an integer and does the following:
@@ -671,16 +695,16 @@ namespace SpreadsheetUtilities
         /// closing parenthesis.
         /// </summary>
         /// <param name="s"></param>
-        /// <param name="r"> is "(" if checking Start Token Rule or ")" if checking End Token Rule</param>
+        /// <param name="paren"> is "(" if checking Start Token Rule or ")" if checking End Token Rule</param>
         /// <returns></returns>
-        static bool StartOrEndTokenRule(string s, string r)
+        static bool StartOrEndTokenRule(string s, string paren)
         {
             bool openParen = false;
             bool num = false;
             bool var = false;
             double number = 0;
 
-            if (s.Equals(r))
+            if (s.Equals(paren))
             {
                 openParen = true;
             }
@@ -697,9 +721,7 @@ namespace SpreadsheetUtilities
                 return true;
             }
             return false;
-        }
-
-        
+        }  
     }
 
     /// <summary>  

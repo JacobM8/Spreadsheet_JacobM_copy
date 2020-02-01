@@ -8,6 +8,7 @@ using System;
 using System.Text.RegularExpressions;
 using FormulaEvaluator;
 using static FormulaEvaluator.Evaluator;
+using SpreadsheetUtilities;
 
 namespace Test_The_Evaluator_Console_App
 {
@@ -15,40 +16,46 @@ namespace Test_The_Evaluator_Console_App
     {
         static void Main(string[] args)
         {
+
+            string form = "5/0";
+            Formula f = new Formula(form);
+            Console.WriteLine("test");
+            Console.WriteLine(f.Evaluate(s => 0));
+
             String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
             string a = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
             Console.WriteLine(a.Equals(varPattern));
-/*
+
             // Test single number only
             if (Evaluator.Evaluate("2", null) == 2)
             {
                 Console.WriteLine("Single number only works");
             }
-            
+
             // Test only addition
             if (Evaluator.Evaluate("5+5", null) == 10)
             {
                 Console.WriteLine("Addition only works");
             }
-            
+
             // Test only subraction
             if (Evaluator.Evaluate("2-1", null) == 1)
             {
                 Console.WriteLine("Subtration only works");
             }
-            
+
             // Test only multiplication
             if (Evaluator.Evaluate("2*2", null) == 4)
             {
                 Console.WriteLine("Multiplication only works");
             }
-            
+
             // Test only division
             if (Evaluator.Evaluate("6/2", null) == 3)
             {
                 Console.WriteLine("Division only works");
             }
-            
+
             // Test simple parenthesis additon
             if (Evaluator.Evaluate("(1+1)", null) == 2)
             {
@@ -122,7 +129,7 @@ namespace Test_The_Evaluator_Console_App
             }
 
             // test nested invalid operations
-            try 
+            try
             {
                 Evaluator.Evaluate("(2**(3+2)+2)", null);
             }
@@ -147,7 +154,7 @@ namespace Test_The_Evaluator_Console_App
             {
                 Evaluator.Evaluate("&+y1", delegateLookup);
             }
-            catch(ArgumentException)
+            catch (ArgumentException)
             {
                 Console.WriteLine("test succeeded, has invalid variable");
             }
@@ -166,12 +173,12 @@ namespace Test_The_Evaluator_Console_App
             try
             {
                 Evaluator.Evaluate("10 / 0", null);
-                
+
             }
-            catch(ArgumentException)
+            catch (ArgumentException)
             {
                 Console.WriteLine($"divide by 0 throws exception");
-            }*/
+            }
         }
 
         // helper method for variables

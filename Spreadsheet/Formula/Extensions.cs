@@ -16,12 +16,18 @@ namespace SpreadsheetUtilities
 		/// </summary>
 		/// <param name="s"></param>
 		/// <returns> true or false </returns>
-		public static bool WhenOpenPerenOrOperator(this string formula)
+		public static bool WhenOpenPerenOrOperator(this string[] formula)
 		{
+			if (Regex.IsMatch(formula[0], @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
+			{
+				return true;
+			}
 			// used to verify token is a number in TryParse
 			double number;
 			for (int i = 0; i < formula.Length - 1; i++)
 			{
+				// || Regex.IsMatch(formula[i], @"\d*\.?\d*")
+				
 				// Any token that immediately follows an opening parenthesis or an operator must be either 
 				// a number, a variable, or an opening parenthesis.
 				if ((formula[i].ToString().Equals("(") || formula[i].ToString().IsOperator()) && (double.TryParse(formula[i + 1].ToString(), out number) ||
@@ -40,12 +46,17 @@ namespace SpreadsheetUtilities
 		/// </summary>
 		/// <param name="s"></param>
 		/// <returns> returns true if above statement is correct </returns>
-		public static bool WhenNumOrVarOrCloseParen(this string formula)
+		public static bool WhenNumOrVarOrCloseParen(this string[] formula)
 		{
+			if (Regex.IsMatch(formula[0], @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
+			{
+				return true;
+			}
 			// used to verify token is variable in TryParse
 			double number = 0;
 			for (int i = 0; i < formula.Length - 1; i++)
 			{
+				
 				// Any token that immediately follows a number, a variable, or a closing 
 				// parenthesis must be either an operator or a closing parenthesis.
 				// s[i].CheckVariable() 

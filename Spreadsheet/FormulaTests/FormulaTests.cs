@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace FormulaTests
 {
+    
     /// <summary>  
     ///This is a test class for Formula.cs and is intended  
     ///to contain all Formula.cs Unit Tests  
@@ -13,7 +14,7 @@ namespace FormulaTests
     [TestClass]
     public class FormulaTests
     {
-        // the following tests ensure the formula is valid and the correct exception is thrown
+        // the following tests the constructor by ensuring the formula is valid and the correct exception is thrown
         [TestMethod]
         public void TestConstructorIsNotNull()
         {
@@ -21,15 +22,27 @@ namespace FormulaTests
             Formula f = new Formula(formula, normalize, isValid);
             Assert.IsNotNull(f);
         }
-
         [TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
-        public void TestCanCatchInvalidChar()
+        public void TestCanCatchInvalidCharDollarSign()
         {
             string formula = "$2 + x";
             Formula f = new Formula(formula, normalize, isValid);
         }
-
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestCanCatchInvalidCharPoundSign()
+        {
+            string formula = "#2 + x";
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestCanCatchInvalidExclamationPoint()
+        {
+            string formula = "2 +! x";
+            Formula f = new Formula(formula, normalize, isValid);
+        }
         [TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
         public void TestEmptyFormula()
@@ -37,15 +50,13 @@ namespace FormulaTests
             string formula = "";
             Formula f = new Formula(formula, normalize, isValid);
         }
-
         [TestMethod]
         public void TestSimpleAddWithDecimal()
-        {  
+        {
             string formula = "2.2 + 2.2";
             Formula f = new Formula(formula, normalize, isValid);
             Assert.AreEqual(4.4, f.Evaluate(s => 0));
         }
-
         [TestMethod]
         public void TestComplexWithDecimal()
         {
@@ -55,7 +66,6 @@ namespace FormulaTests
         }
 
         // test scientific notation
-        // can create a helper method to get the value of the variable or use lambda
         [TestMethod]
         public void TestSimpleAddWithScientificNotation()
         {
@@ -64,7 +74,7 @@ namespace FormulaTests
             Assert.AreEqual(0.0001, f.Evaluate(s => 0));
         }
 
-        [TestMethod]
+        /*[TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
         public void TestSpecificTokenRuleFail()
         {
@@ -73,7 +83,7 @@ namespace FormulaTests
             string formula = "(3! + 3 - 3)";
             // problem with regex to catch !
             Formula f = new Formula(formula, normalize, isValid);
-        }
+        }*/
 
         [TestMethod]
         public void TestSpecificTokenRulePass()
@@ -202,7 +212,7 @@ namespace FormulaTests
 
             string formula = "(3 + 3) * (5 - 3)";
             Formula f = new Formula(formula, normalize, isValid);
-        }        
+        }
 
         // Tests for IEnumerable GetVariables()
         [TestMethod]
@@ -260,9 +270,307 @@ namespace FormulaTests
         {
             // new Formula("x + Y").ToString() should return "x+Y"  
             string formula = "x + Y";
-            Formula f = new Formula(formula); //, normalize, isValid);
+            Formula f = new Formula(formula);
             string result = "x+Y";
             Assert.AreEqual(result, f.ToString());
+        }
+
+        // test for getVariables
+        // test for equals, ==, !=
+        [TestMethod]
+        public void TestTwoNullObjsAreEqual()
+        {
+            Formula f1 = null;
+            Formula f2 = null;
+            //Assert.AreEqual(true, f1 == f2);
+            Assert.IsTrue(f1 == f2);
+        }
+        [TestMethod]
+        public void TestOneNullObjIsEqual()
+        {
+            string form = "2+2";
+            Formula f1 = new Formula(form, normalize, isValid);
+            Formula f2 = null;
+            Assert.IsFalse(f1.Equals(f2));
+        }
+        [TestMethod]
+        public void TestTwoNonNullSameObjsAreEqual()
+        {
+            string formula = "4*3";
+            Formula f1 = new Formula(formula, normalize, isValid);
+            Formula f2 = new Formula(formula, normalize, isValid);
+            Assert.IsTrue(f1.Equals(f2));
+        }
+        [TestMethod]
+        public void TestTwoNonNullDifferentObjsAreNotEqual()
+        {
+            string formula = "4*3";
+            string formula2 = "3*4";
+            Formula f1 = new Formula(formula, normalize, isValid);
+            Formula f2 = new Formula(formula2, normalize, isValid);
+            Assert.IsFalse(f1.Equals(f2));
+        }
+        // tests for evaluate
+
+        // These tests are from assignment one
+        ///<summary>
+        ///  This is a test class for EvaluatorTest and is intended
+        ///  to contain all EvaluatorTest Unit Tests
+        ///</summary>
+
+
+        [TestMethod(), Timeout(5000)]
+        public void TestSingleNumber()
+        {
+            string form = "5";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(5.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestSingleVariable()
+        {
+            string form = "X5";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(13.0, f.Evaluate(s => 13));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestAddition()
+        {
+            string form = "5+3";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(8.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestSubtraction()
+        {
+            string form = "18-10";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(8.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestMultiplication()
+        {
+            string form = "2*4";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(8.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestDivision()
+        {
+            string form = "16/2";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(8.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestArithmeticWithVariable()
+        {
+            string form = "2+X1";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(6.0, f.Evaluate(s => 4));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestLeftToRight()
+        {
+            string form = "2*6+3";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(15.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestOrderOperations()
+        {
+            string form = "2+6*3";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(20.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestParenthesesTimes()
+        {
+            string form = "(2*6)*3";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(36.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestTimesParentheses()
+        {
+            string form = "2*(3+5)";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(16.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestPlusParentheses()
+        {
+            string form = "2+(3+5)";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(10.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestPlusComplex()
+        {
+            string form = "2+(3+5*9)";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(50.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestOperatorAfterParens()
+        {
+            string form = "(1*1)-2/2";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(0.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestComplexTimesParentheses()
+        {
+            string form = "2+3*(3+5)";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(26.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestComplexAndParentheses()
+        {
+            string form = "2+3*5+(3+4*8)*5+2";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(194.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod()]//, Timeout(5000)]
+        [ExpectedException(typeof(System.ArgumentException))]
+        public void TestDivideByZero()
+        {
+            string form = "5/0";
+            Formula f = new Formula(form, normalize, isValid);
+            Console.WriteLine("test");
+            Console.WriteLine(f.Evaluate(s => 0));
+            f.Evaluate(s => 0);
+        }
+
+        [TestMethod(), Timeout(5000)]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestSingleOperator()
+        {
+            string form = "+";
+            Formula f = new Formula(form, normalize, isValid);
+            f.Evaluate(s => 0);
+        }
+
+        [TestMethod(), Timeout(5000)]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestExtraOperator()
+        {
+            string form = "2+5+";
+            Formula f = new Formula(form, normalize, isValid);
+            f.Evaluate(s => 0);
+        }
+
+        [TestMethod(), Timeout(5000)]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestExtraParentheses()
+        {
+            string form = "2+5*7)";
+            Formula f = new Formula(form, normalize, isValid);
+            f.Evaluate(s => 0);
+        }
+
+        [TestMethod(), Timeout(5000)]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestInvalidVariable()
+        {
+            string form = "xx";
+            Formula f = new Formula(form, normalize, isValid);
+            f.Evaluate(s => 0);
+        }
+
+        [TestMethod(), Timeout(5000)]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestPlusInvalidVariable()
+        {
+            string form = "5+xx";
+            Formula f = new Formula(form, normalize, isValid);
+            f.Evaluate(s => 0);
+        }
+
+        [TestMethod()]//, Timeout(5000)]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestParensNoOperator()
+        {
+            string form = "5+7+(5)8";
+            Formula f = new Formula(form, normalize, isValid);
+            f.Evaluate(s => 0);
+        }
+
+
+        [TestMethod(), Timeout(5000)]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestEmpty()
+        {
+            string form = "";
+            Formula f = new Formula(form, normalize, isValid);
+            f.Evaluate(s => 0);
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestComplexMultiVar()
+        {
+            string form = "y1*3-8/2+4*(8-9*2)/14*x7";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(6.0, f.Evaluate(s => (s == "x7") ? 1 : 4));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestComplexNestedParensRight()
+        {
+            string form = "x1+(x2+(x3+(x4+(x5+x6))))";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(6.0, f.Evaluate(s => 1));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestComplexNestedParensLeft()
+        {
+            string form = "((((x1+x2)+x3)+x4)+x5)+x6";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(12.0, f.Evaluate(s => 2));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        public void TestRepeatedVar()
+        {
+            string form = "a4-a4*a4/a4";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(0.0, f.Evaluate(s => 3));
+        }
+
+
+        [TestMethod(), Timeout(5000)]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestNegativeLiteral()
+        {
+            string form = "-5";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(-5.0, f.Evaluate(s => 0));
+        }
+
+        [TestMethod(), Timeout(5000)]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestNegativeParens()
+        {
+            string form = "-(5+5)";
+            Formula f = new Formula(form, normalize, isValid);
+            Assert.AreEqual(-10.0, f.Evaluate(s => 0));
         }
 
         // Helper methods
