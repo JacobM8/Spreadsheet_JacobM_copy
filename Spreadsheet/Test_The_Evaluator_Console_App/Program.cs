@@ -17,10 +17,10 @@ namespace Test_The_Evaluator_Console_App
         static void Main(string[] args)
         {
 
-            string form = "5/0";
+            /*string form = "5/0";
             Formula f = new Formula(form);
             Console.WriteLine("test");
-            Console.WriteLine(f.Evaluate(s => 0));
+            Console.WriteLine(f.Evaluate(s => 0));*/
 
             String varPattern = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";
             string a = @"[a-zA-Z_](?: [a-zA-Z_]|\d)*";

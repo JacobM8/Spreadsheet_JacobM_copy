@@ -14,7 +14,8 @@
 /// <summary>
 ///     Author: Jacob Morrison
 ///     Date: 1/31/2020
-///     update this - what the file does
+///     In this file the constructor ensures the formula only contains the correct characters, the evaluate method returns 
+///     the final value of the given formula.
 ///     I pledge that I did the work myself.
 /// </summary>
 
@@ -105,14 +106,13 @@ namespace SpreadsheetUtilities
             int tokenCount = 0;
             int leftParenCount = 0;
             int rightParenCount = 0;
-            string[] formulaList = new string[GetTokens(formula).Count()];
+            // used to ensure proper token rules in formula
+            string prevToken = "";
 
             // the following foreach loop and if statements will ensure there is a valid formula
             // checks will not catch errors like divide by 0
             foreach (string s in GetTokens(formula)){
                 string temp = s;
-                formulaList[tokenCount] = temp;
-                
 
                 if (s == "(")
                 {
@@ -129,7 +129,18 @@ namespace SpreadsheetUtilities
                         "no point should the number of closing parentheses seen so far be greater " +
                         "than the number of opening parentheses seen so far.");
                 }
-                
+                // ensures proper tokens follow a "(" or operator
+                if (!WhenOpenPerenOrOperator(prevToken, s))
+                {
+                    throw new FormulaFormatException("Any token that immediately follows an opening parenthesis " +
+                        "or an operator must be either a number, a variable, or an opening parenthesis.");
+                }
+                // ensures proper token follow a number, variable, or ")"
+                if (!WhenNumOrVarOrCloseParen(prevToken, s))
+                {
+                    throw new FormulaFormatException("Any token that immediately follows a number, a variable, or " +
+                        "a closing parenthesis must be either an operator or a closing parenthesis.");
+                }
                 // checks token to ensure there is no invalid operand  
                 if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
                 {
@@ -152,29 +163,18 @@ namespace SpreadsheetUtilities
                     // make helper to check sig figs 
                     temp = num.ToString();
                 }
-                //  //
-                
-                // //
+                prevToken = temp;
                 // add to final formula
                 finalFormula += temp;
                 tokenCount++;
             }
-
+            
             // these execeptions are checked outside of the loop because the loop need to be completed
             // before they can be checked.
-            // ensures proper tokens follow a "(" or operator
-            if (!formulaList.WhenOpenPerenOrOperator())
-            {
-                throw new FormulaFormatException("Any token that immediately follows an opening parenthesis " +
-                    "or an operator must be either a number, a variable, or an opening parenthesis.");
-            }
-            // ensures proper token follow a number, variable, or ")"
-            if (!formulaList.WhenNumOrVarOrCloseParen())
-            {
-                throw new FormulaFormatException("Any token that immediately follows a number, a variable, or " +
-                    "a closing parenthesis must be either an operator or a closing parenthesis.");
-            }
+            
+            
 
+            
             // ensures formula starts with correct tokens
             if (!StartOrEndTokenRule(finalFormula[0].ToString(), "("))
             {
@@ -182,7 +182,7 @@ namespace SpreadsheetUtilities
                     "variable, or an opening parenthesis.");
             }
             // ensures formula ends with correct tokens
-            if (!StartOrEndTokenRule(GetTokens(formula).Count().ToString(), ")"))
+            if (!StartOrEndTokenRule(finalFormula[tokenCount - 1].ToString(), ")"))
             {
                 throw new FormulaFormatException("The last token of an expression must be a number," +
                     " a variable, or an closing parenthesis.");
@@ -459,15 +459,64 @@ namespace SpreadsheetUtilities
                 }
             }
         }
-        
+
         // helper methods
-        /// <summary>
-        /// Determines if token is an integer and does the following:
-        /// If * or / is at the top of the operator stack, pop the value stack, pop the operator stack, 
-        /// and apply the popped operator to the popped number and t. Push the result onto the value stack.
-        /// Otherwise, pushes token onto the value stack.
-        /// </summary>
-        /// <param name="s"> integer </param>
+        // Parenthesis/Operator Following Rule - Any token that immediately follows an opening 
+        // parenthesis or an operator must be either a number, a variable, or an opening parenthesis.
+        private static bool WhenOpenPerenOrOperator(string prev, string curr)
+        {
+            // if prev is equal to "" then it is the first iteration of the loop and there is no previous token to check
+            if (prev.Equals(""))
+            {
+                return true;
+            }
+            // used to verify token is a number in TryParse
+            double number;
+            // if prev is not a "(" or an operator no need to check
+            if (!prev.Equals("(") || !prev.IsOperator())
+            {
+                return true;
+            }
+            if ((prev.Equals("(") || prev.IsOperator()) && (double.TryParse(curr, out number) ||
+                       Regex.IsMatch(curr, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") || curr.Equals("(")))
+            {
+                return true;
+            }
+            return false;
+        }
+        // Extra Following Rule - Any token that immediately follows a number, a variable, or a closing 
+        // parenthesis must be either an operator or a closing parenthesis.
+        private static bool WhenNumOrVarOrCloseParen(string prev, string curr)
+        {
+            // to be used to check if token is a number
+            double number = 0;
+            // if prev is equal to "" it is the first iteration of the loop and there is no previous token
+            if (prev.Equals(""))
+            {
+                return true;
+            }
+            // if token is not a number, variable, or ")" continue on the loop
+            if (!double.TryParse(prev, out number) || !Regex.IsMatch(prev, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") || 
+                !prev.ToString().Equals(")"))
+            {
+                return true;
+            } 
+            if ((double.TryParse(prev, out number) || Regex.IsMatch(prev, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") ||
+                    prev.ToString().Equals(")")) && (curr.IsOperator() || curr.Equals(")")))
+            {
+                return true;
+            }
+            return false;
+        }
+
+
+            /// <summary>
+            /// Determines if token is an integer and does the following:
+            /// If * or / is at the top of the operator stack, pop the value stack, pop the operator stack, 
+            /// and apply the popped operator to the popped number and t. Push the result onto the value stack.
+            /// Otherwise, pushes token onto the value stack.
+            /// </summary>
+            /// <param name="s"> integer </param>
         private static void IsDouble(double tokenValue)
         {
             // If * or / is at the top of the operator stack, pop the value stack, pop the operator stack, 
