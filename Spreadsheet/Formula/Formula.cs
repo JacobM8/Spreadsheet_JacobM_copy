@@ -108,10 +108,13 @@ namespace SpreadsheetUtilities
             int rightParenCount = 0;
             // used to ensure proper token rules in formula
             string prevToken = "";
+            // used to ensure no invalid token is in the formula
+            double num1; 
 
             // the following foreach loop and if statements will ensure there is a valid formula
             // checks will not catch errors like divide by 0
             foreach (string s in GetTokens(formula)){
+                
                 string temp = s;
 
                 if (s == "(")
@@ -141,7 +144,13 @@ namespace SpreadsheetUtilities
                     throw new FormulaFormatException("Any token that immediately follows a number, a variable, or " +
                         "a closing parenthesis must be either an operator or a closing parenthesis.");
                 }
-                // checks token to ensure there is no invalid operand  
+                // checks token to ensure there is no invalid operand 
+                if (!Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") && !double.TryParse(s, out num1) &&
+                    !s.IsOperator() && !s.IsParen())
+                {
+                    throw new FormulaFormatException("invalid token in formula.");
+                }
+
                 if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
                 {
                     if (!isValid(s))
@@ -163,6 +172,15 @@ namespace SpreadsheetUtilities
                     // make helper to check sig figs 
                     temp = num.ToString();
                 }
+                // ensures formula ends with correct tokens
+                if (GetTokens(formula).Count() - 1 == tokenCount)
+                {
+                    if (!StartOrEndTokenRule(s, ")"))
+                    {
+                        throw new FormulaFormatException("The last token of an expression must be a number," +
+                            " a variable, or an closing parenthesis.");
+                    }
+                }
                 prevToken = temp;
                 // add to final formula
                 finalFormula += temp;
@@ -180,12 +198,6 @@ namespace SpreadsheetUtilities
             {
                 throw new FormulaFormatException("The first token of an expression must be a number, a " +
                     "variable, or an opening parenthesis.");
-            }
-            // ensures formula ends with correct tokens
-            if (!StartOrEndTokenRule(finalFormula[tokenCount - 1].ToString(), ")"))
-            {
-                throw new FormulaFormatException("The last token of an expression must be a number," +
-                    " a variable, or an closing parenthesis.");
             }
             // ensures there is at least one valid token in formula
             if (tokenCount < 1)
@@ -473,7 +485,8 @@ namespace SpreadsheetUtilities
             // used to verify token is a number in TryParse
             double number;
             // if prev is not a "(" or an operator no need to check
-            if (!prev.Equals("(") || !prev.IsOperator())
+            if ((!prev.Equals("(") && !prev.IsOperator()) || (!double.TryParse(curr, out number) && 
+                !Regex.IsMatch(curr, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") && !curr.Equals("(")))
             {
                 return true;
             }
@@ -495,14 +508,13 @@ namespace SpreadsheetUtilities
             {
                 return true;
             }
-            // if token is not a number, variable, or ")" continue on the loop
-            if (!double.TryParse(prev, out number) || !Regex.IsMatch(prev, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") || 
-                !prev.ToString().Equals(")"))
+            if ((!double.TryParse(prev, out number) && !Regex.IsMatch(prev, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") &&
+                !prev.Equals(")")))
             {
                 return true;
-            } 
+            }
             if ((double.TryParse(prev, out number) || Regex.IsMatch(prev, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") ||
-                    prev.ToString().Equals(")")) && (curr.IsOperator() || curr.Equals(")")))
+                    prev.Equals(")")) && (curr.IsOperator() || curr.Equals(")")))
             {
                 return true;
             }

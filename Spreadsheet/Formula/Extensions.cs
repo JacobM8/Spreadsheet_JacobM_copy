@@ -60,6 +60,15 @@ namespace SpreadsheetUtilities
 			return false;
 		}
 
+		public static bool IsParen(this string s)
+		{
+			if (s.Equals("(") || s.Equals(")"))
+			{
+				return true;
+			}
+			return false;
+		}
+
 		/// <summary>
 		/// Checks to see what is on top of the stack.
 		/// </summary>
