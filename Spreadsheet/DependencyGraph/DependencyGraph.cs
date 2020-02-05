@@ -79,7 +79,14 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public int this[string s]
         {
-            get { return DependeeGraph[s].Count(); }
+            get 
+            { 
+                if (DependeeGraph.ContainsKey(s))
+                {
+                    return DependeeGraph[s].Count(); 
+                }
+                return 0;
+            }
         }
 
         /// <summary>    
@@ -87,7 +94,7 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public bool HasDependents(string s)
         {
-            if (s.Count() != 0)
+            if (DependentGraph.ContainsKey(s) && DependentGraph[s].Count() > 0)
             {
                 return true;
             }
@@ -99,7 +106,7 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public bool HasDependees(string s)
         {
-            if (s.Count() != 0)
+            if (DependeeGraph.ContainsKey(s) && DependeeGraph[s].Count() > 0)
             {
                 return true;
             }
@@ -200,7 +207,7 @@ namespace SpreadsheetUtilities
         public void RemoveDependency(string s, string t)
         {
             // check for dependency then remove appropriately from both graphs
-            if (DependentGraph[s].Contains(t))
+            if (DependentGraph.ContainsKey(s) && DependentGraph[s].Contains(t))
             {
                 DependentGraph[s].Remove(t);
                 DependeeGraph[t].Remove(s);
@@ -214,29 +221,19 @@ namespace SpreadsheetUtilities
         /// </summary>     
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
-            // if DependeeGraph does not contain 's' create a new HashSet and add it to DependeeGraph
-            if (!DependentGraph.ContainsKey(s))
+            if (DependentGraph.ContainsKey(s))
             {
-                HashSet<string> newHash = new HashSet<string>(DependeeGraph[s]);
-                DependentGraph.Add(s, newHash);
+                // create a copy because items are removed during the iteration
+                HashSet<string> copy1 = new HashSet<string>(DependentGraph[s]);
+                foreach (string el in copy1)
+                {
+                    RemoveDependency(s, el);
+                }
             }
-            // if DependentGraph does contain 's' iterate through DependentGraph[s] and remove all dependencys
-            else
+            // add newDependents to DependentGraph
+            foreach (string element in newDependents)
             {
-                if (DependentGraph.ContainsKey(s))
-                {
-                    // create a copy because items are removed during the iteration
-                    HashSet<string> copy1 = new HashSet<string>(DependentGraph[s]);
-                    foreach (string el in copy1)
-                    {
-                        RemoveDependency(s, el);
-                    }
-                }
-                // add newDependents to DependentGraph
-                foreach (string element in newDependents)
-                {
-                    AddDependency(s, element);
-                }
+                AddDependency(s, element);
             }
         }
 
@@ -246,29 +243,19 @@ namespace SpreadsheetUtilities
         /// </summary>     
         public void ReplaceDependees(string s, IEnumerable<string> newDependees)
         {
-            // if DependeeGraph does not contain 's' create a new HashSet and add it to DependeeGraph
-            if (!DependeeGraph.ContainsKey(s))
+            if (DependeeGraph.ContainsKey(s))
             {
-                HashSet<string> newHash = new HashSet<string>(DependeeGraph[s]);
-                DependeeGraph.Add(s, newHash);
+                // create a copy because items are removed during the iteration
+                HashSet<string> copy1 = new HashSet<string>(DependeeGraph[s]);
+                foreach (string el in copy1)
+                {
+                    RemoveDependency(el, s);
+                }    
             }
-            // if DependeeGraph does contain 's' iterate through DependeeGraph[s] and remove all dependencys
-            else
+            // add newDependees to the DependeeGraph
+            foreach (string el in newDependees)
             {
-                if (DependeeGraph.ContainsKey(s))
-                {
-                    // create a copy because items are removed during the iteration
-                    HashSet<string> copy1 = new HashSet<string>(DependeeGraph[s]);
-                    foreach (string el in copy1)
-                    {
-                        RemoveDependency(el, s);
-                    }
-                }
-                // add newDependees to the DependeeGraph
-                foreach (string el in newDependees)
-                {
-                    AddDependency(el, s);
-                }
+                AddDependency(el, s);
             }
         }
     }
