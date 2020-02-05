@@ -98,6 +98,7 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public Formula(String formula, Func<string, string> normalize, Func<string, bool> isValid)
         {
+            // ensures there is at least one token
             if (formula.Equals("") || formula.Equals(null))
             {
                 throw new FormulaFormatException("Formula cannot be empty or null");
@@ -132,6 +133,19 @@ namespace SpreadsheetUtilities
                         "no point should the number of closing parentheses seen so far be greater " +
                         "than the number of opening parentheses seen so far.");
                 }
+                if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
+                {
+                    if (!isValid(s))
+                    {
+                        throw new FormulaFormatException("the only valid tokens are (, ), +, -, *, /, " +
+                                "variables, and decimal real numbers (including scientific notation)");
+                    }
+                    //normalize if its a variable
+                    temp = normalize(s);
+                }
+                    // if variable is in scientific notation convert to double then call ToString to add it to finalFormula
+                    
+                // }
                 // ensures proper tokens follow a "(" or operator
                 if (!WhenOpenPerenOrOperator(prevToken, s))
                 {
@@ -150,18 +164,7 @@ namespace SpreadsheetUtilities
                 {
                     throw new FormulaFormatException("invalid token in formula.");
                 }
-
-                if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
-                {
-                    if (!isValid(s))
-                    {
-                        throw new FormulaFormatException("the only valid tokens are (, ), +, -, *, /, " +
-                            "variables, and decimal real numbers (including scientific notation)");
-                    }
-                    // if variable is in scientific notation convert to double then call ToString to add it to finalFormula
-                    //normalize if its a variable
-                    temp = normalize(s);
-                }
+                
                 // convert scientific notation to regular number
                 if (Regex.IsMatch(s, @"-?.*\d*\.?\d+[eE][+-]?\d+"))
                 {
@@ -190,19 +193,11 @@ namespace SpreadsheetUtilities
             // these execeptions are checked outside of the loop because the loop need to be completed
             // before they can be checked.
             
-            
-
-            
             // ensures formula starts with correct tokens
             if (!StartOrEndTokenRule(finalFormula[0].ToString(), "("))
             {
                 throw new FormulaFormatException("The first token of an expression must be a number, a " +
                     "variable, or an opening parenthesis.");
-            }
-            // ensures there is at least one valid token in formula
-            if (tokenCount < 1)
-            {
-                throw new FormulaFormatException("There must be at least one token");
             }
             // ensures formula has same number of open and close parenthesis
             if (leftParenCount != rightParenCount)
@@ -258,11 +253,6 @@ namespace SpreadsheetUtilities
                 // for loop through masterFormula
                 foreach (string token in GetTokens(finalFormula))
                 {
-                    // if token is blank
-                    if (token.Equals("") || token.Equals(" "))
-                    {
-                        continue;
-                    }
                     // trim whitespaces off front and back of the token
                     token.Trim();
                     // if token is an doubleing point
@@ -485,8 +475,7 @@ namespace SpreadsheetUtilities
             // used to verify token is a number in TryParse
             double number;
             // if prev is not a "(" or an operator no need to check
-            if ((!prev.Equals("(") && !prev.IsOperator()) || (!double.TryParse(curr, out number) && 
-                !Regex.IsMatch(curr, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") && !curr.Equals("(")))
+            if ((!prev.Equals("(") && !prev.IsOperator()))
             {
                 return true;
             }

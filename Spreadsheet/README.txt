@@ -1,5 +1,48 @@
 Author:     Jacob Morrison
 Partner:    None
+Date:       February 7, 2020
+Course:     CS 3500, University of Utah, School of Computing
+Assignment: Assignment #4 - Onward To Spreadsheet
+Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use in Academic Coursework.
+
+1. Comments to Evaluators:
+
+    **** Update
+    
+
+2. Assignment Specific Topics:
+
+    Learn to follow (somewhat) complex Requirements and Specifications. 
+    Understand object hierarchy (i.e., a string is an object, but so is a formula).
+    Method Overloading.
+    DRY software.
+    Recursions, abstract classes, namespaces, testing, and code coverage.
+    Start to define MVC.
+
+3. Consulted Peers:
+
+    Logan (TA)
+    Haley (peer)
+    Misty (peer)
+    James (peer)
+
+
+4. References:
+
+    1. Interfaces (C# Programming Guide) - https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/interfaces/
+    2.
+
+5. Estimated Time: PS3 - 12 hours     
+6. Acutal Time:    PS3 -                     
+    Learning:                       
+    Programming:         
+    Debugging:           
+    Total:              
+
+------------------------------------------------------------------------------------------------------
+
+Author:     Jacob Morrison
+Partner:    None
 Date:       January 31, 2020
 Course:     CS 3500, University of Utah, School of Computing
 Assignment: Assignment #3 - Formula

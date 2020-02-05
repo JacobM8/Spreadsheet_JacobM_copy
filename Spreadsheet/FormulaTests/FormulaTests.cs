@@ -46,6 +46,34 @@ namespace FormulaTests
         }
         [TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
+        public void TestOpenPerenFollowFail()
+        {
+            string formula = "() + 3";
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestOperatorFollowFail()
+        {
+            string formula = "(2 ++ 1) + 3";
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+        [TestMethod]
+        public void TestOneNumFormulaFail()
+        {
+            string formula = "3";
+            Formula f = new Formula(formula, normalize, isValid);
+            Assert.AreEqual(3.0, f.Evaluate(s => 0));
+        }
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void TestToManyLeftParens()
+        {
+            string formula = "((2 + 1) + 3";
+            Formula f = new Formula(formula, normalize, isValid);
+        }
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
         public void TestEmptyFormula()
         {
             string formula = "";
@@ -281,6 +309,27 @@ namespace FormulaTests
             Assert.IsTrue(f1 == f2);
         }
         [TestMethod]
+        public void TestTwoNullObjsAreEqualFail()
+        {
+            Formula f1 = null;
+            Formula f2 = null;
+            Assert.IsFalse(f1 != f2);
+        }
+        [TestMethod]
+        public void TestTwoNullObjsAreNotEqual()
+        {
+            Formula f1 = new Formula("2", normalize, isValid);
+            Formula f2 = null;
+            Assert.IsTrue(f1 != f2);
+        }
+        [TestMethod]
+        public void TestTwoNullObjsAreNotEqualFail()
+        {
+            Formula f1 = new Formula("2", normalize, isValid);
+            Formula f2 = null;
+            Assert.IsFalse(f1 == f2);
+        }
+        [TestMethod]
         public void TestOneNullObjIsEqual()
         {
             string form = "2+2";
@@ -330,7 +379,7 @@ namespace FormulaTests
             Assert.AreEqual(13.0, f.Evaluate(s => 13));
         }
 
-        [TestMethod()]//, Timeout(5000)]
+        [TestMethod(), Timeout(5000)]
         public void TestAddition()
         {
             string form = "5+3";
@@ -443,14 +492,11 @@ namespace FormulaTests
         }
 
         [TestMethod(), Timeout(5000)]
-        [ExpectedException(typeof(FormulaFormatException))]
         public void TestDivideByZero()
         {
             string form = "5/0";
             Formula f = new Formula(form, normalize, isValid);
-            Console.WriteLine("test");
-            Console.WriteLine(f.Evaluate(s => 0));
-            f.Evaluate(s => 0);
+            Assert.AreEqual(new FormulaError() is FormulaError, f.Evaluate(s => 0) is FormulaError);
         }
 
         [TestMethod(), Timeout(5000)]
@@ -462,7 +508,7 @@ namespace FormulaTests
             f.Evaluate(s => 0);
         }
 
-        [TestMethod()]//, Timeout(5000)]
+        [TestMethod(), Timeout(5000)]
         [ExpectedException(typeof(FormulaFormatException))]
         public void TestExtraOperator()
         {
@@ -480,7 +526,7 @@ namespace FormulaTests
             f.Evaluate(s => 0);
         }
 
-        [TestMethod()]//, Timeout(5000)]
+        [TestMethod(), Timeout(5000)]
         [ExpectedException(typeof(FormulaFormatException))]
         public void TestParensNoOperator()
         {
@@ -499,7 +545,7 @@ namespace FormulaTests
             f.Evaluate(s => 0);
         }
 
-        [TestMethod()]//, Timeout(5000)]
+        [TestMethod(), Timeout(5000)]
         public void TestComplexMultiVar()
         {
             string form = "y1*3-8/2+4*(8-9*2)/14*x7";

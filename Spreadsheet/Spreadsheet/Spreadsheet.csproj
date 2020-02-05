@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DependencyGraph\DependencyGraph.csproj" />
+    <ProjectReference Include="..\FormulaEvaluator\FormulaEvaluator.csproj" />
+    <ProjectReference Include="..\Formula\Formula.csproj" />
+  </ItemGroup>
+
+</Project>
