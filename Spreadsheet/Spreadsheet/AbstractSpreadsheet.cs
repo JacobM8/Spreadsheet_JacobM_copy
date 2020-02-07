@@ -314,26 +314,14 @@ namespace SS
             return GetCellsToRecalculate(new HashSet<String>() { name });
         }
 
-/*
         /// <summary>
-        /// A helper for the GetCellsToRecalculate method.
-        /// 
-        ///   -- You should fully comment what is going on below using XML tags as appropriate --
-        ///   <param String="start"> Starting cell to cells that need to be recalculated.</param>
-        ///   <param String="name"> The name of a given cell whose dependent cells need to be checked for recalculation.</param>
-        ///   <param ISet="visited"> ISet of visited cells.</param>
-        ///   <param LinkedList="changed"> LinkedList of cells that need to be recalculated.</param>
+        /// Returns a LinkedList of cells that need to be recalculated.
+        /// Thorws CircularException if a cell depends on itself.
         /// </summary>
-         
-        ///
-*/
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="name"></param>
-        /// <param name="visited"></param>
-        /// <param name="changed"></param>
+        /// <param name="start">Starting cell to cells that need to be recalculated.</param>
+        /// <param name="name">The name of a given cell whose dependent cells need to be checked for recalculation.</param>
+        /// <param name="visited">ISet of visited cells.</param>
+        /// <param name="changed">LinkedList of cells that need to be recalculated.</param>
         private void Visit(String start, String name, ISet<String> visited, LinkedList<String> changed)
         {
             // mark first cell as visited

@@ -27,6 +27,27 @@ namespace SpreadsheetTests
 
         [TestMethod]
         [ExpectedException(typeof(InvalidNameException))]
+        public void TestGetCellContentsWhenNull()
+        {
+            // Test new constructor is empty
+            Spreadsheet s = new Spreadsheet();
+            Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
+            s.GetCellContents(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidNameException))]
+        public void TestGetCellContentsWhenInvalidVariable()
+        {
+            // Test new constructor is empty
+            Spreadsheet s = new Spreadsheet();
+            Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
+            string var = "3m2";
+            s.GetCellContents(var);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidNameException))]
         public void TestGetCellContentsString()
         {
             // Test if cell content is a string GetCellContent returns a string

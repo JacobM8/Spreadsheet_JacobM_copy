@@ -90,6 +90,9 @@ namespace SS
         /// </returns>
         public override ISet<string> SetCellContents(string name, double number)
         {
+            // TODO **** is the this the right way to return the correct set???
+            HashSet<string> newSet = new HashSet<string>();
+            newSet.Add(number.ToString());
             // if name is null or not valid throw InvalidNameException
             if (name.Equals(null) || !RegexVariableCheck(name))
             {
@@ -105,8 +108,12 @@ namespace SS
             {
                 cells.Add(name, new Cell(name, number));
             }
+            foreach (string s in GetCellsToRecalculate(name))
+            {
+                newSet.Add(s);
+            }
             // return the cell name and all values that depend on the cell name
-            return (ISet<string>)GetCellsToRecalculate(name);
+            return (ISet<string>)newSet; // (ISet<string>)GetCellsToRecalculate(name);
         }
 
         /// <summary>
@@ -194,6 +201,9 @@ namespace SS
         /// </returns>
         public override ISet<string> SetCellContents(string name, Formula formula)
         {
+            // TODO **** is the this the right way to return the correct set???
+            HashSet<string> newSet = new HashSet<string>();
+            newSet.Add(name);
             // if formula is null throw ArgumentNullException
             if (formula.Equals(null))
             {
@@ -205,6 +215,7 @@ namespace SS
                 throw new InvalidNameException();
             }
             // CircularException is checked somewhere else, don't need to check here
+
             // if cells has name as a key add formula to name
             if (cells.ContainsKey(name))
             {
@@ -215,8 +226,12 @@ namespace SS
             {
                 cells.Add(name, new Cell(name, formula));
             }
+            foreach (string s in GetCellsToRecalculate(name))
+            {
+                newSet.Add(s);
+            }
             // return the cell name and all values that depend on the cell name
-            return (ISet<string>)GetCellsToRecalculate(name);
+            return (ISet<string>)newSet; //(ISet<string>)GetCellsToRecalculate(name);
         }
 
         /// <summary>
@@ -250,7 +265,18 @@ namespace SS
         /// </returns>
         protected override IEnumerable<string> GetDirectDependents(string name)
         {
-            throw new NotImplementedException();
+            // if name is null throw ArgumentNullException
+            if (name.Equals(null))
+            {
+                throw new ArgumentNullException();
+            }
+            // if name is innalid throw InvalidNameException
+            if (!RegexVariableCheck(name))
+            {
+                throw new ArgumentNullException();
+            }
+            // return enumeration of all values that depend on the cell name
+            return (ISet<string>)GetCellsToRecalculate(name);
         }
 
         // helper methods

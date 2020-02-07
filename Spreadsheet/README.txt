@@ -31,7 +31,7 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 4. References:
 
     1. Interfaces (C# Programming Guide) - https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/interfaces/
-    2.
+    2. ISet<T> Interface - https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iset-1?view=netframework-4.8
 
 5. Examples of Good Software Practice:
 
