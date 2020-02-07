@@ -59,7 +59,7 @@ namespace SpreadsheetUtilities
         public DependencyGraph()
         {
             DependentGraph = new Dictionary<string, HashSet<string>>();
-            DependeeGraph  = new Dictionary<string, HashSet<string>>();
+            DependeeGraph = new Dictionary<string, HashSet<string>>();
         }
 
         /// <summary>    
@@ -79,11 +79,11 @@ namespace SpreadsheetUtilities
         /// </summary>    
         public int this[string s]
         {
-            get 
-            { 
+            get
+            {
                 if (DependeeGraph.ContainsKey(s))
                 {
-                    return DependeeGraph[s].Count(); 
+                    return DependeeGraph[s].Count();
                 }
                 return 0;
             }
@@ -173,7 +173,7 @@ namespace SpreadsheetUtilities
                         DependeeGraph[t].Add(s);
                         size++;
                     }
-                } 
+                }
             }
             // if s does not exist add dependency
             else
@@ -250,7 +250,7 @@ namespace SpreadsheetUtilities
                 foreach (string el in copy1)
                 {
                     RemoveDependency(el, s);
-                }    
+                }
             }
             // add newDependees to the DependeeGraph
             foreach (string el in newDependees)

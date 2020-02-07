@@ -25,6 +25,7 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     Haley (peer)
     Misty (peer)
     James (peer)
+    Corbin (peer)
 
 
 4. References:
@@ -35,8 +36,8 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 5. Estimated Time: PS3 - 12 hours     
 6. Acutal Time:    PS3 -                     
     Learning:                       
-    Programming:         
-    Debugging:           
+    Programming:        4 
+    Debugging:          2 hours   (2 hours fixing code from assignment 1 and 2)
     Total:              
 
 ------------------------------------------------------------------------------------------------------

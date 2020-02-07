@@ -133,6 +133,27 @@ namespace SpreadsheetUtilities
                         "no point should the number of closing parentheses seen so far be greater " +
                         "than the number of opening parentheses seen so far.");
                 }
+                // checks token to ensure there is no invalid operand 
+                if (!Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") && !double.TryParse(s, out num1) &&
+                    !s.IsOperator() && !s.IsParen())
+                {
+                    throw new FormulaFormatException("invalid token in formula.");
+                }
+                // if the token is a number set temp equal to it, TryParse also trims off trailing 0s at the end
+                if (double.TryParse(s, out num1 ))
+                {
+                    temp = num1.ToString();
+                }
+                // convert scientific notation to regular number
+                if (Regex.IsMatch(s, @"-?.*\d*\.?\d+[eE][+-]?\d+"))
+                {
+                    NumberFormatInfo info;
+                    info = NumberFormatInfo.CurrentInfo;
+                    Decimal num;
+                    Decimal.TryParse(s, System.Globalization.NumberStyles.Float, info, out num);
+                    temp = num.ToString();
+                }
+                // check for valid variables an valid operators
                 if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
                 {
                     if (!isValid(s))
@@ -143,9 +164,6 @@ namespace SpreadsheetUtilities
                     //normalize if its a variable
                     temp = normalize(s);
                 }
-                    // if variable is in scientific notation convert to double then call ToString to add it to finalFormula
-                    
-                // }
                 // ensures proper tokens follow a "(" or operator
                 if (!WhenOpenPerenOrOperator(prevToken, s))
                 {
@@ -158,23 +176,6 @@ namespace SpreadsheetUtilities
                     throw new FormulaFormatException("Any token that immediately follows a number, a variable, or " +
                         "a closing parenthesis must be either an operator or a closing parenthesis.");
                 }
-                // checks token to ensure there is no invalid operand 
-                if (!Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") && !double.TryParse(s, out num1) &&
-                    !s.IsOperator() && !s.IsParen())
-                {
-                    throw new FormulaFormatException("invalid token in formula.");
-                }
-                
-                // convert scientific notation to regular number
-                if (Regex.IsMatch(s, @"-?.*\d*\.?\d+[eE][+-]?\d+"))
-                {
-                    NumberFormatInfo info;
-                    info = NumberFormatInfo.CurrentInfo;
-                    Decimal num;
-                    Decimal.TryParse(s, System.Globalization.NumberStyles.Float, info, out num);
-                    // make helper to check sig figs 
-                    temp = num.ToString();
-                }
                 // ensures formula ends with correct tokens
                 if (GetTokens(formula).Count() - 1 == tokenCount)
                 {
@@ -185,7 +186,6 @@ namespace SpreadsheetUtilities
                     }
                 }
                 prevToken = temp;
-                // add to final formula
                 finalFormula += temp;
                 tokenCount++;
             }
@@ -284,7 +284,7 @@ namespace SpreadsheetUtilities
                     else
                     {
                         // checks to see if token is a valid variable
-                        if (Regex.IsMatch(token, @"[a-zA-Z]+\d+"))
+                        if (Regex.IsMatch(token, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
                         {
                             // try catch will catch an exception when there is one from Program.cs
                             try
@@ -337,7 +337,10 @@ namespace SpreadsheetUtilities
             // "normalize" it by converting to upper case.
             foreach (string s in GetTokens(finalFormula))
             {
+                if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") && !returnList.Contains(s))
+                {
                 returnList.Add(s);
+                }
             }
             // return the items that were enumerated
             return returnList;
@@ -463,6 +466,8 @@ namespace SpreadsheetUtilities
         }
 
         // helper methods
+        // Convert significant figures
+
         // Parenthesis/Operator Following Rule - Any token that immediately follows an opening 
         // parenthesis or an operator must be either a number, a variable, or an opening parenthesis.
         private static bool WhenOpenPerenOrOperator(string prev, string curr)
@@ -674,7 +679,7 @@ namespace SpreadsheetUtilities
                 }
                 else
                 {
-                    if (operand4 == 0)
+                    if (operand3 == 0)
                     {
                         throw new ArgumentException("Invalid formula, cannot divide by zero.");
                     }
