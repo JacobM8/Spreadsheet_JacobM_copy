@@ -33,11 +33,15 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     1. Interfaces (C# Programming Guide) - https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/interfaces/
     2.
 
-5. Estimated Time: PS3 - 12 hours     
-6. Acutal Time:    PS3 -                     
+5. Examples of Good Software Practice:
+
+    - See section 12.2 in the instructions for Assignment 4
+
+6. Estimated Time: PS3 - 12 hours     
+7. Acutal Time:    PS3 -                     
     Learning:                       
     Programming:        4 
-    Debugging:          2 hours   (2 hours fixing code from assignment 1 and 2)
+    Debugging:          3.5 hours   (3.5 hours fixing code from assignment 2 and 3)
     Total:              
 
 ------------------------------------------------------------------------------------------------------

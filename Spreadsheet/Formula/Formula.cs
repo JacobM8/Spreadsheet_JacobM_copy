@@ -390,8 +390,6 @@ namespace SpreadsheetUtilities
             {
                 return false;
             }
-            var typeOfF1 = f1.GetType();
-            var typeOfF2 = f2.GetType();
             if (f1.Equals(f2))
             {
                 return true;
@@ -414,8 +412,6 @@ namespace SpreadsheetUtilities
             {
                 return true;
             }
-            var typeOfF1 = f1.GetType();
-            var typeOfF2 = f2.GetType();
             if (!f1.Equals(f2))
             {
                 return true;

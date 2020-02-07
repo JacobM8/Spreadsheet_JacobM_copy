@@ -1,4 +1,11 @@
-﻿using SpreadsheetUtilities;
+﻿/// <summary>
+///     Author: Jacob Morrison
+///     Date: 2/7/2020
+///     This file is used to get and set the contents of a cell, remember the contents and the value of the cell are 
+///     separate. This file is also used to recalculate cells when a dependent cell is changed.
+///     I pledge that I did the work myself.
+/// </summary>
+using SpreadsheetUtilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +21,7 @@ namespace SS
         /// </summary>
         public Spreadsheet()
         {
-            // the string will be the cell name and Cell is the contents of the cell i.e. string, double, formula. 
+            // the string will be the cell name and Cell is the contents of the cell i.e. string, double, or formula. 
             cells = new Dictionary<string, Cell>();
         }
 
@@ -35,7 +42,7 @@ namespace SS
         public override object GetCellContents(string name)
         {
             // throw InvalidNameException if name is null or invalid 
-            if (name == null || !RegexCheck(name))
+            if (name == null || !RegexVariableCheck(name))
             {
                 throw new InvalidNameException();
             }
@@ -49,35 +56,211 @@ namespace SS
             
         }
 
+        /// <summary>
+        /// Returns an Enumerable that can be used to enumerates 
+        /// the names of all the non-empty cells in the spreadsheet.
+        /// </summary>
         public override IEnumerable<string> GetNamesOfAllNonemptyCells()
         {
-            throw new NotImplementedException();
+            // return key values from cells dictionary
+            return cells.Keys;
         }
 
+        /// <summary>
+        ///  Set the contents of the named cell to the given number.  
+        /// </summary>
+        /// 
+        /// <exception cref="InvalidNameException"> 
+        ///   If the name is null or invalid, throw an InvalidNameException
+        /// </exception>
+        /// 
+        /// <param name="name"> The name of the cell </param>
+        /// <param name="number"> The new contents/value </param>
+        /// 
+        /// <returns>
+        ///   <para>
+        ///      The method returns a set consisting of name plus the names of all other cells whose value depends, 
+        ///      directly or indirectly, on the named cell.
+        ///   </para>
+        /// 
+        ///   <para>
+        ///      For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+        ///      set {A1, B1, C1} is returned.
+        ///   </para>
+        /// </returns>
         public override ISet<string> SetCellContents(string name, double number)
         {
-            throw new NotImplementedException();
+            // if name is null or not valid throw InvalidNameException
+            if (name.Equals(null) || !RegexVariableCheck(name))
+            {
+                throw new InvalidNameException();
+            }
+            // if cells has name as a key add number to name
+            if (cells.ContainsKey(name))
+            {
+                cells[name].contents = number;
+            }
+            // if cells does not have name as a key, add name as a key and number as it's value
+            else
+            {
+                cells.Add(name, new Cell(name, number));
+            }
+            // return the cell name and all values that depend on the cell name
+            return (ISet<string>)GetCellsToRecalculate(name);
         }
 
+        /// <summary>
+        /// The contents of the named cell becomes the text.  
+        /// </summary>
+        /// 
+        /// <exception cref="ArgumentNullException"> 
+        ///   If text is null, throw an ArgumentNullException.
+        /// </exception>
+        /// 
+        /// <exception cref="InvalidNameException"> 
+        ///   If the name is null or invalid, throw an InvalidNameException
+        /// </exception>
+        /// 
+        /// <param name="name"> The name of the cell </param>
+        /// <param name="text"> The new content/value of the cell</param>
+        /// 
+        /// <returns>
+        ///   The method returns a set consisting of name plus the names of all 
+        ///   other cells whose value depends, directly or indirectly, on the 
+        ///   named cell.
+        /// 
+        ///   <para>
+        ///     For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+        ///     set {A1, B1, C1} is returned.
+        ///   </para>
+        /// </returns>
         public override ISet<string> SetCellContents(string name, string text)
         {
-            throw new NotImplementedException();
+            // if text is null throw ArgumentNullException
+            if (text.Equals(null))
+            {
+                throw new ArgumentNullException();
+            }
+            // if name is null or not valid throw InvalidNameException
+            if (name.Equals(null) || !RegexVariableCheck(name))
+            {
+                throw new ArgumentNullException();
+            }
+            // if cells has name as a key add text to name
+            if (cells.ContainsKey(name))
+            {
+                cells[name].contents = text;
+            }
+            // if cells does not have name as a key, add name as a key and text as it's value
+            else
+            {
+                cells.Add(name, new Cell(name, text));
+            }
+            // return the cell name and all values that depend on the cell name
+            return (ISet<string>)GetCellsToRecalculate(name);
         }
 
+        /// <summary>
+        /// Set the contents of the named cell to the formula.  
+        /// </summary>
+        /// 
+        /// <exception cref="ArgumentNullException"> 
+        ///   If formula parameter is null, throw an ArgumentNullException.
+        /// </exception>
+        /// 
+        /// <exception cref="InvalidNameException"> 
+        ///   If the name is null or invalid, throw an InvalidNameException
+        /// </exception>
+        /// 
+        /// <exception cref="CircularException"> 
+        ///   If changing the contents of the named cell to be the formula would 
+        ///   cause a circular dependency, throw a CircularException.  
+        ///   (NOTE: No change is made to the spreadsheet.)
+        /// </exception>
+        /// 
+        /// <param name="name"> The cell name</param>
+        /// <param name="formula"> The content of the cell</param>
+        /// 
+        /// <returns>
+        ///   <para>
+        ///     The method returns a Set consisting of name plus the names of all other 
+        ///     cells whose value depends, directly or indirectly, on the named cell.
+        ///   </para>
+        ///   <para> 
+        ///     For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+        ///     set {A1, B1, C1} is returned.
+        ///   </para>
+        /// 
+        /// </returns>
         public override ISet<string> SetCellContents(string name, Formula formula)
         {
-            throw new NotImplementedException();
+            // if formula is null throw ArgumentNullException
+            if (formula.Equals(null))
+            {
+                throw new ArgumentNullException();
+            }
+            // if name is null or not valid throw InvalidNameException
+            if (name.Equals(null) || !RegexVariableCheck(name))
+            {
+                throw new InvalidNameException();
+            }
+            // CircularException is checked somewhere else, don't need to check here
+            // if cells has name as a key add formula to name
+            if (cells.ContainsKey(name))
+            {
+                cells[name].contents = formula;
+            }
+            // if cells does not have name as a key, add name as a key and formula as it's value
+            else
+            {
+                cells.Add(name, new Cell(name, formula));
+            }
+            // return the cell name and all values that depend on the cell name
+            return (ISet<string>)GetCellsToRecalculate(name);
         }
 
+        /// <summary>
+        /// Returns an enumeration, without duplicates, of the names of all cells whose
+        /// values depend directly on the value of the named cell. 
+        /// </summary>
+        /// 
+        /// <exception cref="ArgumentNullException"> 
+        ///   If the name is null, throw an ArgumentNullException.
+        /// </exception>
+        /// 
+        /// <exception cref="InvalidNameException"> 
+        ///   If the name is null or invalid, throw an InvalidNameException
+        /// </exception>
+        /// 
+        /// <param name="name"></param>
+        /// <returns>
+        ///   Returns an enumeration, without duplicates, of the names of all cells that contain
+        ///   formulas containing name.
+        /// 
+        ///   <para>For example, suppose that: </para>
+        ///   <list type="bullet">
+        ///      <item>A1 contains 3</item>
+        ///      <item>B1 contains the formula A1 * A1</item>
+        ///      <item>C1 contains the formula B1 + A1</item>
+        ///      <item>D1 contains the formula B1 - C1</item>
+        ///   </list>
+        /// 
+        ///   <para>The direct dependents of A1 are B1 and C1</para>
+        /// 
+        /// </returns>
         protected override IEnumerable<string> GetDirectDependents(string name)
         {
             throw new NotImplementedException();
         }
 
         // helper methods
-        public bool RegexCheck(string name)
+        /// <summary>
+        /// Checks to see the given string is a valid variable
+        /// </summary>
+        /// <param name="name"> string to check if it's a variable </param>
+        /// <returns> true if "s" is a variable</returns>
+        public bool RegexVariableCheck(string name)
         {
-            // TODO update regex formula to include "_"
             if (Regex.IsMatch(name, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
             {
                 return true;

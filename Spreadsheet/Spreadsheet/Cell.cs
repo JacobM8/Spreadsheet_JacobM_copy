@@ -15,17 +15,19 @@ namespace SS
         /// </summary>
         /// <param name="name"></param>
         /// <param name="content"></param>
-        public Cell(String name, String content)
+        public Cell(string name, object content)
         {
             this.contents = content;
         }
 
+        // don't need bottom two when first constructor has "object" passed in as second parameter
+/*
         /// <summary>
         /// Double constructor sets the public contents to the content parameter passed in the constructor
         /// </summary>
         /// <param name="name"></param>
         /// <param name="content"></param>
-        public Cell (String name, Double content)
+        public Cell (string name, double content)
         {
             this.contents = content;
         }
@@ -35,10 +37,10 @@ namespace SS
         /// </summary>
         /// <param name="name"></param>
         /// <param name="content"></param>
-        public Cell (String name, Formula content)
+        public Cell (string name, Formula content)
         {
             this.contents = content;
         }
-
+*/
     }
 }

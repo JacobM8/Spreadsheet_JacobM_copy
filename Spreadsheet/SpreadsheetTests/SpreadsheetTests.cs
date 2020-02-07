@@ -15,6 +15,7 @@ namespace SpreadsheetTests
             // Test new constructor is empty
             Spreadsheet s = new Spreadsheet();
             Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
+            // get names of nonemptycells
             /*// use when s is not empty
             foreach (KeyValuePair<string, Cell> entry in cells)
             {
@@ -50,6 +51,16 @@ namespace SpreadsheetTests
             // Test if cell content is a formula GetCellContent returns a formula
             Spreadsheet s = new Spreadsheet();
             s.GetCellContents(null);
+        }
+
+        [TestMethod]
+        public void TestSetContentsOfCellAsDouble()
+        {
+            // Test if cell content is a formula GetCellContent returns a formula
+            Spreadsheet s = new Spreadsheet();
+            double d = 32.2;
+            s.SetCellContents("A1", d);
+            Assert.AreEqual(d, s.GetCellContents("A1"));
         }
     }
 }
