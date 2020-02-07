@@ -16,6 +16,7 @@ namespace SS
     public class Spreadsheet : AbstractSpreadsheet
     {
         Dictionary<string, Cell> cells;
+        DependencyGraph cellDependecies = new DependencyGraph();
         /// <summary>
         /// Creates a an empty constructor (Dictionary) with zero arguments.
         /// </summary>
@@ -90,9 +91,8 @@ namespace SS
         /// </returns>
         public override ISet<string> SetCellContents(string name, double number)
         {
-            // TODO **** is the this the right way to return the correct set???
             HashSet<string> newSet = new HashSet<string>();
-            newSet.Add(number.ToString());
+            newSet.Add(name);
             // if name is null or not valid throw InvalidNameException
             if (name.Equals(null) || !RegexVariableCheck(name))
             {
@@ -101,6 +101,12 @@ namespace SS
             // if cells has name as a key add number to name
             if (cells.ContainsKey(name))
             {
+                // if name is a Formula replace its dependees with a empty set
+                if (cells[name].contents is Formula)
+                {
+                    // update cellDependencies with variables in formula
+                    cellDependecies.ReplaceDependees(name, new HashSet<string>());
+                }
                 cells[name].contents = number;
             }
             // if cells does not have name as a key, add name as a key and number as it's value
@@ -113,7 +119,7 @@ namespace SS
                 newSet.Add(s);
             }
             // return the cell name and all values that depend on the cell name
-            return (ISet<string>)newSet; // (ISet<string>)GetCellsToRecalculate(name);
+            return (ISet<string>)newSet;
         }
 
         /// <summary>
@@ -143,6 +149,8 @@ namespace SS
         /// </returns>
         public override ISet<string> SetCellContents(string name, string text)
         {
+            HashSet<string> newSet = new HashSet<string>();
+            newSet.Add(name);
             // if text is null throw ArgumentNullException
             if (text.Equals(null))
             {
@@ -156,6 +164,12 @@ namespace SS
             // if cells has name as a key add text to name
             if (cells.ContainsKey(name))
             {
+                // if name is a Formula replace its dependees with a empty set
+                if (cells[name].contents is Formula)
+                {
+                    // update cellDependencies with variables in formula
+                    cellDependecies.ReplaceDependees(name, new HashSet<string>());
+                }
                 cells[name].contents = text;
             }
             // if cells does not have name as a key, add name as a key and text as it's value
@@ -163,8 +177,12 @@ namespace SS
             {
                 cells.Add(name, new Cell(name, text));
             }
+            foreach (string s in GetCellsToRecalculate(name))
+            {
+                newSet.Add(s);
+            }
             // return the cell name and all values that depend on the cell name
-            return (ISet<string>)GetCellsToRecalculate(name);
+            return (ISet<string>)newSet;
         }
 
         /// <summary>
@@ -201,7 +219,6 @@ namespace SS
         /// </returns>
         public override ISet<string> SetCellContents(string name, Formula formula)
         {
-            // TODO **** is the this the right way to return the correct set???
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
             // if formula is null throw ArgumentNullException
@@ -230,8 +247,10 @@ namespace SS
             {
                 newSet.Add(s);
             }
+            // update cellDependencies with variables in formula
+            cellDependecies.ReplaceDependees(name, formula.GetVariables());
             // return the cell name and all values that depend on the cell name
-            return (ISet<string>)newSet; //(ISet<string>)GetCellsToRecalculate(name);
+            return (ISet<string>)newSet;
         }
 
         /// <summary>
@@ -266,17 +285,17 @@ namespace SS
         protected override IEnumerable<string> GetDirectDependents(string name)
         {
             // if name is null throw ArgumentNullException
-            if (name.Equals(null))
+            if (name == null)
             {
                 throw new ArgumentNullException();
             }
-            // if name is innalid throw InvalidNameException
+            // if name is invalid throw InvalidNameException
             if (!RegexVariableCheck(name))
             {
                 throw new ArgumentNullException();
             }
             // return enumeration of all values that depend on the cell name
-            return (ISet<string>)GetCellsToRecalculate(name);
+            return cellDependecies.GetDependees(name);
         }
 
         // helper methods
@@ -287,7 +306,7 @@ namespace SS
         /// <returns> true if "s" is a variable</returns>
         public bool RegexVariableCheck(string name)
         {
-            if (Regex.IsMatch(name, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
+            if (Regex.IsMatch(name, @"^[a-zA-Z_](?:[a-zA-Z_]|\d)*"))
             {
                 return true;
             }
