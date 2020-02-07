@@ -50,8 +50,8 @@ namespace SpreadsheetUtilities
     /// </summary>  
     public class DependencyGraph
     {
-        Dictionary<string, HashSet<string>> DependentGraph;
-        Dictionary<string, HashSet<string>> DependeeGraph;
+        private Dictionary<string, HashSet<string>> DependentGraph;
+        private Dictionary<string, HashSet<string>> DependeeGraph;
         private int size = 0;
         /// <summary>    
         /// Creates an empty DependencyGraph.    
@@ -168,9 +168,7 @@ namespace SpreadsheetUtilities
                     // if 't' doesn't exist in DependeeGraph, create new HashSet and add
                     else
                     {
-                        HashSet<string> DependeeValue = new HashSet<string>();
-                        DependeeGraph.Add(t, DependeeValue);
-                        DependeeGraph[t].Add(s);
+                        AddReferenceToGraph(DependeeGraph, s, t);
                         size++;
                     }
                 }
@@ -179,9 +177,7 @@ namespace SpreadsheetUtilities
             else
             {
                 // add new HashSet to DependentGraph, then add 't' to the new HashSet
-                HashSet<string> DependentValue = new HashSet<string>();
-                DependentGraph.Add(s, DependentValue);
-                DependentGraph[s].Add(t);
+                AddReferenceToGraph(DependentGraph, t, s);
                 // add to DependeeGraph if 't' is already created
                 if (DependeeGraph.ContainsKey(t))
                 {
@@ -191,9 +187,7 @@ namespace SpreadsheetUtilities
                 // add new HashSet to DependeeGraph then add 's' to the new HashSet
                 else
                 {
-                    HashSet<string> DependeeValue = new HashSet<string>();
-                    DependeeGraph.Add(t, DependeeValue);
-                    DependeeGraph[t].Add(s);
+                    AddReferenceToGraph(DependeeGraph, s, t);
                     size++;
                 }
             }
@@ -257,6 +251,21 @@ namespace SpreadsheetUtilities
             {
                 AddDependency(el, s);
             }
+        }
+
+        // helper methods
+        /// <summary>
+        /// Adds new HashSet to given Dictionary with given strings
+        /// </summary>
+        /// <param name="graph"> dictionary to add a new HashSet to </param>
+        /// <param name="s"> string to be added to graph </param>
+        /// <param name="t"> string to be added to newGraph </param>
+        private void AddReferenceToGraph(Dictionary<string, HashSet<string>> graph, string s, string t)
+        {
+            HashSet<string> newGraph = new HashSet<string>();
+            graph.Add(t, newGraph);
+            graph[t].Add(s);
+
         }
     }
 }

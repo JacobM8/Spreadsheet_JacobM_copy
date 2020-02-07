@@ -51,7 +51,7 @@ namespace SpreadsheetUtilities
         static Stack<string> operatorStack;
 
         // tokenValue will be set to the value of token when it's a doubleing point value in TryPase below
-        static double tokenValue = 0;
+        double tokenValue = 0;
         // Final value of formula
         static double finalValue = 0;
         // master formula
@@ -70,8 +70,6 @@ namespace SpreadsheetUtilities
         public Formula(String formula) :
             this(formula, s => s, s => true)
         {
-            // this constructor takes the 'String formula' parameter and passes it into the 
-            // other constructor that has two func's as parameters
         }
 
         /// <summary>    
@@ -112,17 +110,17 @@ namespace SpreadsheetUtilities
             // used to ensure no invalid token is in the formula
             double num1; 
 
-            // the following foreach loop and if statements will ensure there is a valid formula
+            // the following foreach loop and if statements will ensure there is a valid formula,
             // checks will not catch errors like divide by 0
             foreach (string s in GetTokens(formula)){
                 
                 string temp = s;
 
-                if (s == "(")
+                if (temp == "(")
                 {
                     leftParenCount++;
                 }
-                if (s == ")")
+                if (temp == ")")
                 {
                     rightParenCount++;
                 }
@@ -134,18 +132,18 @@ namespace SpreadsheetUtilities
                         "than the number of opening parentheses seen so far.");
                 }
                 // checks token to ensure there is no invalid operand 
-                if (!Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") && !double.TryParse(s, out num1) &&
-                    !s.IsOperator() && !s.IsParen())
+                if (!RegexVariableCheck(s) && !double.TryParse(temp, out num1) &&
+                    !temp.IsOperator() && !s.IsParen())
                 {
                     throw new FormulaFormatException("invalid token in formula.");
                 }
                 // if the token is a number set temp equal to it, TryParse also trims off trailing 0s at the end
-                if (double.TryParse(s, out num1 ))
+                if (double.TryParse(temp, out num1 ))
                 {
                     temp = num1.ToString();
                 }
                 // convert scientific notation to regular number
-                if (Regex.IsMatch(s, @"-?.*\d*\.?\d+[eE][+-]?\d+"))
+                if (Regex.IsMatch(temp, @"-?.*\d*\.?\d+[eE][+-]?\d+"))
                 {
                     NumberFormatInfo info;
                     info = NumberFormatInfo.CurrentInfo;
@@ -154,24 +152,24 @@ namespace SpreadsheetUtilities
                     temp = num.ToString();
                 }
                 // check for valid variables an valid operators
-                if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
+                if (Regex.IsMatch(temp, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
                 {
-                    if (!isValid(s))
+                    if (!isValid(temp))
                     {
                         throw new FormulaFormatException("the only valid tokens are (, ), +, -, *, /, " +
                                 "variables, and decimal real numbers (including scientific notation)");
                     }
                     //normalize if its a variable
-                    temp = normalize(s);
+                    temp = normalize(temp);
                 }
                 // ensures proper tokens follow a "(" or operator
-                if (!WhenOpenPerenOrOperator(prevToken, s))
+                if (!WhenOpenPerenOrOperator(prevToken, temp))
                 {
                     throw new FormulaFormatException("Any token that immediately follows an opening parenthesis " +
                         "or an operator must be either a number, a variable, or an opening parenthesis.");
                 }
                 // ensures proper token follow a number, variable, or ")"
-                if (!WhenNumOrVarOrCloseParen(prevToken, s))
+                if (!WhenNumOrVarOrCloseParen(prevToken, temp))
                 {
                     throw new FormulaFormatException("Any token that immediately follows a number, a variable, or " +
                         "a closing parenthesis must be either an operator or a closing parenthesis.");
@@ -179,7 +177,7 @@ namespace SpreadsheetUtilities
                 // ensures formula ends with correct tokens
                 if (GetTokens(formula).Count() - 1 == tokenCount)
                 {
-                    if (!StartOrEndTokenRule(s, ")"))
+                    if (!StartOrEndTokenRule(temp, ")"))
                     {
                         throw new FormulaFormatException("The last token of an expression must be a number," +
                             " a variable, or an closing parenthesis.");
@@ -230,20 +228,6 @@ namespace SpreadsheetUtilities
         /// </summary>  
         public object Evaluate(Func<string, double> lookup)
         {
-            // example of lookup being used is lookup("string"), it will lookup the string and see if it 
-            // can convert it into a double.
-
-            // the object in the method header is saying it is a method that will return an object
-            // if I had 'return lookup' it would lookup the value associated with the string and return it as a double
-
-            // The Evaluate method should use the evaluation algorithm from the first assignment, 
-            // modified to deal with double-precision doubleing point numbers instead of integers and 
-            // to take account of the normalization delegate (see below).
-            //
-            // Because the constructor throws an exception when it encounters a syntactically incorrect 
-            // formula, the only problems that the Evaluate method needs to worry about are undefined 
-            // variables and division by zero.
-            
             valueStack = new Stack<double>();
             operatorStack = new Stack<string>();
 
@@ -284,7 +268,7 @@ namespace SpreadsheetUtilities
                     else
                     {
                         // checks to see if token is a valid variable
-                        if (Regex.IsMatch(token, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
+                        if (RegexVariableCheck(token))
                         {
                             // try catch will catch an exception when there is one from Program.cs
                             try
@@ -333,11 +317,10 @@ namespace SpreadsheetUtilities
         public IEnumerable<String> GetVariables()
         {
             List<string> returnList = new List<string>();
-            // check if each token is a variable, if it is compare to masterFormula, if it is lower case
-            // "normalize" it by converting to upper case.
+            // check if each token is a variable, and add it to returnList if it is not already in the list
             foreach (string s in GetTokens(finalFormula))
             {
-                if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") && !returnList.Contains(s))
+                if (RegexVariableCheck(s) && !returnList.Contains(s))
                 {
                 returnList.Add(s);
                 }
@@ -402,9 +385,16 @@ namespace SpreadsheetUtilities
             {
                 return true;
             }
-            if ((object.ReferenceEquals(f1, null) && !object.ReferenceEquals(f2, null)) || (!object.ReferenceEquals(f1, null) && object.ReferenceEquals(f2, null)))
+            if ((object.ReferenceEquals(f1, null) && !object.ReferenceEquals(f2, null)) || 
+                (!object.ReferenceEquals(f1, null) && object.ReferenceEquals(f2, null)))
             {
                 return false;
+            }
+            var typeOfF1 = f1.GetType();
+            var typeOfF2 = f2.GetType();
+            if (f1.Equals(f2))
+            {
+                return true;
             }
             return false;
         }
@@ -421,6 +411,12 @@ namespace SpreadsheetUtilities
                 return false;
             }
             if ((object.ReferenceEquals(f1, null) && !object.ReferenceEquals(f2, null)) || (!object.ReferenceEquals(f1, null) && object.ReferenceEquals(f2, null)))
+            {
+                return true;
+            }
+            var typeOfF1 = f1.GetType();
+            var typeOfF2 = f2.GetType();
+            if (!f1.Equals(f2))
             {
                 return true;
             }
@@ -466,10 +462,23 @@ namespace SpreadsheetUtilities
         }
 
         // helper methods
-        // Convert significant figures
+        /// <summary>
+        /// Checks to see the given string is a valid variable
+        /// </summary>
+        /// <param name="s"> string to check if it's a variable </param>
+        /// <returns> true if "s" is a variable</returns>
+        private static bool RegexVariableCheck(string s)
+        {
+            return Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*");
+        }
 
-        // Parenthesis/Operator Following Rule - Any token that immediately follows an opening 
-        // parenthesis or an operator must be either a number, a variable, or an opening parenthesis.
+        /// <summary>
+        /// Parenthesis/Operator Following Rule - Any token that immediately follows an opening 
+        /// parenthesis or an operator must be either a number, a variable, or an opening parenthesis.
+        /// </summary>
+        /// <param name="prev"> previous token in formula </param>
+        /// <param name="curr"> current token in formula</param>
+        /// <returns> true if Parenthesis/Operator Following Rules are kept </returns>
         private static bool WhenOpenPerenOrOperator(string prev, string curr)
         {
             // if prev is equal to "" then it is the first iteration of the loop and there is no previous token to check
@@ -485,14 +494,20 @@ namespace SpreadsheetUtilities
                 return true;
             }
             if ((prev.Equals("(") || prev.IsOperator()) && (double.TryParse(curr, out number) ||
-                       Regex.IsMatch(curr, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") || curr.Equals("(")))
+                       RegexVariableCheck(curr) || curr.Equals("(")))
             {
                 return true;
             }
             return false;
         }
-        // Extra Following Rule - Any token that immediately follows a number, a variable, or a closing 
-        // parenthesis must be either an operator or a closing parenthesis.
+
+        /// <summary>
+        /// Extra Following Rule - Any token that immediately follows a number, a variable, or a closing 
+        /// parenthesis must be either an operator or a closing parenthesis.
+        /// </summary>
+        /// <param name="prev"> previous token in formula </param>
+        /// <param name="curr"> current token in formula</param>
+        /// <returns> returns true Extra Following Rules are kept </returns>
         private static bool WhenNumOrVarOrCloseParen(string prev, string curr)
         {
             // to be used to check if token is a number
@@ -502,21 +517,19 @@ namespace SpreadsheetUtilities
             {
                 return true;
             }
-            if ((!double.TryParse(prev, out number) && !Regex.IsMatch(prev, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") &&
-                !prev.Equals(")")))
+            if ((!double.TryParse(prev, out number) && !RegexVariableCheck(prev) && !prev.Equals(")")))
             {
                 return true;
             }
-            if ((double.TryParse(prev, out number) || Regex.IsMatch(prev, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*") ||
-                    prev.Equals(")")) && (curr.IsOperator() || curr.Equals(")")))
+            if ((double.TryParse(prev, out number) || RegexVariableCheck(prev) || prev.Equals(")")) && 
+                (curr.IsOperator() || curr.Equals(")")))
             {
                 return true;
             }
             return false;
         }
 
-
-            /// <summary>
+        /// <summary>
             /// Determines if token is an integer and does the following:
             /// If * or / is at the top of the operator stack, pop the value stack, pop the operator stack, 
             /// and apply the popped operator to the popped number and t. Push the result onto the value stack.
@@ -749,9 +762,9 @@ namespace SpreadsheetUtilities
         /// Ending Token Rule- The last token of an expression must be a number, a variable, or a 
         /// closing parenthesis.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="s"> string to be checked if it is a paren </param>
         /// <param name="paren"> is "(" if checking Start Token Rule or ")" if checking End Token Rule</param>
-        /// <returns></returns>
+        /// <returns> true of is is a paren </returns>
         static bool StartOrEndTokenRule(string s, string paren)
         {
             bool openParen = false;
@@ -767,7 +780,7 @@ namespace SpreadsheetUtilities
             {
                 num = true;
             }
-            if (Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
+            if (RegexVariableCheck(s))
             {
                 var = true;
             }
