@@ -94,7 +94,7 @@ namespace SS
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
             // if name is null or not valid throw InvalidNameException
-            if (name.Equals(null) || !RegexVariableCheck(name))
+            if (name == null || !RegexVariableCheck(name))
             {
                 throw new InvalidNameException();
             }
@@ -152,12 +152,12 @@ namespace SS
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
             // if text is null throw ArgumentNullException
-            if (text.Equals(null))
+            if (text == null)
             {
                 throw new ArgumentNullException();
             }
             // if name is null or not valid throw InvalidNameException
-            if (name.Equals(null) || !RegexVariableCheck(name))
+            if (name == null || !RegexVariableCheck(name))
             {
                 throw new ArgumentNullException();
             }
@@ -222,12 +222,12 @@ namespace SS
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
             // if formula is null throw ArgumentNullException
-            if (formula.Equals(null))
+            if (formula == null)
             {
                 throw new ArgumentNullException();
             }
             // if name is null or not valid throw InvalidNameException
-            if (name.Equals(null) || !RegexVariableCheck(name))
+            if (name == null || !RegexVariableCheck(name))
             {
                 throw new InvalidNameException();
             }

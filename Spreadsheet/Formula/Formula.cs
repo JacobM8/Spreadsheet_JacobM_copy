@@ -152,7 +152,7 @@ namespace SpreadsheetUtilities
                     temp = num.ToString();
                 }
                 // check for valid variables an valid operators
-                if (Regex.IsMatch(temp, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*"))
+                if (RegexVariableCheck(temp))
                 {
                     if (!isValid(temp))
                     {
@@ -465,7 +465,7 @@ namespace SpreadsheetUtilities
         /// <returns> true if "s" is a variable</returns>
         private static bool RegexVariableCheck(string s)
         {
-            return Regex.IsMatch(s, @"[a-zA-Z_](?: [a-zA-Z_]|\d)*");
+            return Regex.IsMatch(s, @"[a-zA-Z_](?:[a-zA-Z_]|\d)*");
         }
 
         /// <summary>
