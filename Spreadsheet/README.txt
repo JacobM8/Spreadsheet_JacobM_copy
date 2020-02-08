@@ -7,8 +7,9 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 
 1. Comments to Evaluators:
 
-    **** Update
-    
+    I spent more time than I anticipated on fixing bugs in assignment 2 and 3, it took me a total of 3.5 hours to do that.
+    On this assignment I focused more on writing my tests before implementing the functions. There were still times where I 
+    could have written more test cases before I wrote the code for the function. Doing this helped me understand a couple t
 
 2. Assignment Specific Topics:
 
@@ -22,11 +23,13 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 3. Consulted Peers:
 
     Logan (TA)
+    Arindam (TA)
+    Michael (TA)
     Haley (peer)
     Misty (peer)
     James (peer)
     Corbin (peer)
-
+    Piazza
 
 4. References:
 
@@ -35,13 +38,29 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 
 5. Examples of Good Software Practice:
 
-    - See section 12.2 in the instructions for Assignment 4
+    Testing Strategies: On this assignment I focused on writing my test cases before writing the code for a specific function.
+    I did get carried away when implementing the SetCellContents methods and could have done a better job at writing more test 
+    functions before implementation. Writing the tests prior to the function helped me understand on a deeper level the specific 
+    functionality of each function which resulted in the ability to implment them faster. One area I can improve in my test 
+    writing is focusing on all of the if statements and ensure I have a test case for each possible outcome. I expect I will 
+    improve here on the next assignment. 
+
+    DRY: Don't repeat yourself/your code. On previous assignments there were functions were I repeated code and points were
+    deducted. On this assignment I focused on noticing when I wrote similar code an made a helper method. Paying attention to 
+    this good software practice helps me keep my methods shorter and more readable because I use descriptive names. 
+
+    Well named, commented, short methods that do a specific job and return a specific result: Having well documented code
+    including XML comments, comments throughout the functions, and having descriptive names for data structures and functions
+    has always been something that I felt I have been good at. Throughout the last few assignments I have focused on writing more 
+    shorter helper methods and giving them specific descriptive names. Working on this assignment and fixing bugs in the 
+    previous two assignments have been good practice to include more helper methods. This will be a focus on the future assignments
+    so I don't have to go back and do it later. 
 
 6. Estimated Time: PS3 - 12 hours     
-7. Acutal Time:    PS3 -                     
-    Learning:                       
-    Programming:        4 
-    Debugging:          3.5 hours   (3.5 hours fixing code from assignment 2 and 3)
+7. Acutal Time:    PS3 - 14 hours                    
+    Learning:            .5            
+    Programming:         6 
+    Debugging:           7.5 hours   (4 hours fixing code from assignment 2 and 3)
     Total:              
 
 ------------------------------------------------------------------------------------------------------

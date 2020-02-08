@@ -1,3 +1,9 @@
+/// <summary>
+///     Author: Jacob Morrison
+///     Date: 2/7/2020
+///     This file is used to test Spreadsheet.cs
+///     I pledge that I did the work myself.
+/// </summary>
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 using System.Collections.Generic;
@@ -8,15 +14,6 @@ namespace SpreadsheetTests
 {
     [TestClass]
     public class SpreadsheetTests
-
-    // get names of nonemptycells
-    /*// use when s is not empty
-    foreach (KeyValuePair<string, Cell> entry in cells)
-    {
-
-    }*/
-    // should have a .MoveNext and if s is empty .MoveNext will return null and can test that it is returning null
-    // s.GetNamesOfAllNonemptyCells().MoveNext
     {
         // The following TestMehod test the constructor
         [TestMethod]

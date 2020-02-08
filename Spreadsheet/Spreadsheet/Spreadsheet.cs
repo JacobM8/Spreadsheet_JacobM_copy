@@ -22,7 +22,8 @@ namespace SS
         /// </summary>
         public Spreadsheet()
         {
-            // the string will be the cell name and Cell is the contents of the cell i.e. string, double, or formula. 
+            // the string key will be the cell name and the Cell value is the contents of the cell i.e. string, 
+            // double, or formula. 
             cells = new Dictionary<string, Cell>();
         }
 
@@ -231,8 +232,6 @@ namespace SS
             {
                 throw new InvalidNameException();
             }
-            // CircularException is checked somewhere else, don't need to check here
-
             // if cells has name as a key add formula to name
             if (cells.ContainsKey(name))
             {
@@ -306,6 +305,7 @@ namespace SS
         /// <returns> true if "s" is a variable</returns>
         public bool RegexVariableCheck(string name)
         {
+            // return true if given string matches correct variable check
             if (Regex.IsMatch(name, @"^[a-zA-Z_](?:[a-zA-Z_]|\d)*"))
             {
                 return true;
