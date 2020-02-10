@@ -168,7 +168,7 @@ namespace SpreadsheetTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(InvalidNameException))]
         public void TestSetContentsOfCellWhenCellNameIsANullString()
         {
             Spreadsheet s = new Spreadsheet();
@@ -177,7 +177,7 @@ namespace SpreadsheetTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(InvalidNameException))]
         public void TestSetContentsOfCellWhenCellNameIsAnInvalidVariable()
         {
             Spreadsheet s = new Spreadsheet();
@@ -218,7 +218,7 @@ namespace SpreadsheetTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(InvalidNameException))]
         public void TestSetContentsOfCellWhenCellNameIsANullStringAndContentsIsAFormula()
         {
             Spreadsheet s = new Spreadsheet();

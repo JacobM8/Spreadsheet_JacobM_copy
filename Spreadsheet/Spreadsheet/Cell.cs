@@ -17,7 +17,7 @@ namespace SS
         public object contents { get; set; }
         
         /// <summary>
-        /// String constructor sets the public contents to the content parameter passed in the constructor
+        /// Object constructor sets the public contents to the content parameter passed in the constructor
         /// </summary>
         /// <param name="name"></param>
         /// <param name="content"></param>

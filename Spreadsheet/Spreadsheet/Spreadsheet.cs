@@ -8,7 +8,6 @@
 using SpreadsheetUtilities;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace SS
@@ -16,7 +15,7 @@ namespace SS
     public class Spreadsheet : AbstractSpreadsheet
     {
         Dictionary<string, Cell> cells;
-        DependencyGraph cellDependecies = new DependencyGraph();
+        DependencyGraph cellDependecies;
         /// <summary>
         /// Creates a an empty constructor (Dictionary) with zero arguments.
         /// </summary>
@@ -25,6 +24,7 @@ namespace SS
             // the string key will be the cell name and the Cell value is the contents of the cell i.e. string, 
             // double, or formula. 
             cells = new Dictionary<string, Cell>();
+            cellDependecies = new DependencyGraph();
         }
 
         /// <summary>
@@ -44,10 +44,8 @@ namespace SS
         public override object GetCellContents(string name)
         {
             // throw InvalidNameException if name is null or invalid 
-            if (name == null || !RegexVariableCheck(name))
-            {
-                throw new InvalidNameException();
-            }
+            NameNullCheck(name);
+            RegexVariableCheck(name);
             // if name isn't in cell dicitonary return empty string
             if (!cells.ContainsKey(name))
             {
@@ -55,7 +53,6 @@ namespace SS
             }
             // return contents from Cell class constructor
             return cells[name].contents;
-            
         }
 
         /// <summary>
@@ -95,10 +92,8 @@ namespace SS
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
             // if name is null or not valid throw InvalidNameException
-            if (name == null || !RegexVariableCheck(name))
-            {
-                throw new InvalidNameException();
-            }
+            NameNullCheck(name);
+            RegexVariableCheck(name);
             // if cells has name as a key add number to name
             if (cells.ContainsKey(name))
             {
@@ -153,15 +148,10 @@ namespace SS
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
             // if text is null throw ArgumentNullException
-            if (text == null)
-            {
-                throw new ArgumentNullException();
-            }
-            // if name is null or not valid throw InvalidNameException
-            if (name == null || !RegexVariableCheck(name))
-            {
-                throw new ArgumentNullException();
-            }
+            ObjectNullCheck(text);
+            // if name is null or invalid throw exception
+            NameNullCheck(name);
+            RegexVariableCheck(name);
             // if cells has name as a key add text to name
             if (cells.ContainsKey(name))
             {
@@ -223,15 +213,10 @@ namespace SS
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
             // if formula is null throw ArgumentNullException
-            if (formula == null)
-            {
-                throw new ArgumentNullException();
-            }
-            // if name is null or not valid throw InvalidNameException
-            if (name == null || !RegexVariableCheck(name))
-            {
-                throw new InvalidNameException();
-            }
+            ObjectNullCheck(formula);
+            // if name is null or invalid throw exception
+            NameNullCheck(name);
+            RegexVariableCheck(name);
             // if cells has name as a key add formula to name
             if (cells.ContainsKey(name))
             {
@@ -283,23 +268,16 @@ namespace SS
         /// </returns>
         protected override IEnumerable<string> GetDirectDependents(string name)
         {
-            // if name is null throw ArgumentNullException
-            if (name == null)
-            {
-                throw new ArgumentNullException();
-            }
-            // if name is invalid throw InvalidNameException
-            if (!RegexVariableCheck(name))
-            {
-                throw new ArgumentNullException();
-            }
+            // if name is null or invalid throw exception
+            NameNullCheck(name);
+            RegexVariableCheck(name);
             // return enumeration of all values that depend on the cell name
             return cellDependecies.GetDependees(name);
         }
 
         // helper methods
         /// <summary>
-        /// Checks to see the given string is a valid variable
+        /// Throws InvalidNameException if given name is not a valid variable, otherwise returns true.
         /// </summary>
         /// <param name="name"> string to check if it's a variable </param>
         /// <returns> true if "s" is a variable</returns>
@@ -309,6 +287,32 @@ namespace SS
             if (Regex.IsMatch(name, @"^[a-zA-Z_](?:[a-zA-Z_]|\d)*"))
             {
                 return true;
+            }
+            throw new InvalidNameException();
+        }
+        /// <summary>
+        /// Throws InvalidNameException if given name is equal to null, otherwise returns false.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool NameNullCheck(string name)
+        {
+            if (name == null)
+            {
+                throw new InvalidNameException();
+            }
+            return false;
+        }
+        /// <summary>
+        /// Throws ArgumentNullException if given object is null, otherwise returns false.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public bool ObjectNullCheck(object text)
+        {
+        if (text == null)
+            {
+                throw new ArgumentNullException();
             }
             return false;
         }
