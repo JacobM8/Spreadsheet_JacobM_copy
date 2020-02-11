@@ -387,7 +387,7 @@ namespace SS
         }
 
         /// <summary>
-        /// Returns a LinkedList of cells that need to be recalculated.
+        /// Modifies a LinkedList of cells that need to be recalculated.
         /// Thorws CircularException if a cell depends on itself.
         /// </summary>
         /// <param name="start">Starting cell to cells that need to be recalculated.</param>

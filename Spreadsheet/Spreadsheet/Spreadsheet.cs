@@ -16,15 +16,36 @@ namespace SS
     {
         Dictionary<string, Cell> cells;
         DependencyGraph cellDependecies;
+
+        public override bool Changed { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
+
         /// <summary>
         /// Creates a an empty constructor (Dictionary) with zero arguments.
         /// </summary>
         public Spreadsheet()
         {
+            // constructor will have ":this(formula, s => s, s => true)" like the constructor in formula but the word this will be changed. Google how to call inherited constructor c#
+            // TODO: Your zero-argument constructor should create an empty spreadsheet that imposes no extra validity conditions, normalizes every cell name to itself, 
+            // and use the name "default" as the version.
+
             // the string key will be the cell name and the Cell value is the contents of the cell i.e. string, 
             // double, or formula. 
             cells = new Dictionary<string, Cell>();
             cellDependecies = new DependencyGraph();
+        }
+
+        public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version)
+        {
+            // TODO: You should add a three-argument constructor to the Spreadsheet class. Just like the zero-argument constructor, it should create an empty spreadsheet. 
+            // However, it should allow the user to provide a validity delegate (first parameter), a normalization delegate (second parameter), and a version (third parameter).
+        }
+
+        public Spreadsheet(String pathToFile, Func<string, bool> isValid, Func<string, string> normalize, string version)
+        {
+            // TODO: You should add a four-argument constructor to the Spreadsheet class. It should allow the user to provide a string representing a path to a file 
+            // (first parameter), a validity delegate (second parameter), a normalization delegate (third parameter), and a version (fourth parameter). It should read a 
+            // saved spreadsheet from the file (see the Save method) and use it to construct a new spreadsheet. The new spreadsheet should use the provided validity delegate, 
+            // normalization delegate, and version. Do not try to implement loading from file until after we have discussed XML in class. 
         }
 
         /// <summary>
@@ -87,8 +108,10 @@ namespace SS
         ///      set {A1, B1, C1} is returned.
         ///   </para>
         /// </returns>
-        public override ISet<string> SetCellContents(string name, double number)
+        protected override IList<string> SetCellContents(string name, double number)
         {
+            // TODO change XML comments from new Abstract class and change newSet to a list
+
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
             // if name is null or not valid throw InvalidNameException
@@ -115,7 +138,7 @@ namespace SS
                 newSet.Add(s);
             }
             // return the cell name and all values that depend on the cell name
-            return (ISet<string>)newSet;
+            return (IList<string>)newSet;
         }
 
         /// <summary>
@@ -143,8 +166,10 @@ namespace SS
         ///     set {A1, B1, C1} is returned.
         ///   </para>
         /// </returns>
-        public override ISet<string> SetCellContents(string name, string text)
+        protected override IList<string> SetCellContents(string name, string text)
         {
+            // TODO change XML comments from new Abstract class and change newSet to a list
+
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
             // if text is null throw ArgumentNullException
@@ -173,7 +198,7 @@ namespace SS
                 newSet.Add(s);
             }
             // return the cell name and all values that depend on the cell name
-            return (ISet<string>)newSet;
+            return (IList<string>)newSet;
         }
 
         /// <summary>
@@ -208,8 +233,9 @@ namespace SS
         ///   </para>
         /// 
         /// </returns>
-        public override ISet<string> SetCellContents(string name, Formula formula)
+        protected override IList<string> SetCellContents(string name, Formula formula)
         {
+            // TODO change XML comments from new Abstract class and change newSet to a list
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
             // if formula is null throw ArgumentNullException
@@ -234,7 +260,7 @@ namespace SS
             // update cellDependencies with variables in formula
             cellDependecies.ReplaceDependees(name, formula.GetVariables());
             // return the cell name and all values that depend on the cell name
-            return (ISet<string>)newSet;
+            return (IList<string>)newSet;
         }
 
         /// <summary>
@@ -315,6 +341,26 @@ namespace SS
                 throw new ArgumentNullException();
             }
             return false;
+        }
+
+        public override IList<string> SetContentsOfCell(string name, string content)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string GetSavedVersion(string filename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Save(string filename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object GetCellValue(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }
