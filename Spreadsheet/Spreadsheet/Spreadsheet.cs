@@ -21,8 +21,9 @@ namespace SS
 
         /// <summary>
         /// Creates a an empty constructor (Dictionary) with zero arguments.
+        /// default is used when a specified version isn't used
         /// </summary>
-        public Spreadsheet()
+        public Spreadsheet() : this(s => true, s => s, "default")
         {
             // constructor will have ":this(formula, s => s, s => true)" like the constructor in formula but the word this will be changed. Google how to call inherited constructor c#
             // TODO: Your zero-argument constructor should create an empty spreadsheet that imposes no extra validity conditions, normalizes every cell name to itself, 
@@ -30,22 +31,27 @@ namespace SS
 
             // the string key will be the cell name and the Cell value is the contents of the cell i.e. string, 
             // double, or formula. 
+            
+
+        }
+
+        public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(s => true, s => s, version)
+        {
+            // TODO: You should add a three-argument constructor to the Spreadsheet class. Just like the zero-argument constructor, it should create an empty spreadsheet. 
+            // However, it should allow the user to provide a validity delegate (first parameter), a normalization delegate (second parameter), and a version (third parameter).
             cells = new Dictionary<string, Cell>();
             cellDependecies = new DependencyGraph();
         }
 
-        public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version)
-        {
-            // TODO: You should add a three-argument constructor to the Spreadsheet class. Just like the zero-argument constructor, it should create an empty spreadsheet. 
-            // However, it should allow the user to provide a validity delegate (first parameter), a normalization delegate (second parameter), and a version (third parameter).
-        }
-
-        public Spreadsheet(String pathToFile, Func<string, bool> isValid, Func<string, string> normalize, string version)
+        public Spreadsheet(String pathToFile, Func<string, bool> isValid, Func<string, string> normalize, string version) : base(s => true, s => s, version)
         {
             // TODO: You should add a four-argument constructor to the Spreadsheet class. It should allow the user to provide a string representing a path to a file 
             // (first parameter), a validity delegate (second parameter), a normalization delegate (third parameter), and a version (fourth parameter). It should read a 
             // saved spreadsheet from the file (see the Save method) and use it to construct a new spreadsheet. The new spreadsheet should use the provided validity delegate, 
             // normalization delegate, and version. Do not try to implement loading from file until after we have discussed XML in class. 
+            cells = new Dictionary<string, Cell>();
+            cellDependecies = new DependencyGraph();
+            // TODO add stuff for pathToFile
         }
 
         /// <summary>
@@ -77,9 +83,12 @@ namespace SS
         }
 
         /// <summary>
-        /// Returns an Enumerable that can be used to enumerates 
-        /// the names of all the non-empty cells in the spreadsheet.
+        ///   Returns the names of all non-empty cells.
         /// </summary>
+        /// <returns>
+        ///     Returns an Enumerable that can be used to enumerate
+        ///     the names of all the non-empty cells in the spreadsheet.  
+        /// </returns>
         public override IEnumerable<string> GetNamesOfAllNonemptyCells()
         {
             // return key values from cells dictionary
@@ -90,27 +99,35 @@ namespace SS
         ///  Set the contents of the named cell to the given number.  
         /// </summary>
         /// 
-        /// <exception cref="InvalidNameException"> 
-        ///   If the name is null or invalid, throw an InvalidNameException
-        /// </exception>
+        /// <requires> 
+        ///   The name parameter must be non null and valid
+        /// </requires>
         /// 
         /// <param name="name"> The name of the cell </param>
         /// <param name="number"> The new contents/value </param>
         /// 
         /// <returns>
         ///   <para>
-        ///      The method returns a set consisting of name plus the names of all other cells whose value depends, 
-        ///      directly or indirectly, on the named cell.
+        ///       This method returns a LIST consisting of the passed in name followed by the names of all 
+        ///       other cells whose value depends, directly or indirectly, on the named cell.
         ///   </para>
-        /// 
+        ///
         ///   <para>
-        ///      For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
-        ///      set {A1, B1, C1} is returned.
+        ///       The order must correspond to a valid dependency ordering for recomputing
+        ///       all of the cells, i.e., if you re-evaluate each cell in the order of the list,
+        ///       the overall spreadsheet will be consistently updated.
+        ///   </para>
+        ///
+        ///   <para>
+        ///     For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+        ///     set {A1, B1, C1} is returned, i.e., A1 was changed, so then A1 must be 
+        ///     evaluated, followed by B1 re-evaluated, followed by C1 re-evaluated.
         ///   </para>
         /// </returns>
         protected override IList<string> SetCellContents(string name, double number)
         {
-            // TODO change XML comments from new Abstract class and change newSet to a list
+            // TODO need to return the list after cells have been recomputed
+            // TODO undetstand if you need to take exception checks out of there because they aren't in the XML comment any more
 
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
@@ -149,26 +166,35 @@ namespace SS
         ///   If text is null, throw an ArgumentNullException.
         /// </exception>
         /// 
-        /// <exception cref="InvalidNameException"> 
-        ///   If the name is null or invalid, throw an InvalidNameException
-        /// </exception>
+        /// <requires> 
+        ///   The name parameter must be non null and valid
+        /// </requires>
         /// 
         /// <param name="name"> The name of the cell </param>
         /// <param name="text"> The new content/value of the cell</param>
         /// 
         /// <returns>
-        ///   The method returns a set consisting of name plus the names of all 
-        ///   other cells whose value depends, directly or indirectly, on the 
-        ///   named cell.
-        /// 
+        ///   <para>
+        ///       This method returns a LIST consisting of the passed in name followed by the names of all 
+        ///       other cells whose value depends, directly or indirectly, on the named cell.
+        ///   </para>
+        ///
+        ///   <para>
+        ///       The order must correspond to a valid dependency ordering for recomputing
+        ///       all of the cells, i.e., if you re-evaluate each cell in the order of the list,
+        ///       the overall spreadsheet will be consistently updated.
+        ///   </para>
+        ///
         ///   <para>
         ///     For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
-        ///     set {A1, B1, C1} is returned.
+        ///     set {A1, B1, C1} is returned, i.e., A1 was changed, so then A1 must be 
+        ///     evaluated, followed by B1 re-evaluated, followed by C1 re-evaluated.
         ///   </para>
         /// </returns>
         protected override IList<string> SetCellContents(string name, string text)
         {
-            // TODO change XML comments from new Abstract class and change newSet to a list
+            // TODO need to return the list after cells have been recomputed
+            // TODO undetstand if you need to take exception checks out of there because they aren't in the XML comment any more
 
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
@@ -209,9 +235,9 @@ namespace SS
         ///   If formula parameter is null, throw an ArgumentNullException.
         /// </exception>
         /// 
-        /// <exception cref="InvalidNameException"> 
-        ///   If the name is null or invalid, throw an InvalidNameException
-        /// </exception>
+        /// <requires> 
+        ///   The name parameter must be non null and valid
+        /// </requires>
         /// 
         /// <exception cref="CircularException"> 
         ///   If changing the contents of the named cell to be the formula would 
@@ -224,18 +250,27 @@ namespace SS
         /// 
         /// <returns>
         ///   <para>
-        ///     The method returns a Set consisting of name plus the names of all other 
-        ///     cells whose value depends, directly or indirectly, on the named cell.
+        ///       This method returns a LIST consisting of the passed in name followed by the names of all 
+        ///       other cells whose value depends, directly or indirectly, on the named cell.
         ///   </para>
-        ///   <para> 
+        ///
+        ///   <para>
+        ///       The order must correspond to a valid dependency ordering for recomputing
+        ///       all of the cells, i.e., if you re-evaluate each cell in the order of the list,
+        ///       the overall spreadsheet will be consistently updated.
+        ///   </para>
+        ///
+        ///   <para>
         ///     For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
-        ///     set {A1, B1, C1} is returned.
+        ///     set {A1, B1, C1} is returned, i.e., A1 was changed, so then A1 must be 
+        ///     evaluated, followed by B1 re-evaluated, followed by C1 re-evaluated.
         ///   </para>
-        /// 
         /// </returns>
         protected override IList<string> SetCellContents(string name, Formula formula)
         {
-            // TODO change XML comments from new Abstract class and change newSet to a list
+            // TODO need to return the list after cells have been recomputed
+            // TODO undetstand if you need to take exception checks out of there because they aren't in the XML comment any more
+
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
             // if formula is null throw ArgumentNullException
@@ -301,6 +336,27 @@ namespace SS
             return cellDependecies.GetDependees(name);
         }
 
+        public override IList<string> SetContentsOfCell(string name, string content)
+        {
+            // checks for nulls and invalid
+            throw new NotImplementedException();
+        }
+
+        public override string GetSavedVersion(string filename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Save(string filename)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object GetCellValue(string name)
+        {
+            throw new NotImplementedException();
+        }
+
         // helper methods
         /// <summary>
         /// Throws InvalidNameException if given name is not a valid variable, otherwise returns true.
@@ -336,31 +392,11 @@ namespace SS
         /// <returns></returns>
         public bool ObjectNullCheck(object text)
         {
-        if (text == null)
+            if (text == null)
             {
                 throw new ArgumentNullException();
             }
             return false;
-        }
-
-        public override IList<string> SetContentsOfCell(string name, string content)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string GetSavedVersion(string filename)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Save(string filename)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override object GetCellValue(string name)
-        {
-            throw new NotImplementedException();
         }
     }
 }
