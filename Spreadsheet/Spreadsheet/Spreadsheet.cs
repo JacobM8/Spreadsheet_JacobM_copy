@@ -9,6 +9,7 @@ using SpreadsheetUtilities;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace SS
 {
@@ -38,6 +39,43 @@ namespace SS
             dictionaryOfCells = new Dictionary<string, Cell>();
             cellDependencyGraph = new DependencyGraph();
             // TODO add stuff for pathToFile
+            using (XmlReader reader = XmlReader.Create(pathToFile))
+            {
+                while (reader.Read())
+                {
+                    if (reader.IsStartElement())
+                    {
+                        switch (reader.Name) 
+                        {
+                            case "Spreadsheet":
+                                if (version == null)
+                                {
+                                    this.Version = reader["version"];
+                                    Console.WriteLine("version: " + reader["cell"]);
+                                    
+                                }
+                                break; 
+                            case "Cell":
+                                string name;
+                                reader.Read();
+                                name = reader.Value;
+                                string contents;
+                                reader.Read();
+                                contents = reader.Value;
+                                this.SetContentsOfCell(name, contents);
+                                break;
+                        }
+                    }
+                    // do I need this?
+                    //else
+                    //{
+                    //    if (reader.Name == "Cell")
+                    //    {
+                    //        Console.WriteLine("end of cell");
+                    //    }
+                    //}
+                }
+            }
         }
 
         /// <summary>
@@ -411,18 +449,69 @@ namespace SS
             return new List<string>(GetCellsToRecalculate(name));
         }
 
-
+        /// <summary>
+        /// Writes the contents of this spreadsheet to the named file using an XML format.
+        /// The XML elements should be structured as follows:
+        /// 
+        /// <spreadsheet version="version information goes here">
+        /// 
+        /// <cell>
+        /// <name>cell name goes here</name>
+        /// <contents>cell contents goes here</contents>    
+        /// </cell>
+        /// 
+        /// </spreadsheet>
+        /// 
+        /// There should be one cell element for each non-empty cell in the spreadsheet.  
+        /// If the cell contains a string, it should be written as the contents.  
+        /// If the cell contains a double d, d.ToString() should be written as the contents.  
+        /// If the cell contains a Formula f, f.ToString() with "=" prepended should be written as the contents.
+        /// 
+        /// If there are any problems opening, writing, or closing the file, the method should throw a
+        /// SpreadsheetReadWriteException with an explanatory message.
+        /// </summary>
         public override void Save(string filename)
         {
-            throw new NotImplementedException();
+            using (XmlWriter writer = XmlWriter.Create(filename))
+            {
+                writer.WriteStartDocument();
+                writer.WriteStartElement("version");
+                writer.WriteStartElement("Cell");
+                // write each cell
+                foreach (Cell c in dictionaryOfCells.Values)
+                {
+                    c.WriteXml(writer);
+                }
+                //foreach (KeyValuePair<string, Cell> entry in dictionaryOfCells)
+                //{
+                //    //entry.WriteXml(writer);
+                //    entry.write
+                //}
+                // end cell block
+                writer.WriteEndElement();
+                // end version block
+                writer.WriteEndElement();
+                // end file
+                writer.WriteEndDocument();
+            }
         }
         public override string GetSavedVersion(string filename)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// If name is null or invalid, throws an InvalidNameException.
+        /// 
+        /// Otherwise, returns the value (as opposed to the contents) of the named cell.  The return
+        /// value should be either a string, a double, or a SpreadsheetUtilities.FormulaError.
+        /// </summary>
         public override object GetCellValue(string name)
         {
+            // if name isnull or invlaide throw InvalidNameException
+            NameNullCheck(name);
+            RegexVariableCheck(name);
+
             throw new NotImplementedException();
         }
 
