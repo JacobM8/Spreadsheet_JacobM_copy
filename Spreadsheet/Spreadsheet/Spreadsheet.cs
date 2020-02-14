@@ -92,8 +92,6 @@ namespace SS
             // if name is null or not valid throw InvalidNameException
             NameNullCheck(name);
             RegexVariableCheck(name);
-            HashSet<string> newSet = new HashSet<string>();
-            newSet.Add(name);
             // if cells has name as a key add number to name
             if (dictionaryOfCells.ContainsKey(name))
             {
@@ -110,12 +108,8 @@ namespace SS
             {
                 dictionaryOfCells.Add(name, new Cell(name, number));
             }
-            foreach (string s in GetCellsToRecalculate(name))
-            {
-                newSet.Add(s);
-            }
             // return the cell name and all values that depend on the cell name
-            return (ISet<string>)newSet;
+            return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
         /// <summary>
@@ -150,10 +144,8 @@ namespace SS
             // if name is null or invalid throw exception
             NameNullCheck(name);
             RegexVariableCheck(name);
-            HashSet<string> newSet = new HashSet<string>();
             if (!text.Equals(""))
             {
-                newSet.Add(name);
                 // if cells has name as a key add text to name
                 if (dictionaryOfCells.ContainsKey(name))
                 {
@@ -170,13 +162,9 @@ namespace SS
                 {
                     dictionaryOfCells.Add(name, new Cell(name, text));
                 }
-                foreach (string s in GetCellsToRecalculate(name))
-                {
-                    newSet.Add(s);
-                }
             }
             // return the cell name and all values that depend on the cell name
-            return (ISet<string>)newSet;
+            return new HashSet<string>(GetCellsToRecalculate(name));
         }
 
         /// <summary>
