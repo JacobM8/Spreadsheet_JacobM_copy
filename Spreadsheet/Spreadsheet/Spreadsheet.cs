@@ -89,11 +89,11 @@ namespace SS
         /// </returns>
         public override ISet<string> SetCellContents(string name, double number)
         {
-            HashSet<string> newSet = new HashSet<string>();
-            newSet.Add(name);
             // if name is null or not valid throw InvalidNameException
             NameNullCheck(name);
             RegexVariableCheck(name);
+            HashSet<string> newSet = new HashSet<string>();
+            newSet.Add(name);
             // if cells has name as a key add number to name
             if (cells.ContainsKey(name))
             {
@@ -145,32 +145,35 @@ namespace SS
         /// </returns>
         public override ISet<string> SetCellContents(string name, string text)
         {
-            HashSet<string> newSet = new HashSet<string>();
-            newSet.Add(name);
             // if text is null throw ArgumentNullException
             ObjectNullCheck(text);
             // if name is null or invalid throw exception
             NameNullCheck(name);
             RegexVariableCheck(name);
-            // if cells has name as a key add text to name
-            if (cells.ContainsKey(name))
+            HashSet<string> newSet = new HashSet<string>();
+            if (!text.Equals(""))
             {
-                // if name is a Formula replace its dependees with a empty set
-                if (cells[name].contents is Formula)
+                newSet.Add(name);
+                // if cells has name as a key add text to name
+                if (cells.ContainsKey(name))
                 {
-                    // update cellDependencies with variables in formula
-                    cellDependecies.ReplaceDependees(name, new HashSet<string>());
+                    // if name is a Formula replace its dependees with a empty set
+                    if (cells[name].contents is Formula)
+                    {
+                        // update cellDependencies with variables in formula
+                        cellDependecies.ReplaceDependees(name, new HashSet<string>());
+                    }
+                    cells[name].contents = text;
                 }
-                cells[name].contents = text;
-            }
-            // if cells does not have name as a key, add name as a key and text as it's value
-            else
-            {
-                cells.Add(name, new Cell(name, text));
-            }
-            foreach (string s in GetCellsToRecalculate(name))
-            {
-                newSet.Add(s);
+                // if cells does not have name as a key, add name as a key and text as it's value
+                else
+                {
+                    cells.Add(name, new Cell(name, text));
+                }
+                foreach (string s in GetCellsToRecalculate(name))
+                {
+                    newSet.Add(s);
+                }
             }
             // return the cell name and all values that depend on the cell name
             return (ISet<string>)newSet;
@@ -210,31 +213,38 @@ namespace SS
         /// </returns>
         public override ISet<string> SetCellContents(string name, Formula formula)
         {
-            HashSet<string> newSet = new HashSet<string>();
-            newSet.Add(name);
             // if formula is null throw ArgumentNullException
             ObjectNullCheck(formula);
             // if name is null or invalid throw exception
             NameNullCheck(name);
             RegexVariableCheck(name);
+            // copy of original cell contents to reset value if circular exception is thrown
+            object originalContents = null;
             // if cells has name as a key add formula to name
             if (cells.ContainsKey(name))
             {
+                originalContents = cells[name].contents;
                 cells[name].contents = formula;
+                cellDependecies.ReplaceDependees(name, formula.GetVariables());
             }
             // if cells does not have name as a key, add name as a key and formula as it's value
             else
             {
+                //formulaCopy = new Formula(" ");
                 cells.Add(name, new Cell(name, formula));
+                cellDependecies.ReplaceDependees(name, formula.GetVariables());
             }
-            foreach (string s in GetCellsToRecalculate(name))
+            // check for circular exception
+            try { return new HashSet<string>(GetCellsToRecalculate(name));  }
+            catch
             {
-                newSet.Add(s);
+                if (originalContents != null)
+                {
+                    cells[name].contents = originalContents;
+                }
+                // need to set the contents back to their original value if we reset them with the parmeter formula, that what formCopy is trying to do
+                throw new CircularException();
             }
-            // update cellDependencies with variables in formula
-            cellDependecies.ReplaceDependees(name, formula.GetVariables());
-            // return the cell name and all values that depend on the cell name
-            return (ISet<string>)newSet;
         }
 
         /// <summary>
@@ -272,7 +282,7 @@ namespace SS
             NameNullCheck(name);
             RegexVariableCheck(name);
             // return enumeration of all values that depend on the cell name
-            return cellDependecies.GetDependees(name);
+            return cellDependecies.GetDependents(name);
         }
 
         // helper methods

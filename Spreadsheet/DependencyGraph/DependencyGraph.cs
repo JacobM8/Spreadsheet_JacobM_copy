@@ -218,8 +218,8 @@ namespace SpreadsheetUtilities
             if (DependentGraph.ContainsKey(s))
             {
                 // create a copy because items are removed during the iteration
-                HashSet<string> copy1 = new HashSet<string>(DependentGraph[s]);
-                foreach (string el in copy1)
+                HashSet<string> copyOfDependents = new HashSet<string>(DependentGraph[s]);
+                foreach (string el in copyOfDependents)
                 {
                     RemoveDependency(s, el);
                 }
@@ -240,8 +240,8 @@ namespace SpreadsheetUtilities
             if (DependeeGraph.ContainsKey(s))
             {
                 // create a copy because items are removed during the iteration
-                HashSet<string> copy1 = new HashSet<string>(DependeeGraph[s]);
-                foreach (string el in copy1)
+                HashSet<string> copyOfDependees = new HashSet<string>(DependeeGraph[s]);
+                foreach (string el in copyOfDependees)
                 {
                     RemoveDependency(el, s);
                 }
@@ -265,7 +265,6 @@ namespace SpreadsheetUtilities
             HashSet<string> newGraph = new HashSet<string>();
             graph.Add(t, newGraph);
             graph[t].Add(s);
-
         }
     }
 }
