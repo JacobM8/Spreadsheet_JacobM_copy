@@ -14,8 +14,8 @@ namespace SS
 {
     public class Spreadsheet : AbstractSpreadsheet
     {
-        Dictionary<string, Cell> cells;
-        DependencyGraph cellDependecies;
+        Dictionary<string, Cell> dictionaryOfCells;
+        DependencyGraph cellDependencyGraph;
 
         public override bool Changed { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
 
@@ -39,8 +39,8 @@ namespace SS
         {
             // TODO: You should add a three-argument constructor to the Spreadsheet class. Just like the zero-argument constructor, it should create an empty spreadsheet. 
             // However, it should allow the user to provide a validity delegate (first parameter), a normalization delegate (second parameter), and a version (third parameter).
-            cells = new Dictionary<string, Cell>();
-            cellDependecies = new DependencyGraph();
+            dictionaryOfCells = new Dictionary<string, Cell>();
+            cellDependencyGraph = new DependencyGraph();
         }
 
         public Spreadsheet(String pathToFile, Func<string, bool> isValid, Func<string, string> normalize, string version) : base(s => true, s => s, version)
@@ -49,8 +49,8 @@ namespace SS
             // (first parameter), a validity delegate (second parameter), a normalization delegate (third parameter), and a version (fourth parameter). It should read a 
             // saved spreadsheet from the file (see the Save method) and use it to construct a new spreadsheet. The new spreadsheet should use the provided validity delegate, 
             // normalization delegate, and version. Do not try to implement loading from file until after we have discussed XML in class. 
-            cells = new Dictionary<string, Cell>();
-            cellDependecies = new DependencyGraph();
+            dictionaryOfCells = new Dictionary<string, Cell>();
+            cellDependencyGraph = new DependencyGraph();
             // TODO add stuff for pathToFile
         }
 
@@ -74,12 +74,12 @@ namespace SS
             NameNullCheck(name);
             RegexVariableCheck(name);
             // if name isn't in cell dicitonary return empty string
-            if (!cells.ContainsKey(name))
+            if (!dictionaryOfCells.ContainsKey(name))
             {
                 return "";
             }
             // return contents from Cell class constructor
-            return cells[name].contents;
+            return dictionaryOfCells[name].contents;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace SS
         public override IEnumerable<string> GetNamesOfAllNonemptyCells()
         {
             // return key values from cells dictionary
-            return cells.Keys;
+            return dictionaryOfCells.Keys;
         }
 
         /// <summary>
@@ -129,33 +129,27 @@ namespace SS
             // TODO need to return the list after cells have been recomputed
             // TODO undetstand if you need to take exception checks out of there because they aren't in the XML comment any more
 
-            HashSet<string> newSet = new HashSet<string>();
-            newSet.Add(name);
             // if name is null or not valid throw InvalidNameException
             NameNullCheck(name);
             RegexVariableCheck(name);
             // if cells has name as a key add number to name
-            if (cells.ContainsKey(name))
+            if (dictionaryOfCells.ContainsKey(name))
             {
                 // if name is a Formula replace its dependees with a empty set
-                if (cells[name].contents is Formula)
+                if (dictionaryOfCells[name].contents is Formula)
                 {
                     // update cellDependencies with variables in formula
-                    cellDependecies.ReplaceDependees(name, new HashSet<string>());
+                    cellDependencyGraph.ReplaceDependees(name, new HashSet<string>());
                 }
-                cells[name].contents = number;
+                dictionaryOfCells[name].contents = number;
             }
             // if cells does not have name as a key, add name as a key and number as it's value
             else
             {
-                cells.Add(name, new Cell(name, number));
-            }
-            foreach (string s in GetCellsToRecalculate(name))
-            {
-                newSet.Add(s);
+                dictionaryOfCells.Add(name, new Cell(name, number));
             }
             // return the cell name and all values that depend on the cell name
-            return (IList<string>)newSet;
+            return new List<string>(GetCellsToRecalculate(name));
         }
 
         /// <summary>
@@ -196,35 +190,32 @@ namespace SS
             // TODO need to return the list after cells have been recomputed
             // TODO undetstand if you need to take exception checks out of there because they aren't in the XML comment any more
 
-            HashSet<string> newSet = new HashSet<string>();
-            newSet.Add(name);
             // if text is null throw ArgumentNullException
             ObjectNullCheck(text);
             // if name is null or invalid throw exception
             NameNullCheck(name);
             RegexVariableCheck(name);
-            // if cells has name as a key add text to name
-            if (cells.ContainsKey(name))
+            if (!text.Equals(""))
             {
-                // if name is a Formula replace its dependees with a empty set
-                if (cells[name].contents is Formula)
+                // if cells has name as a key add text to name
+                if (dictionaryOfCells.ContainsKey(name))
                 {
-                    // update cellDependencies with variables in formula
-                    cellDependecies.ReplaceDependees(name, new HashSet<string>());
+                    // if name is a Formula replace its dependees with a empty set
+                    if (dictionaryOfCells[name].contents is Formula)
+                    {
+                        // update cellDependencies with variables in formula
+                        cellDependencyGraph.ReplaceDependees(name, new HashSet<string>());
+                    }
+                    dictionaryOfCells[name].contents = text;
                 }
-                cells[name].contents = text;
-            }
-            // if cells does not have name as a key, add name as a key and text as it's value
-            else
-            {
-                cells.Add(name, new Cell(name, text));
-            }
-            foreach (string s in GetCellsToRecalculate(name))
-            {
-                newSet.Add(s);
+                // if cells does not have name as a key, add name as a key and text as it's value
+                else
+                {
+                    dictionaryOfCells.Add(name, new Cell(name, text));
+                }
             }
             // return the cell name and all values that depend on the cell name
-            return (IList<string>)newSet;
+            return new List<string>(GetCellsToRecalculate(name));
         }
 
         /// <summary>
@@ -271,31 +262,37 @@ namespace SS
             // TODO need to return the list after cells have been recomputed
             // TODO undetstand if you need to take exception checks out of there because they aren't in the XML comment any more
 
-            HashSet<string> newSet = new HashSet<string>();
-            newSet.Add(name);
             // if formula is null throw ArgumentNullException
             ObjectNullCheck(formula);
             // if name is null or invalid throw exception
             NameNullCheck(name);
             RegexVariableCheck(name);
-            // if cells has name as a key add formula to name
-            if (cells.ContainsKey(name))
+            // copy of original cell contents to reset value if circular exception is thrown
+            object originalContents = null;
+            // if cells has name as a key add formula to name and set originalContents before changing
+            if (dictionaryOfCells.ContainsKey(name))
             {
-                cells[name].contents = formula;
+                originalContents = dictionaryOfCells[name].contents;
+                dictionaryOfCells[name].contents = formula;
+                cellDependencyGraph.ReplaceDependees(name, formula.GetVariables());
             }
             // if cells does not have name as a key, add name as a key and formula as it's value
             else
             {
-                cells.Add(name, new Cell(name, formula));
+                dictionaryOfCells.Add(name, new Cell(name, formula));
+                cellDependencyGraph.ReplaceDependees(name, formula.GetVariables());
             }
-            foreach (string s in GetCellsToRecalculate(name))
+            // try returning GetCellsToRecalculate on the giving name, if circular exception is thrown in GetCellsToRecalculate, 
+            // reset cell contents to originalContents and throw exception
+            try { return new List<string>(GetCellsToRecalculate(name)); }
+            catch
             {
-                newSet.Add(s);
+                if (originalContents != null)
+                {
+                    dictionaryOfCells[name].contents = originalContents;
+                }
+                throw new CircularException();
             }
-            // update cellDependencies with variables in formula
-            cellDependecies.ReplaceDependees(name, formula.GetVariables());
-            // return the cell name and all values that depend on the cell name
-            return (IList<string>)newSet;
         }
 
         /// <summary>
@@ -333,7 +330,7 @@ namespace SS
             NameNullCheck(name);
             RegexVariableCheck(name);
             // return enumeration of all values that depend on the cell name
-            return cellDependecies.GetDependees(name);
+            return cellDependencyGraph.GetDependents(name);
         }
 
         public override IList<string> SetContentsOfCell(string name, string content)
