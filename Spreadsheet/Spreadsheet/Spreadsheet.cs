@@ -25,30 +25,16 @@ namespace SS
         /// </summary>
         public Spreadsheet() : this(s => true, s => s, "default")
         {
-            // constructor will have ":this(formula, s => s, s => true)" like the constructor in formula but the word this will be changed. Google how to call inherited constructor c#
-            // TODO: Your zero-argument constructor should create an empty spreadsheet that imposes no extra validity conditions, normalizes every cell name to itself, 
-            // and use the name "default" as the version.
-
-            // the string key will be the cell name and the Cell value is the contents of the cell i.e. string, 
-            // double, or formula. 
-            
-
         }
 
         public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(s => true, s => s, version)
         {
-            // TODO: You should add a three-argument constructor to the Spreadsheet class. Just like the zero-argument constructor, it should create an empty spreadsheet. 
-            // However, it should allow the user to provide a validity delegate (first parameter), a normalization delegate (second parameter), and a version (third parameter).
             dictionaryOfCells = new Dictionary<string, Cell>();
             cellDependencyGraph = new DependencyGraph();
         }
 
         public Spreadsheet(String pathToFile, Func<string, bool> isValid, Func<string, string> normalize, string version) : base(s => true, s => s, version)
         {
-            // TODO: You should add a four-argument constructor to the Spreadsheet class. It should allow the user to provide a string representing a path to a file 
-            // (first parameter), a validity delegate (second parameter), a normalization delegate (third parameter), and a version (fourth parameter). It should read a 
-            // saved spreadsheet from the file (see the Save method) and use it to construct a new spreadsheet. The new spreadsheet should use the provided validity delegate, 
-            // normalization delegate, and version. Do not try to implement loading from file until after we have discussed XML in class. 
             dictionaryOfCells = new Dictionary<string, Cell>();
             cellDependencyGraph = new DependencyGraph();
             // TODO add stuff for pathToFile
@@ -126,9 +112,6 @@ namespace SS
         /// </returns>
         protected override IList<string> SetCellContents(string name, double number)
         {
-            // TODO need to return the list after cells have been recomputed
-            // TODO undetstand if you need to take exception checks out of there because they aren't in the XML comment any more
-
             // if name is null or not valid throw InvalidNameException
             NameNullCheck(name);
             RegexVariableCheck(name);
@@ -187,9 +170,6 @@ namespace SS
         /// </returns>
         protected override IList<string> SetCellContents(string name, string text)
         {
-            // TODO need to return the list after cells have been recomputed
-            // TODO undetstand if you need to take exception checks out of there because they aren't in the XML comment any more
-
             // if text is null throw ArgumentNullException
             ObjectNullCheck(text);
             // if name is null or invalid throw exception
@@ -259,9 +239,6 @@ namespace SS
         /// </returns>
         protected override IList<string> SetCellContents(string name, Formula formula)
         {
-            // TODO need to return the list after cells have been recomputed
-            // TODO undetstand if you need to take exception checks out of there because they aren't in the XML comment any more
-
             // if formula is null throw ArgumentNullException
             ObjectNullCheck(formula);
             // if name is null or invalid throw exception
@@ -333,10 +310,100 @@ namespace SS
             return cellDependencyGraph.GetDependents(name);
         }
 
+        /// <summary>
+        ///   <para>Sets the contents of the named cell to the appropriate value. </para>
+        ///   <para>
+        ///       First, if the content parses as a double, the contents of the named
+        ///       cell becomes that double.
+        ///   </para>
+        ///
+        ///   <para>
+        ///       Otherwise, if content begins with the character '=', an attempt is made
+        ///       to parse the remainder of content into a Formula.  
+        ///       There are then three possible outcomes:
+        ///   </para>
+        ///
+        ///   <list type="number">
+        ///       <item>
+        ///           If the remainder of content cannot be parsed into a Formula, a 
+        ///           SpreadsheetUtilities.FormulaFormatException is thrown.
+        ///       </item>
+        /// 
+        ///       <item>
+        ///           If changing the contents of the named cell to be f
+        ///           would cause a circular dependency, a CircularException is thrown,
+        ///           and no change is made to the spreadsheet.
+        ///       </item>
+        ///
+        ///       <item>
+        ///           Otherwise, the contents of the named cell becomes f.
+        ///       </item>
+        ///   </list>
+        ///
+        ///   <para>
+        ///       Finally, if the content is a string that is not a double and does not
+        ///       begin with an "=" (equal sign), save the content as a string.
+        ///   </para>
+        /// </summary>
+        ///
+        /// <exception cref="ArgumentNullException"> 
+        ///   If the content parameter is null, throw an ArgumentNullException.
+        /// </exception>
+        /// 
+        /// <exception cref="InvalidNameException"> 
+        ///   If the name parameter is null or invalid, throw an InvalidNameException
+        /// </exception>
+        ///
+        /// <exception cref="SpreadsheetUtilities.FormulaFormatException"> 
+        ///   If the content is "=XYZ" where XYZ is an invalid formula, throw a FormulaFormatException.
+        /// </exception>
+        /// 
+        /// <exception cref="CircularException"> 
+        ///   If changing the contents of the named cell to be the formula would 
+        ///   cause a circular dependency, throw a CircularException.  
+        ///   (NOTE: No change is made to the spreadsheet.)
+        /// </exception>
+        /// 
+        /// <param name="name"> The cell name that is being changed</param>
+        /// <param name="content"> The new content of the cell</param>
+        /// 
+        /// <returns>
+        ///       <para>
+        ///           This method returns a list consisting of the passed in cell name,
+        ///           followed by the names of all other cells whose value depends, directly
+        ///           or indirectly, on the named cell. The order of the list MUST BE any
+        ///           order such that if cells are re-evaluated in that order, their dependencies 
+        ///           are satisfied by the time they are evaluated.
+        ///       </para>
+        ///
+        ///       <para>
+        ///           For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+        ///           list {A1, B1, C1} is returned.  If the cells are then evaluate din the order:
+        ///           A1, then B1, then C1, the integrity of the Spreadsheet is maintained.
+        ///       </para>
+        /// </returns>
         public override IList<string> SetContentsOfCell(string name, string content)
         {
-            // checks for nulls and invalid
-            throw new NotImplementedException();
+            // check for Null and invalidNames
+            NameNullCheck(name);
+            ObjectNullCheck(content);
+            // if contents can be parsed as a double call SetCellContents(string, double) with contentAsDouble
+            double contentAsDouble;
+            if (Double.TryParse(content, out contentAsDouble))
+            {
+                SetCellContents(name, contentAsDouble);
+            }
+            // if contents starts with "=" call SetCellContents(string, Formula) with "=" removed from the content string
+            if (content.StartsWith("="))
+            {
+                // remove "=" from content
+                content.Remove(1, content.Length);
+                SetCellContents(name, content);
+            }
+            // otherwise call SetCellContent(string, string) to save the string as the cell contents
+            SetCellContents(name, content);
+
+            return new List<string>(GetCellsToRecalculate(name));
         }
 
         public override string GetSavedVersion(string filename)

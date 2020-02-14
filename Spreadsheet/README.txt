@@ -16,6 +16,10 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 3. Consulted Peers:
 
     Julie (TA)
+    Logan (TA)
+    Varun (TA)
+    James (peer)
+    Crobin (peer)
 
 4. References:
 
@@ -31,7 +35,7 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 7. Actual Time:    PS5 -  hours                    
     Learning:                        
     Programming:          
-    Debugging:           hours   
+    Debugging:           5 hours (5 hours spent fixing assignment 4)   
 
 ------------------------------------------------------------------------------------------------------
 
