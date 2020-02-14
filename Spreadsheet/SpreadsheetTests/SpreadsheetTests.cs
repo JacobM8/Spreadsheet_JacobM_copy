@@ -38,9 +38,10 @@ namespace SpreadsheetTests
         public void TestGetCellContentsWhenDoubleSimple()
         {
             Spreadsheet s = new Spreadsheet();
+            string str = "1";
             Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
-            s.SetCellContents("A1", 1);
-            Assert.AreEqual(1.0, s.GetCellContents("A1"));
+            s.SetContentsOfCell("A1", str);
+            Assert.AreEqual(1.0.ToString(), s.GetCellContents("A1"));
         }
 
         [TestMethod]
@@ -49,7 +50,7 @@ namespace SpreadsheetTests
             Spreadsheet s = new Spreadsheet();
             Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
             string str = "String Test";
-            s.SetCellContents("A1", str);
+            s.SetContentsOfCell("A1", str);
             Assert.AreEqual(str, s.GetCellContents("A1"));
         }
 
@@ -58,9 +59,9 @@ namespace SpreadsheetTests
         {
             Spreadsheet s = new Spreadsheet();
             Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
-            Formula f = new Formula("2+2");
-            s.SetCellContents("A1", f);
-            Assert.AreEqual(f, s.GetCellContents("A1"));
+            string str = "=2+2";
+            s.SetContentsOfCell("A1", str);
+            Assert.AreEqual("2+2", s.GetCellContents("A1"));
         }
 
         [TestMethod]
@@ -109,8 +110,8 @@ namespace SpreadsheetTests
         public void TestSetContentsOfCellAsDouble()
         {
             Spreadsheet s = new Spreadsheet();
-            double d = 32.2;
-            s.SetCellContents("A1", d);
+            string d = "32.2";
+            s.SetContentsOfCell("A1", d);
             Assert.AreEqual(d, s.GetCellContents("A1"));
         }
 
@@ -119,8 +120,8 @@ namespace SpreadsheetTests
         public void TestSetContentsOfCellWhenCellNameIsInvalidVariable()
         {
             Spreadsheet s = new Spreadsheet();
-            double d = 32.2;
-            s.SetCellContents("3L2", d);
+            string d = "32.2";
+            s.SetContentsOfCell("3L2", d);
             Assert.AreEqual(d, s.GetCellContents("3L2"));
         }
 
@@ -129,9 +130,9 @@ namespace SpreadsheetTests
         public void TestSetContentsOfCellWhenCellNameIsNull()
         {
             Spreadsheet s = new Spreadsheet();
-            double d = 32.2;
+            string d = "32.2";
             string str = null;
-            s.SetCellContents(str, d);
+            s.SetContentsOfCell(str, d);
             Assert.AreEqual(d, s.GetCellContents("3L2"));
         }
 
@@ -139,22 +140,23 @@ namespace SpreadsheetTests
         public void TestSetContentsOfCellWhenCellNameIsAlreadyContained()
         {
             Spreadsheet s = new Spreadsheet();
-            double d = 32.2;
+            string d = "32.2";
             string str = "x1";
-            s.SetCellContents(str, d);
-            s.SetCellContents("x1", 44);
-            Assert.AreEqual(44.0, s.GetCellContents("x1"));
+            string str1 = "44";
+            s.SetContentsOfCell(str, d);
+            s.SetContentsOfCell("x1", str1);
+            Assert.AreEqual(44.0.ToString(), s.GetCellContents("x1"));
         }
 
         [TestMethod]
         public void TestSetContentsOfCellWhenCellNameIsAlreadyContainedAndItIsAFormula()
         {
             Spreadsheet s = new Spreadsheet();
-            Formula f = new Formula("2+2");
-            double d = 38.4;
+            string f = "=2+2";
+            string d = "38.4";
             string str = "x1";
-            s.SetCellContents(str, f);
-            s.SetCellContents("x1", d);
+            s.SetContentsOfCell(str, f);
+            s.SetContentsOfCell("x1", d);
             Assert.AreEqual(d, s.GetCellContents("x1"));
         }
 
@@ -164,7 +166,7 @@ namespace SpreadsheetTests
         {
             Spreadsheet s = new Spreadsheet();
             string str = null;
-            s.SetCellContents("x1", str);
+            s.SetContentsOfCell("x1", str);
         }
 
         [TestMethod]
@@ -173,7 +175,7 @@ namespace SpreadsheetTests
         {
             Spreadsheet s = new Spreadsheet();
             string str = null;
-            s.SetCellContents(str, "2+2");
+            s.SetContentsOfCell(str, "=2+2");
         }
 
         [TestMethod]
@@ -182,7 +184,7 @@ namespace SpreadsheetTests
         {
             Spreadsheet s = new Spreadsheet();
             string str = "3x";
-            s.SetCellContents(str, "2+2");
+            s.SetContentsOfCell(str, "=2+2");
         }
 
         [TestMethod]
@@ -190,8 +192,8 @@ namespace SpreadsheetTests
         {
             Spreadsheet s = new Spreadsheet();
             string str = "x1";
-            s.SetCellContents(str, "2+2");
-            s.SetCellContents("x1", "4+4");
+            s.SetContentsOfCell(str, "=2+2");
+            s.SetContentsOfCell("x1", "=4+4");
             Assert.AreEqual("4+4", s.GetCellContents("x1"));
         }
 
@@ -199,12 +201,12 @@ namespace SpreadsheetTests
         public void TestSetContentsOfCellWhenCellNameIsAlreadyContainedAsAStringAndContentsIsAFormula()
         {
             Spreadsheet s = new Spreadsheet();
-            Formula f = new Formula("2+2");
-            string str1 = "3*2";
+            string f = "=2+2";
+            string str1 = "=3*2";
             string str = "x1";
-            s.SetCellContents(str, f);
-            s.SetCellContents("x1", str1);
-            Assert.AreEqual(str1, s.GetCellContents("x1"));
+            s.SetContentsOfCell(str, f);
+            s.SetContentsOfCell("x1", str1);
+            Assert.AreEqual("3*2", s.GetCellContents("x1"));
         }
 
         [TestMethod]
@@ -212,9 +214,9 @@ namespace SpreadsheetTests
         public void TestSetContentsOfCellWhenFormulaIsSetAsNull()
         {
             Spreadsheet s = new Spreadsheet();
-            Formula f = null;
+            string f = null;
             string str = "x1";
-            s.SetCellContents(str, f);
+            s.SetContentsOfCell(str, f);
         }
 
         [TestMethod]
@@ -222,9 +224,9 @@ namespace SpreadsheetTests
         public void TestSetContentsOfCellWhenCellNameIsANullStringAndContentsIsAFormula()
         {
             Spreadsheet s = new Spreadsheet();
-            Formula f = new Formula("2+2");
+            Formula f = new Formula("=2+2");
             string str = null;
-            s.SetCellContents(str, "2+2");
+            s.SetContentsOfCell(str, "=2+2");
         }
 
         [TestMethod]
@@ -232,20 +234,20 @@ namespace SpreadsheetTests
         public void TestSetContentsOfCellWhenCellNameIsAnInvalidVariableAndConentsIsAFormula()
         {
             Spreadsheet s = new Spreadsheet();
-            Formula f = new Formula("2+2");
+            string f = "=2+2";
             string str = "3x";
-            s.SetCellContents(str, f);
+            s.SetContentsOfCell(str, f);
         }
 
         [TestMethod]
         public void TestSetContentsOfCellWhenCellNameIsAlreadyContainedAndContentsAreAFormula()
         {
             Spreadsheet s = new Spreadsheet();
-            Formula f = new Formula("2+2");
-            Formula f1 = new Formula("4*4");
-            s.SetCellContents("x1", f);
-            s.SetCellContents("x1", f1);
-            Assert.AreEqual(f1, s.GetCellContents("x1"));
+            string f = "=2+2";
+            string f1 = "=4*4";
+            s.SetContentsOfCell("x1", f);
+            s.SetContentsOfCell("x1", f1);
+            Assert.AreEqual("4*4", s.GetCellContents("x1"));
         }
 
         // The following TestMethods test GetNamesOfAllNonemptyCells function
@@ -253,14 +255,15 @@ namespace SpreadsheetTests
         public void TestGetNamesOfAllNonemptyCellsReturnsCorrectEnermerable()
         {
             Spreadsheet s = new Spreadsheet();
-            double d = 32.2;
-            s.SetCellContents("A1", d);
-            s.SetCellContents("A2", d);
-            s.SetCellContents("A3", 341.0);
+            string d = "32.2";
+            string str = "341.0";
+            s.SetContentsOfCell("A1", d);
+            s.SetContentsOfCell("A2", d);
+            s.SetContentsOfCell("A3", str);
             Spreadsheet s1 = new Spreadsheet();
-            s1.SetCellContents("A1", d);
-            s1.SetCellContents("A2", d);
-            s1.SetCellContents("A3", 341.0);
+            s1.SetContentsOfCell("A1", d);
+            s1.SetContentsOfCell("A2", d);
+            s1.SetContentsOfCell("A3", str);
             Assert.AreEqual(s1.GetNamesOfAllNonemptyCells().ToString(), s.GetNamesOfAllNonemptyCells().ToString());
         }
 
@@ -268,11 +271,27 @@ namespace SpreadsheetTests
         public void TestGetNamesOfAllNonemptyCellsIsNotNull()
         {
             Spreadsheet s = new Spreadsheet();
-            double d = 32.2;
-            s.SetCellContents("A1", d);
-            s.SetCellContents("A2", d);
-            s.SetCellContents("A3", 341.0);
+            string d = "32.2";
+            string str = "341.0";
+            s.SetContentsOfCell("A1", d);
+            s.SetContentsOfCell("A2", d);
+            s.SetContentsOfCell("A3", str);
             Assert.AreNotEqual(null, s.GetNamesOfAllNonemptyCells());
+        }
+
+        // Tests for save function
+        [TestMethod]
+        public void testSave()
+        {
+            Spreadsheet s = new Spreadsheet();
+            string expectedResult = "<spreadsheet version=\"default\"\n<name>A1\n<content>\"3\"";
+            string str = "3";
+            s.SetContentsOfCell("A1", str);
+            s.Save("filename");
+            string load = System.IO.File.ReadAllText("filename");
+            Assert.AreEqual(load, expectedResult);
+
+            // another test is to create a new spreadsheet from the loaded version and check if the contents are the same
         }
     }
 }

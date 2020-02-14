@@ -1,6 +1,6 @@
 ﻿/// <summary>
 ///     Author: Jacob Morrison
-///     Date: 2/7/2020
+///     Date: 2/14/2020
 ///     This file is used to get and set the contents of a cell, remember the contents and the value of the cell are 
 ///     separate. This file is also used to recalculate cells when a dependent cell is changed.
 ///     I pledge that I did the work myself.
@@ -268,6 +268,10 @@ namespace SS
                 {
                     dictionaryOfCells[name].contents = originalContents;
                 }
+                if (originalContents is Formula)
+                {
+                    cellDependencyGraph.ReplaceDependees(name, ((Formula)originalContents).GetVariables());
+                }
                 throw new CircularException();
             }
         }
@@ -397,8 +401,9 @@ namespace SS
             if (content.StartsWith("="))
             {
                 // remove "=" from content
-                content.Remove(1, content.Length);
-                SetCellContents(name, content);
+                content = content.Remove(0, 1);
+                Formula formulaFromContent = new Formula(content);
+                SetCellContents(name, formulaFromContent);
             }
             // otherwise call SetCellContent(string, string) to save the string as the cell contents
             SetCellContents(name, content);
@@ -406,12 +411,12 @@ namespace SS
             return new List<string>(GetCellsToRecalculate(name));
         }
 
-        public override string GetSavedVersion(string filename)
+
+        public override void Save(string filename)
         {
             throw new NotImplementedException();
         }
-
-        public override void Save(string filename)
+        public override string GetSavedVersion(string filename)
         {
             throw new NotImplementedException();
         }
