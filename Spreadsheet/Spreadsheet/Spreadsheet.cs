@@ -14,8 +14,8 @@ namespace SS
 {
     public class Spreadsheet : AbstractSpreadsheet
     {
-        Dictionary<string, Cell> cells;
-        DependencyGraph cellDependecies;
+        Dictionary<string, Cell> dictionaryOfCells;
+        DependencyGraph cellDependecyGraph;
         /// <summary>
         /// Creates a an empty constructor (Dictionary) with zero arguments.
         /// </summary>
@@ -23,8 +23,8 @@ namespace SS
         {
             // the string key will be the cell name and the Cell value is the contents of the cell i.e. string, 
             // double, or formula. 
-            cells = new Dictionary<string, Cell>();
-            cellDependecies = new DependencyGraph();
+            dictionaryOfCells = new Dictionary<string, Cell>();
+            cellDependecyGraph = new DependencyGraph();
         }
 
         /// <summary>
@@ -47,12 +47,12 @@ namespace SS
             NameNullCheck(name);
             RegexVariableCheck(name);
             // if name isn't in cell dicitonary return empty string
-            if (!cells.ContainsKey(name))
+            if (!dictionaryOfCells.ContainsKey(name))
             {
                 return "";
             }
             // return contents from Cell class constructor
-            return cells[name].contents;
+            return dictionaryOfCells[name].contents;
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace SS
         public override IEnumerable<string> GetNamesOfAllNonemptyCells()
         {
             // return key values from cells dictionary
-            return cells.Keys;
+            return dictionaryOfCells.Keys;
         }
 
         /// <summary>
@@ -95,20 +95,20 @@ namespace SS
             HashSet<string> newSet = new HashSet<string>();
             newSet.Add(name);
             // if cells has name as a key add number to name
-            if (cells.ContainsKey(name))
+            if (dictionaryOfCells.ContainsKey(name))
             {
                 // if name is a Formula replace its dependees with a empty set
-                if (cells[name].contents is Formula)
+                if (dictionaryOfCells[name].contents is Formula)
                 {
                     // update cellDependencies with variables in formula
-                    cellDependecies.ReplaceDependees(name, new HashSet<string>());
+                    cellDependecyGraph.ReplaceDependees(name, new HashSet<string>());
                 }
-                cells[name].contents = number;
+                dictionaryOfCells[name].contents = number;
             }
             // if cells does not have name as a key, add name as a key and number as it's value
             else
             {
-                cells.Add(name, new Cell(name, number));
+                dictionaryOfCells.Add(name, new Cell(name, number));
             }
             foreach (string s in GetCellsToRecalculate(name))
             {
@@ -155,20 +155,20 @@ namespace SS
             {
                 newSet.Add(name);
                 // if cells has name as a key add text to name
-                if (cells.ContainsKey(name))
+                if (dictionaryOfCells.ContainsKey(name))
                 {
                     // if name is a Formula replace its dependees with a empty set
-                    if (cells[name].contents is Formula)
+                    if (dictionaryOfCells[name].contents is Formula)
                     {
                         // update cellDependencies with variables in formula
-                        cellDependecies.ReplaceDependees(name, new HashSet<string>());
+                        cellDependecyGraph.ReplaceDependees(name, new HashSet<string>());
                     }
-                    cells[name].contents = text;
+                    dictionaryOfCells[name].contents = text;
                 }
                 // if cells does not have name as a key, add name as a key and text as it's value
                 else
                 {
-                    cells.Add(name, new Cell(name, text));
+                    dictionaryOfCells.Add(name, new Cell(name, text));
                 }
                 foreach (string s in GetCellsToRecalculate(name))
                 {
@@ -220,29 +220,28 @@ namespace SS
             RegexVariableCheck(name);
             // copy of original cell contents to reset value if circular exception is thrown
             object originalContents = null;
-            // if cells has name as a key add formula to name
-            if (cells.ContainsKey(name))
+            // if cells has name as a key add formula to name and set originalContents before changing
+            if (dictionaryOfCells.ContainsKey(name))
             {
-                originalContents = cells[name].contents;
-                cells[name].contents = formula;
-                cellDependecies.ReplaceDependees(name, formula.GetVariables());
+                originalContents = dictionaryOfCells[name].contents;
+                dictionaryOfCells[name].contents = formula;
+                cellDependecyGraph.ReplaceDependees(name, formula.GetVariables());
             }
             // if cells does not have name as a key, add name as a key and formula as it's value
             else
             {
-                //formulaCopy = new Formula(" ");
-                cells.Add(name, new Cell(name, formula));
-                cellDependecies.ReplaceDependees(name, formula.GetVariables());
+                dictionaryOfCells.Add(name, new Cell(name, formula));
+                cellDependecyGraph.ReplaceDependees(name, formula.GetVariables());
             }
-            // check for circular exception
+            // try returning GetCellsToRecalculate on the giving name, if circular exception is thrown in GetCellsToRecalculate, 
+            // reset cell contents to originalContents and throw exception
             try { return new HashSet<string>(GetCellsToRecalculate(name));  }
             catch
             {
                 if (originalContents != null)
                 {
-                    cells[name].contents = originalContents;
+                    dictionaryOfCells[name].contents = originalContents;
                 }
-                // need to set the contents back to their original value if we reset them with the parmeter formula, that what formCopy is trying to do
                 throw new CircularException();
             }
         }
@@ -282,7 +281,7 @@ namespace SS
             NameNullCheck(name);
             RegexVariableCheck(name);
             // return enumeration of all values that depend on the cell name
-            return cellDependecies.GetDependents(name);
+            return cellDependecyGraph.GetDependents(name);
         }
 
         // helper methods
