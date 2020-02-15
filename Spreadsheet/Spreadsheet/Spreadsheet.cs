@@ -36,6 +36,7 @@ namespace SS
         /// <param name="version"> specified version of spreadsheet </param>
         public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(s => true, s => s, version)
         {
+            // initialize data structures
             dictionaryOfCells = new Dictionary<string, Cell>();
             cellDependencyGraph = new DependencyGraph();
         }
