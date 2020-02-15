@@ -273,6 +273,7 @@ namespace SpreadsheetTests
 
         // Tests for save function
         [TestMethod]
+        [ExpectedException(typeof(IOException))]
         public void testSave()
         {
             Spreadsheet s = new Spreadsheet();
@@ -288,7 +289,7 @@ namespace SpreadsheetTests
 
         // Tests GetSavedVersion
         [TestMethod]
-        [ExpectedException(typeof(DirectoryNotFoundException))]
+        [ExpectedException(typeof(IOException))]
         public void TestGetSavedVersion()
         {
             Spreadsheet s = new Spreadsheet();
