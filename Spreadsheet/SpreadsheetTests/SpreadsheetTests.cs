@@ -302,5 +302,7 @@ namespace SpreadsheetTests
             s.SetContentsOfCell("A1", "2");
             Assert.AreEqual(2.0, s.GetCellValue("A1"));
         }
+
+        // use constructor with version to test getsavedversion
     }
 }

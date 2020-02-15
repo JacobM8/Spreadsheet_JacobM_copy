@@ -20,6 +20,8 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     Varun (TA)
     James (peer)
     Crobin (peer)
+    Jay (peer)
+    Curtis Casados (peer)
 
 4. References:
 

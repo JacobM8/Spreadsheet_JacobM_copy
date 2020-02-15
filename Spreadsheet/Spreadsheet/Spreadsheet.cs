@@ -21,24 +21,36 @@ namespace SS
         public override bool Changed { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
 
         /// <summary>
-        /// Creates a an empty constructor (Dictionary) with zero arguments.
+        /// Creates a an empty spreadsheet (Dictionary) with zero arguments.
         /// default is used when a specified version isn't used
         /// </summary>
         public Spreadsheet() : this(s => true, s => s, "default")
         {
         }
 
+        /// <summary>
+        /// Creates a spreadsheet with the given version
+        /// </summary>
+        /// <param name="isValid"> verifies variables are valid </param>
+        /// <param name="normalize"> normalize "n" to "N" </param>
+        /// <param name="version"> specified version of spreadsheet </param>
         public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(s => true, s => s, version)
         {
             dictionaryOfCells = new Dictionary<string, Cell>();
             cellDependencyGraph = new DependencyGraph();
         }
 
+        /// <summary>
+        /// Creates a spreadsheet of the given version from the given file path
+        /// </summary>
+        /// <param name="pathToFile"> path to file </param>
+        /// <param name="isValid"> verifies variables are valid </param>
+        /// <param name="normalize"> normalize "n" to "N" </param>
+        /// <param name="version"> specified version of spreadsheet </param>
         public Spreadsheet(String pathToFile, Func<string, bool> isValid, Func<string, string> normalize, string version) : base(s => true, s => s, version)
         {
             dictionaryOfCells = new Dictionary<string, Cell>();
             cellDependencyGraph = new DependencyGraph();
-            // TODO add stuff for pathToFile
             using (XmlReader reader = XmlReader.Create(pathToFile))
             {
                 while (reader.Read())
@@ -52,7 +64,6 @@ namespace SS
                                 {
                                     this.Version = reader["version"];
                                     Console.WriteLine("version: " + reader["cell"]);
-                                    
                                 }
                                 break; 
                             case "Cell":
@@ -66,14 +77,6 @@ namespace SS
                                 break;
                         }
                     }
-                    // do I need this?
-                    //else
-                    //{
-                    //    if (reader.Name == "Cell")
-                    //    {
-                    //        Console.WriteLine("end of cell");
-                    //    }
-                    //}
                 }
             }
         }
@@ -429,19 +432,23 @@ namespace SS
             // check for Null and invalidNames
             NameNullCheck(name);
             ObjectNullCheck(content);
+
             // if contents can be parsed as a double call SetCellContents(string, double) with contentAsDouble
             double contentAsDouble;
             if (Double.TryParse(content, out contentAsDouble))
             {
                 SetCellContents(name, contentAsDouble);
+                dictionaryOfCells[name].value = contentAsDouble;
             }
-            // if contents starts with "=" call SetCellContents(string, Formula) with "=" removed from the content string
+            // if contents starts with "=" call SetCellContents(string, Formula) with "=" removed from the content string and set the value
             if (content.StartsWith("="))
             {
                 // remove "=" from content
                 content = content.Remove(0, 1);
                 Formula formulaFromContent = new Formula(content);
                 SetCellContents(name, formulaFromContent);
+                // evaluate contents of given cell name to set value
+                dictionaryOfCells[name].value = formulaFromContent.Evaluate(DelegateLookupHelper);
             }
             // otherwise call SetCellContent(string, string) to save the string as the cell contents
             SetCellContents(name, content);
@@ -477,10 +484,11 @@ namespace SS
             settings.Indent = true;
             settings.IndentChars = "  ";
 
-            using (XmlWriter writer = XmlWriter.Create(filename))
+            using (XmlWriter writer = XmlWriter.Create(filename, settings))
             {
                 writer.WriteStartDocument();
                 writer.WriteStartElement("version");
+                writer.WriteAttributeString("version", Version);
                 // write each cell
                 foreach (Cell c in dictionaryOfCells.Values)
                 {
@@ -492,11 +500,26 @@ namespace SS
                 writer.WriteEndDocument();
             }
         }
+        /// <summary>
+        /// Returns the version information of the spreadsheet saved in the named file.
+        /// If there are any problems opening, reading, or closing the file, the method
+        /// should throw a SpreadsheetReadWriteException with an explanatory message.
+        /// </summary>
         public override string GetSavedVersion(string filename)
         {
+            string fileString = "";
             // use xmlReader has a method to get the version, movetONextAttribute, moveToAttribute, see ms docs
-
-            throw new NotImplementedException();
+            using (XmlReader reader = XmlReader.Create(filename))
+            {
+                while (reader.Read())
+                {
+                    if (reader.IsStartElement())
+                    {
+                        fileString = reader.GetAttribute(Version);
+                    }
+                }
+            }
+            return fileString; 
         }
 
         /// <summary>
@@ -510,22 +533,10 @@ namespace SS
             // if name isnull or invlaide throw InvalidNameException
             NameNullCheck(name);
             RegexVariableCheck(name);
-            // if name is a double return the double
-            double nameAsDouble;
-            if (double.TryParse(name, out nameAsDouble))
+            // return value of given cell name if it exists
+            if (dictionaryOfCells.ContainsKey(name))
             {
-                return nameAsDouble;
-            }
-            // if name is a string return the contents as a string.
-            if (!name.StartsWith("=") && name is string)
-            {
-                return dictionaryOfCells[name].contents;
-            }
-            if (name.StartsWith("="))
-            {
-                name = name.Remove(0, 1);
-                Formula formulaForName = new Formula(name);
-               // formulaForName.Evaluate();
+                return dictionaryOfCells[name].value;
             }
             // else return a FormulaError
             return new FormulaError();
@@ -533,14 +544,22 @@ namespace SS
 
         // helper methods
         // Func<string, double> lookup
-        //public double LookupHelper(string name)
-       // {
-            //double result;
-            // dictionaryOfCells[name].
-
-            //return result;
-        //}
-
+        /// <summary>
+        /// Delegate lookup, used to lookup variable in dictionaryOfCells
+        /// </summary>
+        /// <param name="name"> given cell name </param>
+        /// <returns> double value of given cell </returns>
+        public double DelegateLookupHelper(string name)
+        {
+            double result;
+            if (!(GetCellValue(name) is string))
+            {
+                throw new ArgumentException();
+                
+            }
+            double.TryParse(dictionaryOfCells[name].contents.ToString(), out result);
+            return result; 
+        }
         /// <summary>
         /// Throws InvalidNameException if given name is not a valid variable, otherwise returns true.
         /// </summary>

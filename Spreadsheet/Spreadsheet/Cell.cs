@@ -16,6 +16,7 @@ namespace SS
     {
         // contents getter will be used in Spreadsheet GetCellContent methods
         public object contents { get; set; }
+        public object value { get; set; }
         private string name;
         
         /// <summary>
