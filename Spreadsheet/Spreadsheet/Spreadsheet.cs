@@ -166,11 +166,13 @@ namespace SS
                     cellDependencyGraph.ReplaceDependees(name, new HashSet<string>());
                 }
                 dictionaryOfCells[name].contents = number;
+                dictionaryOfCells[name].value = number;
             }
             // if cells does not have name as a key, add name as a key and number as it's value
             else
             {
                 dictionaryOfCells.Add(name, new Cell(name, number));
+                dictionaryOfCells[name].value = number;
             }
             // return the cell name and all values that depend on the cell name
             return new List<string>(GetCellsToRecalculate(name));
@@ -228,11 +230,13 @@ namespace SS
                         cellDependencyGraph.ReplaceDependees(name, new HashSet<string>());
                     }
                     dictionaryOfCells[name].contents = text;
+                    dictionaryOfCells[name].value = text;
                 }
                 // if cells does not have name as a key, add name as a key and text as it's value
                 else
                 {
                     dictionaryOfCells.Add(name, new Cell(name, text));
+                    dictionaryOfCells[name].value = text;
                 }
             }
             // return the cell name and all values that depend on the cell name
@@ -292,13 +296,16 @@ namespace SS
             {
                 originalContents = dictionaryOfCells[name].contents;
                 dictionaryOfCells[name].contents = formula;
+                dictionaryOfCells[name].value = formula.Evaluate(DelegateLookupHelper);
                 cellDependencyGraph.ReplaceDependees(name, formula.GetVariables());
             }
             // if cells does not have name as a key, add name as a key and formula as it's value
             else
             {
                 dictionaryOfCells.Add(name, new Cell(name, formula));
+                dictionaryOfCells[name].value = formula.Evaluate(DelegateLookupHelper);
                 cellDependencyGraph.ReplaceDependees(name, formula.GetVariables());
+
             }
             // try returning GetCellsToRecalculate on the giving name, if circular exception is thrown in GetCellsToRecalculate, 
             // reset cell contents to originalContents and throw exception
@@ -431,27 +438,28 @@ namespace SS
         {
             // check for Null and invalidNames
             NameNullCheck(name);
+            ObjectNullCheck(name);
             ObjectNullCheck(content);
 
             // if contents can be parsed as a double call SetCellContents(string, double) with contentAsDouble
-            double contentAsDouble;
-            if (Double.TryParse(content, out contentAsDouble))
+            double contentAsDouble = 0;
+            if (double.TryParse(content, out contentAsDouble))
             {
                 SetCellContents(name, contentAsDouble);
-                dictionaryOfCells[name].value = contentAsDouble;
             }
             // if contents starts with "=" call SetCellContents(string, Formula) with "=" removed from the content string and set the value
-            if (content.StartsWith("="))
+            else if (content.StartsWith("="))
             {
                 // remove "=" from content
                 content = content.Remove(0, 1);
                 Formula formulaFromContent = new Formula(content);
                 SetCellContents(name, formulaFromContent);
-                // evaluate contents of given cell name to set value
-                dictionaryOfCells[name].value = formulaFromContent.Evaluate(DelegateLookupHelper);
             }
             // otherwise call SetCellContent(string, string) to save the string as the cell contents
+            else
+            {
             SetCellContents(name, content);
+            }
 
             return new List<string>(GetCellsToRecalculate(name));
         }
