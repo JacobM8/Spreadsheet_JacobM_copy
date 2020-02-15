@@ -18,7 +18,7 @@ namespace SpreadsheetTests
     public class SpreadsheetTests
     {
         // The following TestMehod test the constructor
-        /*[TestMethod]
+        [TestMethod]
         public void TestConstructor()
         {
             // Test new constructor is empty
@@ -284,17 +284,17 @@ namespace SpreadsheetTests
             string load = System.IO.File.ReadAllText("filename");
             Assert.AreNotEqual(expectedResult, load);
 
-            // another test is to create a new spreadsheet from the loaded version and check if the contents are the same
         }
 
         // Tests GetSavedVersion
         [TestMethod]
+        [ExpectedException(typeof(DirectoryNotFoundException))]
         public void TestGetSavedVersion()
         {
             Spreadsheet s = new Spreadsheet();
             s.SetContentsOfCell("A1", "3");
-            s.Save("filename");
-            Assert.AreEqual("default", s.GetSavedVersion("filename"));
+            s.Save(" / NonexistantFile.xml / ");
+            Assert.AreEqual("default", s.GetSavedVersion(" / NonexistantFile.xml / "));
         }
 
         [TestMethod]
@@ -859,6 +859,6 @@ namespace SpreadsheetTests
                 return f;
             }
 
-        }*/
+        }
     }
 }
