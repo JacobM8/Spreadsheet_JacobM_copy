@@ -1,3 +1,9 @@
+/// <summary>
+///     Author: Jacob Morrison
+///     Date: 1/31/2020
+///     This file is used to test Spreadsheet.cs
+///     I pledge that I did the work myself.
+/// </summary>
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 using System;

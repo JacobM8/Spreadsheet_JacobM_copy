@@ -8,6 +8,7 @@ using System;
 using SpreadsheetUtilities;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
 
 namespace SS
 {
@@ -15,15 +16,31 @@ namespace SS
     {
         // contents getter will be used in Spreadsheet GetCellContent methods
         public object contents { get; set; }
+        public object value { get; set; }
+        private string name;
         
         /// <summary>
         /// Object constructor sets the public contents to the content parameter passed in the constructor
         /// </summary>
         /// <param name="name"></param>
         /// <param name="content"></param>
-        public Cell(string name, object content)
+        public Cell(string _name, object content)
         {
+            name = _name;
             this.contents = content;
+        }
+
+        /// <summary>
+        /// Write XML for this Cell
+        /// </summary>
+        /// <param name="writer"></param>
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteStartElement("name", name);
+            writer.WriteStartElement("content", contents.ToString());
+            writer.WriteElementString("contents", contents.ToString());
+            writer.WriteEndElement();
+            writer.WriteEndElement();
         }
     }
 }

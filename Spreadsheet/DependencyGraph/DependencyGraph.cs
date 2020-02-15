@@ -123,7 +123,7 @@ namespace SpreadsheetUtilities
             {
                 return DependentGraph[s];
             }
-            // new HashSet because 's' because DependentGraph[s] is empty
+            // new HashSet because 's' in DependentGraph[s] is empty
             return new HashSet<String>();
         }
 
