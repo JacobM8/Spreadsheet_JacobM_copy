@@ -280,8 +280,8 @@ namespace SpreadsheetTests
                 "\n      <contents>3</contents>\n    </content>\n  </name>\n</version>";
             string str = "3";
             s.SetContentsOfCell("A1", str);
-            s.Save("filename");
-            string load = System.IO.File.ReadAllText("filename");
+            s.Save("NonexistantFile.xml");
+            string load = System.IO.File.ReadAllText("NonexistantFile.xml");
             Assert.AreNotEqual(expectedResult, load);
 
         }
