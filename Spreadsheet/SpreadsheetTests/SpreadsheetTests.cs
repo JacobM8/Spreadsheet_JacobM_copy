@@ -18,7 +18,7 @@ namespace SpreadsheetTests
     public class SpreadsheetTests
     {
         // The following TestMehod test the constructor
-        [TestMethod]
+        /*[TestMethod]
         public void TestConstructor()
         {
             // Test new constructor is empty
@@ -859,6 +859,6 @@ namespace SpreadsheetTests
                 return f;
             }
 
-        }
+        }*/
     }
 }
