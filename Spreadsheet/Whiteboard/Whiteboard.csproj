@@ -37,9 +37,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="architecture.png" />
-    <Content Include="DependencyGraph.png" />
-    <Content Include="Formula.png" />
-    <Content Include="Spreadsheet.png" />
+    <Content Include="dependency_graph_whiteboard.png" />
+    <Content Include="formula_whiteboard.png" />
+    <Content Include="spreadsheet_whiteboard.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
