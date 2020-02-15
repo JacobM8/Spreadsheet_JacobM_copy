@@ -280,7 +280,7 @@ namespace SpreadsheetTests
                 "\n      <contents>3</contents>\n    </content>\n  </name>\n</version>";
             string str = "3";
             s.SetContentsOfCell("A1", str);
-            s.Save("NonexistantFile.xml");
+            s.Save("/NonexistantFile.xml/");
             string load = System.IO.File.ReadAllText("NonexistantFile.xml");
             Assert.AreNotEqual(expectedResult, load);
 
@@ -293,7 +293,7 @@ namespace SpreadsheetTests
         {
             Spreadsheet s = new Spreadsheet();
             s.SetContentsOfCell("A1", "3");
-            s.Save(" / NonexistantFile.xml / ");
+            s.Save("/NonexistantFile.xml/");
             Assert.AreEqual("default", s.GetSavedVersion(" / NonexistantFile.xml / "));
         }
 
