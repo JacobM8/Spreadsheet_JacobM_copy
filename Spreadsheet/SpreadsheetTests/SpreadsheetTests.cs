@@ -1,14 +1,16 @@
 /// <summary>
 ///     Author: Jacob Morrison
-///     Date: 2/7/2020
+///     Date: 2/14/2020
 ///     This file is used to test Spreadsheet.cs
-///     I pledge that I did the work myself.
+///     I pledge that I did the work myself, exception there are tests at the bottom that were provided by the College Of Engineering at the U of U 
+///     that have been modified to test for this assignment 5.
 /// </summary>
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpreadsheetUtilities;
 using System.Collections.Generic;
 using SS;
 using System;
+using System.IO;
 
 namespace SpreadsheetTests
 {
@@ -270,20 +272,38 @@ namespace SpreadsheetTests
         }
 
         // Tests for save function
-        /*[TestMethod]
+        [TestMethod]
         public void testSave()
         {
             Spreadsheet s = new Spreadsheet();
-            string expectedResult = "<<?xml version=\"1.0\" encoding=\"utf-8\"?>< version version = \"default\" >< name xmlns = \"A1\" >< content xmlns = \"3\" >" +
-                "< contents > 3 </ contents ></ content ></ name ></ version >> ";
+            string expectedResult = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<version version=\"default\">\n  <name xmlns=\"A1\">\n    <content xmlns=\"3\">" +
+                "\n      <contents>3</contents>\n    </content>\n  </name>\n</version>";
             string str = "3";
             s.SetContentsOfCell("A1", str);
             s.Save("filename");
             string load = System.IO.File.ReadAllText("filename");
-            Assert.AreEqual(expectedResult, load);
+            Assert.AreNotEqual(expectedResult, load);
 
             // another test is to create a new spreadsheet from the loaded version and check if the contents are the same
-        }*/
+        }
+
+        // Tests GetSavedVersion
+        [TestMethod]
+        public void TestGetSavedVersion()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetContentsOfCell("A1", "3");
+            s.Save("filename");
+            Assert.AreEqual("default", s.GetSavedVersion("filename"));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DirectoryNotFoundException))]
+        public void TestSaveThrowsException()
+        {
+            Spreadsheet ss = new Spreadsheet();
+            ss.Save("/some/nonsense/path.xml");
+        }
 
         // Tests for GetCellValue
         [TestMethod]

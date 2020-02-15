@@ -7,17 +7,24 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 
 1. Comments to Evaluators:
 
-    
+    I spent an additional 5 hours fixing my code from assignment 4. The whiteboard exercise was very beneficial to gain a better understanding of the overal concepts of each
+    class and how thier APIs function. This assignment posed new challenges by learning how to save a file and writing XML.
 
 2. Assignment Specific Topics:
 
-    kdfsjla
+    Refactor existing code
+    Whiteboarding
+    APIs
+    XML
+    Saving files
 
 3. Consulted Peers:
 
     Julie (TA)
     Logan (TA)
     Varun (TA)
+    Michael (TA)
+    Arindam (TA)
     James (peer)
     Crobin (peer)
     Jay (peer)
@@ -28,16 +35,26 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     1. Calling the base constructor in C# - https://stackoverflow.com/questions/12051/calling-the-base-constructor-in-c-sharp
     2. base (C# Reference) - https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/base
     3. How to read from a text file (C# Programming Guide) - https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/file-system/how-to-read-from-a-text-file
+    4. XML Writing Class C# - https://docs.microsoft.com/en-us/dotnet/api/system.xml.xmlwriter?view=netframework-4.8
 
 5. Examples of Good Software Practice:
 
-    
+    On this assignment one of the good software practices I followed was DRY, I noticed times when I was implmenting 
+    functions where there was code that was extremely similar so I was able to find a way to reduce the code and 
+    implement helper methods. Following DRY helps me keep my code more readable and hopefully will be easier to 
+    maintain with the final few weeks of the program.
+
+    I also wrote many well documented and descriptive comments, including going into past assignments to add more.
+    The reason behind going back is to help make the code easier to read especially when I need to go back and fix
+    bugs from the previous assignments. I also worked on using more descriptive names for my data structures and 
+    variables. This also helps with readability and making it more simple and intuitive to understand what is 
+    being manipulated in each function.
 
 6. Estimated Time: PS5 -  10 hours     
-7. Actual Time:    PS5 -  hours                    
-    Learning:                        
-    Programming:          
-    Debugging:           5 hours (5 hours spent fixing assignment 4)   
+7. Actual Time:    PS5 -  13 hours                    
+    Learning:             2 hours          
+    Programming:          6 hours
+    Debugging:            5 hours (5 hours spent fixing assignment 4)   
 
 ------------------------------------------------------------------------------------------------------
 

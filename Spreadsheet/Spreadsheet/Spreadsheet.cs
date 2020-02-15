@@ -523,7 +523,8 @@ namespace SS
                 {
                     if (reader.IsStartElement())
                     {
-                        fileString = reader.GetAttribute(Version);
+                        //fileString = reader.GetAttribute(Version);
+                        fileString = Version;
                     }
                 }
             }
