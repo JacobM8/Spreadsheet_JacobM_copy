@@ -36,7 +36,9 @@ namespace SS
         public void WriteXml(XmlWriter writer)
         {
             writer.WriteStartElement("name", name);
+            writer.WriteStartElement("content", contents.ToString());
             writer.WriteElementString("contents", contents.ToString());
+            writer.WriteEndElement();
             writer.WriteEndElement();
         }
     }

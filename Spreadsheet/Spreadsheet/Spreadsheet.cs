@@ -472,23 +472,20 @@ namespace SS
         /// </summary>
         public override void Save(string filename)
         {
+            // specific settings for our XML writer
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = "  ";
+
             using (XmlWriter writer = XmlWriter.Create(filename))
             {
                 writer.WriteStartDocument();
                 writer.WriteStartElement("version");
-                writer.WriteStartElement("Cell");
                 // write each cell
                 foreach (Cell c in dictionaryOfCells.Values)
                 {
                     c.WriteXml(writer);
                 }
-                //foreach (KeyValuePair<string, Cell> entry in dictionaryOfCells)
-                //{
-                //    //entry.WriteXml(writer);
-                //    entry.write
-                //}
-                // end cell block
-                writer.WriteEndElement();
                 // end version block
                 writer.WriteEndElement();
                 // end file
@@ -497,6 +494,8 @@ namespace SS
         }
         public override string GetSavedVersion(string filename)
         {
+            // use xmlReader has a method to get the version, movetONextAttribute, moveToAttribute, see ms docs
+
             throw new NotImplementedException();
         }
 
@@ -511,11 +510,37 @@ namespace SS
             // if name isnull or invlaide throw InvalidNameException
             NameNullCheck(name);
             RegexVariableCheck(name);
-
-            throw new NotImplementedException();
+            // if name is a double return the double
+            double nameAsDouble;
+            if (double.TryParse(name, out nameAsDouble))
+            {
+                return nameAsDouble;
+            }
+            // if name is a string return the contents as a string.
+            if (!name.StartsWith("=") && name is string)
+            {
+                return dictionaryOfCells[name].contents;
+            }
+            if (name.StartsWith("="))
+            {
+                name = name.Remove(0, 1);
+                Formula formulaForName = new Formula(name);
+               // formulaForName.Evaluate();
+            }
+            // else return a FormulaError
+            return new FormulaError();
         }
 
         // helper methods
+        // Func<string, double> lookup
+        //public double LookupHelper(string name)
+       // {
+            //double result;
+            // dictionaryOfCells[name].
+
+            //return result;
+        //}
+
         /// <summary>
         /// Throws InvalidNameException if given name is not a valid variable, otherwise returns true.
         /// </summary>

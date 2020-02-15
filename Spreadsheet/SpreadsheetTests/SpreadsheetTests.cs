@@ -284,14 +284,23 @@ namespace SpreadsheetTests
         public void testSave()
         {
             Spreadsheet s = new Spreadsheet();
-            string expectedResult = "<spreadsheet version=\"default\"\n<name>A1\n<content>\"3\"";
+            string expectedResult = "<?xml version=\"default\"encoding=\" utf-8\"?\n<name>A1\n<content>\"3\"</content></name></spreadsheet>";
             string str = "3";
             s.SetContentsOfCell("A1", str);
             s.Save("filename");
             string load = System.IO.File.ReadAllText("filename");
-            Assert.AreEqual(load, expectedResult);
+            Assert.AreEqual(expectedResult, load);
 
             // another test is to create a new spreadsheet from the loaded version and check if the contents are the same
+        }
+
+        // Tests for GetCellValue
+        [TestMethod]
+        public void TestGetCellValueSimpleFormula()
+        {
+            Spreadsheet s = new Spreadsheet();
+            s.SetContentsOfCell("A1", "2");
+            Assert.AreEqual(2.0, s.GetCellValue("A1"));
         }
     }
 }
