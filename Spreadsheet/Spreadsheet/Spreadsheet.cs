@@ -296,15 +296,20 @@ namespace SS
             if (dictionaryOfCells.ContainsKey(name))
             {
                 originalContents = dictionaryOfCells[name].contents;
+                // set contents of cell
                 dictionaryOfCells[name].contents = formula;
+                // set value of cell
                 dictionaryOfCells[name].value = formula.Evaluate(DelegateLookupHelper);
+                // update cellDependencyGraph with new dependencies
                 cellDependencyGraph.ReplaceDependees(name, formula.GetVariables());
             }
             // if cells does not have name as a key, add name as a key and formula as it's value
             else
             {
                 dictionaryOfCells.Add(name, new Cell(name, formula));
+                // update value of cell
                 dictionaryOfCells[name].value = formula.Evaluate(DelegateLookupHelper);
+                // update cellDependencyGraph with new dependencies
                 cellDependencyGraph.ReplaceDependees(name, formula.GetVariables());
 
             }
@@ -461,7 +466,7 @@ namespace SS
             {
             SetCellContents(name, content);
             }
-
+            this.Changed = true;
             return new List<string>(GetCellsToRecalculate(name));
         }
 
@@ -508,6 +513,7 @@ namespace SS
                 // end file
                 writer.WriteEndDocument();
             }
+            this.Changed = false;
         }
         /// <summary>
         /// Returns the version information of the spreadsheet saved in the named file.
@@ -561,12 +567,11 @@ namespace SS
         /// <returns> double value of given cell </returns>
         public double DelegateLookupHelper(string name)
         {
-            double result;
             if (!(GetCellValue(name) is string))
             {
                 throw new ArgumentException();
-                
             }
+            double result;
             double.TryParse(dictionaryOfCells[name].contents.ToString(), out result);
             return result; 
         }

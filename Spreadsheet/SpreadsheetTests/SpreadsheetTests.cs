@@ -295,7 +295,7 @@ namespace SpreadsheetTests
             Spreadsheet s = new Spreadsheet();
             s.SetContentsOfCell("A1", "3");
             s.Save("/NonexistantFile.xml/");
-            Assert.AreEqual("default", s.GetSavedVersion(" / NonexistantFile.xml / "));
+            Assert.AreEqual("default", s.GetSavedVersion("/NonexistantFile.xml/"));
         }
 
         [TestMethod]
