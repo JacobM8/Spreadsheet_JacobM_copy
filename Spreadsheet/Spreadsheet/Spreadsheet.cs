@@ -515,6 +515,7 @@ namespace SS
             }
             this.Changed = false;
         }
+
         /// <summary>
         /// Returns the version information of the spreadsheet saved in the named file.
         /// If there are any problems opening, reading, or closing the file, the method
