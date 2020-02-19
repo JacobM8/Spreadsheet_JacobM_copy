@@ -36,10 +36,10 @@ namespace SS
         /// <param name="writer"></param>
         public void WriteXml(XmlWriter writer)
         {
-            writer.WriteStartElement("name", name);
-            writer.WriteStartElement("content", contents.ToString());
+            writer.WriteStartElement("cell");
+            writer.WriteElementString("name", name);
+           
             writer.WriteElementString("contents", contents.ToString());
-            writer.WriteEndElement();
             writer.WriteEndElement();
         }
     }

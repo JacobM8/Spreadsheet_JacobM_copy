@@ -22,7 +22,7 @@ namespace SpreadsheetTests
         public void TestConstructor()
         {
             // Test new constructor is empty
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
         }
 
@@ -31,7 +31,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(InvalidNameException))]
         public void TestGetCellContentsWhenNull()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
             s.GetCellContents(null);
         }
@@ -39,7 +39,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestGetCellContentsWhenDoubleSimple()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string str = "1";
             Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
             s.SetContentsOfCell("A1", str);
@@ -49,7 +49,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestGetCellContentsWhenStringSimple()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
             string str = "String Test";
             s.SetContentsOfCell("A1", str);
@@ -59,7 +59,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestGetCellContentsWhenFormulaSimple()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
             string str = "=2+2";
             s.SetContentsOfCell("A1", str);
@@ -69,7 +69,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestGetCellContentsWhenKeyIsNotContainedSimple()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
             Assert.AreEqual("", s.GetCellContents("A1"));
         }
@@ -78,7 +78,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(InvalidNameException))]
         public void TestGetCellContentsWhenInvalidVariable()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             Dictionary<string, Cell> cells = new Dictionary<string, Cell>();
             string var = "3m2";
             s.GetCellContents(var);
@@ -88,7 +88,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(InvalidNameException))]
         public void TestGetCellContentsString()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             s.GetCellContents(null);
         }
 
@@ -96,7 +96,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(InvalidNameException))]
         public void TestGetCellContentsDouble()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             s.GetCellContents(null);
         }
 
@@ -104,14 +104,14 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(InvalidNameException))]
         public void TestGetCellContentsFormula()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             s.GetCellContents(null);
         }
 
         [TestMethod]
         public void TestSetContentsOfCellAsDouble()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string d = "32.2";
             s.SetContentsOfCell("A1", d);
             Assert.AreEqual(32.2, s.GetCellContents("A1"));
@@ -121,7 +121,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(InvalidNameException))]
         public void TestSetContentsOfCellWhenCellNameIsInvalidVariable()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string d = "32.2";
             s.SetContentsOfCell("3L2", d);
             Assert.AreEqual(d, s.GetCellContents("3L2"));
@@ -131,7 +131,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(InvalidNameException))]
         public void TestSetContentsOfCellWhenCellNameIsNull()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string d = "32.2";
             string str = null;
             s.SetContentsOfCell(str, d);
@@ -141,7 +141,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestSetContentsOfCellWhenCellNameIsAlreadyContained()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string d = "32.2";
             string str = "x1";
             string str1 = "44";
@@ -153,7 +153,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestSetContentsOfCellWhenCellNameIsAlreadyContainedAndItIsAFormula()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string f = "=2+2";
             string d = "38.4";
             string str = "x1";
@@ -166,7 +166,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestSetContentsOfCellWhenCellContentsIsANullString()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string str = null;
             s.SetContentsOfCell("x1", str);
         }
@@ -175,7 +175,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(InvalidNameException))]
         public void TestSetContentsOfCellWhenCellNameIsANullString()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string str = null;
             s.SetContentsOfCell(str, "=2+2");
         }
@@ -184,7 +184,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(InvalidNameException))]
         public void TestSetContentsOfCellWhenCellNameIsAnInvalidVariable()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string str = "3x";
             s.SetContentsOfCell(str, "=2+2");
         }
@@ -192,7 +192,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestSetContentsOfCellWhenCellNameIsAlreadyContainedAndItIsAString()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string str = "x1";
             s.SetContentsOfCell(str, "=2+2");
             s.SetContentsOfCell("x1", "=4+4");
@@ -202,7 +202,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestSetContentsOfCellWhenCellNameIsAlreadyContainedAsAStringAndContentsIsAFormula()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string f = "=2+2";
             string str1 = "=3*2";
             string str = "x1";
@@ -215,7 +215,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestSetContentsOfCellWhenFormulaIsSetAsNull()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string f = null;
             string str = "x1";
             s.SetContentsOfCell(str, f);
@@ -225,7 +225,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(InvalidNameException))]
         public void TestSetContentsOfCellWhenCellNameIsAnInvalidVariableAndConentsIsAFormula()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string f = "=2+2";
             string str = "3x";
             s.SetContentsOfCell(str, f);
@@ -234,7 +234,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestSetContentsOfCellWhenCellNameIsAlreadyContainedAndContentsAreAFormula()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string f = "=2+2";
             string f1 = "=4*4";
             s.SetContentsOfCell("x1", f);
@@ -246,13 +246,13 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestGetNamesOfAllNonemptyCellsReturnsCorrectEnermerable()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string d = "32.2";
             string str = "341.0";
             s.SetContentsOfCell("A1", d);
             s.SetContentsOfCell("A2", d);
             s.SetContentsOfCell("A3", str);
-            Spreadsheet s1 = new Spreadsheet();
+            AbstractSpreadsheet s1 = new Spreadsheet();
             s1.SetContentsOfCell("A1", d);
             s1.SetContentsOfCell("A2", d);
             s1.SetContentsOfCell("A3", str);
@@ -262,7 +262,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestGetNamesOfAllNonemptyCellsIsNotNull()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string d = "32.2";
             string str = "341.0";
             s.SetContentsOfCell("A1", d);
@@ -276,7 +276,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(IOException))]
         public void testSave()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             string expectedResult = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<version version=\"default\">\n  <name xmlns=\"A1\">\n    <content xmlns=\"3\">" +
                 "\n      <contents>3</contents>\n    </content>\n  </name>\n</version>";
             string str = "3";
@@ -292,7 +292,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(IOException))]
         public void TestGetSavedVersion()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             s.SetContentsOfCell("A1", "3");
             s.Save("/NonexistantFile.xml/");
             Assert.AreEqual("default", s.GetSavedVersion("/NonexistantFile.xml/"));
@@ -302,7 +302,7 @@ namespace SpreadsheetTests
         [ExpectedException(typeof(DirectoryNotFoundException))]
         public void TestSaveThrowsException()
         {
-            Spreadsheet ss = new Spreadsheet();
+            AbstractSpreadsheet ss = new Spreadsheet();
             ss.Save("/some/nonsense/path.xml");
         }
 
@@ -310,7 +310,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestGetCellValueSimpleDouble()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             s.SetContentsOfCell("A1", "2");
             Assert.AreEqual(2.0, s.GetCellValue("A1"));
         }
@@ -318,7 +318,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestGetCellValueSimpleString()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             s.SetContentsOfCell("A1", "hello");
             Assert.AreEqual("hello", s.GetCellValue("A1"));
         }
@@ -326,7 +326,7 @@ namespace SpreadsheetTests
         [TestMethod]
         public void TestGetCellValueSimpleFormula()
         {
-            Spreadsheet s = new Spreadsheet();
+            AbstractSpreadsheet s = new Spreadsheet();
             s.SetContentsOfCell("A1", "=2+2");
             Assert.AreEqual(4.0, s.GetCellValue("A1"));
         }
@@ -347,7 +347,7 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(InvalidNameException))]
             public void TestEmptyGetNull()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.GetCellContents(null);
             }
 
@@ -355,14 +355,14 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(InvalidNameException))]
             public void TestEmptyGetContents()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.GetCellContents("1AA");
             }
 
             [TestMethod()]
             public void TestGetEmptyContents()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 Assert.AreEqual("", s.GetCellContents("A2"));
             }
 
@@ -371,7 +371,7 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(InvalidNameException))]
             public void TestSetNullDouble()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell(null, "1.5");
             }
 
@@ -379,7 +379,7 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(InvalidNameException))]
             public void TestSetInvalidNameDouble()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("1A1A", "1.5");
             }
 
@@ -396,7 +396,7 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(ArgumentNullException))]
             public void TestSetNullStringVal()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("A8", (string)null);
             }
 
@@ -404,7 +404,7 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(InvalidNameException))]
             public void TestSetNullStringName()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell(null, "hello");
             }
 
@@ -412,14 +412,14 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(InvalidNameException))]
             public void TestSetSimpleString()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("1AZ", "hello");
             }
 
             [TestMethod()]
             public void TestSetGetSimpleString()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("Z7", "hello");
                 Assert.AreEqual("hello", s.GetCellContents("Z7"));
             }
@@ -429,7 +429,7 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(ArgumentNullException))]
             public void TestSetNullFormVal()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("A8", null);
             }
 
@@ -437,7 +437,7 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(InvalidNameException))]
             public void TestSetNullFormName()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell(null, "=2");
             }
 
@@ -445,14 +445,14 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(InvalidNameException))]
             public void TestSetSimpleForm()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("1AZ", "=2");
             }
 
             [TestMethod()]
             public void TestSetGetForm()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("Z7", "=3");
                 Formula f = (Formula)s.GetCellContents("Z7");
                 Assert.AreEqual(new Formula("3"), f);
@@ -464,7 +464,7 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(CircularException))]
             public void TestSimpleCircular()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("A1", "=A2");
                 s.SetContentsOfCell("A2", "=A1");
             }
@@ -473,7 +473,7 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(CircularException))]
             public void TestComplexCircular()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("A1", "=A2+A3");
                 s.SetContentsOfCell("A3", "=A4+A5");
                 s.SetContentsOfCell("A5", "=A6+A7");
@@ -484,7 +484,7 @@ namespace SpreadsheetTests
             [ExpectedException(typeof(CircularException))]
             public void TestUndoCircular()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 try
                 {
                     s.SetContentsOfCell("A1", "=A2+A3");
@@ -503,14 +503,14 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestEmptyNames()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 Assert.IsFalse(s.GetNamesOfAllNonemptyCells().GetEnumerator().MoveNext());
             }
 
             [TestMethod()]
             public void TestExplicitEmptySet()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("B1", "");
                 Assert.IsFalse(s.GetNamesOfAllNonemptyCells().GetEnumerator().MoveNext());
             }
@@ -518,7 +518,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestSimpleNamesString()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("B1", "hello");
                 Assert.IsTrue(new HashSet<string>(s.GetNamesOfAllNonemptyCells()).SetEquals(new HashSet<string>() { "B1" }));
             }
@@ -526,7 +526,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestSimpleNamesDouble()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("B1", "52.25");
                 Assert.IsTrue(new HashSet<string>(s.GetNamesOfAllNonemptyCells()).SetEquals(new HashSet<string>() { "B1" }));
             }
@@ -534,7 +534,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestSimpleNamesFormula()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("B1", "3.5");
                 Assert.IsTrue(new HashSet<string>(s.GetNamesOfAllNonemptyCells()).SetEquals(new HashSet<string>() { "B1" }));
             }
@@ -542,7 +542,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestMixedNames()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("A1", "17.2");
                 s.SetContentsOfCell("C1", "hello");
                 s.SetContentsOfCell("B1", "3.5");
@@ -553,7 +553,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestSetSingletonDouble()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("B1", "hello");
                 s.SetContentsOfCell("C1", "5");
 
@@ -563,7 +563,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestSetSingletonString()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("A1", "17.2");
                 s.SetContentsOfCell("C1", "5");
                 Assert.IsTrue(new HashSet<string>(s.SetContentsOfCell("B1", "hello")).SetEquals(new HashSet<string>() { "B1" }));
@@ -572,7 +572,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestSetSingletonFormula()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("A1", "17.2");
                 s.SetContentsOfCell("B1", "hello");
                 Assert.IsTrue(new HashSet<string>(s.SetContentsOfCell("C1", "5")).SetEquals(new HashSet<string>() { "C1" }));
@@ -581,7 +581,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestSetChain()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("A1", "=A2+A3");
                 s.SetContentsOfCell("A2", "6");
                 s.SetContentsOfCell("A3", "=A2+A4");
@@ -593,7 +593,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestChangeFtoD()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("A1", "=A2+A3");
                 s.SetContentsOfCell("A1", "2.5");
                 Assert.AreEqual(2.5, (double)s.GetCellContents("A1"), 1e-9);
@@ -602,7 +602,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestChangeFtoS()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("A1", "=A2+A3");
                 s.SetContentsOfCell("A1", "Hello");
                 Assert.AreEqual("Hello", (string)s.GetCellContents("A1"));
@@ -611,7 +611,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestChangeStoF()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("A1", "Hello");
                 s.SetContentsOfCell("A1", "23");
                 Assert.AreEqual(new Formula("23"), s.GetCellContents("A1"));
@@ -622,7 +622,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestStress1()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 s.SetContentsOfCell("A1", "=B1+B2");
                 s.SetContentsOfCell("B1", "=C1-C2");
                 s.SetContentsOfCell("B2", "=C3*C4");
@@ -662,7 +662,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestStress2()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 ISet<String> cells = new HashSet<string>();
                 for (int i = 1; i < 200; i++)
                 {
@@ -689,7 +689,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestStress3()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 for (int i = 1; i < 200; i++)
                 {
                     s.SetContentsOfCell("A" + i, "=A" + (i + 1));
@@ -723,7 +723,7 @@ namespace SpreadsheetTests
             [TestMethod()]
             public void TestStress4()
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 for (int i = 0; i < 500; i++)
                 {
                     s.SetContentsOfCell("A1" + i, ("=A1" + (i + 1)));
@@ -785,7 +785,7 @@ namespace SpreadsheetTests
             /// <param name="size">The known resulting spreadsheet size, given the seed</param>
             public void RunRandomizedTest(int seed, int size)
             {
-                Spreadsheet s = new Spreadsheet();
+                AbstractSpreadsheet s = new Spreadsheet();
                 Random rand = new Random(seed);
                 for (int i = 0; i < 10000; i++)
                 {

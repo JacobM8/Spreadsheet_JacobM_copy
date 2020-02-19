@@ -18,7 +18,7 @@ namespace SS
         Dictionary<string, Cell> dictionaryOfCells;
         DependencyGraph cellDependencyGraph;
 
-        public override bool Changed { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
+        public override bool Changed { get; protected set; }
 
         /// <summary>
         /// Creates a an empty spreadsheet (Dictionary) with zero arguments.
@@ -34,7 +34,7 @@ namespace SS
         /// <param name="isValid"> verifies variables are valid </param>
         /// <param name="normalize"> normalize "n" to "N" </param>
         /// <param name="version"> specified version of spreadsheet </param>
-        public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(s => true, s => s, version)
+        public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
         {
             // initialize data structures
             dictionaryOfCells = new Dictionary<string, Cell>();
@@ -48,37 +48,56 @@ namespace SS
         /// <param name="isValid"> verifies variables are valid </param>
         /// <param name="normalize"> normalize "n" to "N" </param>
         /// <param name="version"> specified version of spreadsheet </param>
-        public Spreadsheet(String pathToFile, Func<string, bool> isValid, Func<string, string> normalize, string version) : base(s => true, s => s, version)
+        public Spreadsheet(String pathToFile, Func<string, bool> isValid, Func<string, string> normalize, string version) : base(isValid, normalize, version)
         {
             dictionaryOfCells = new Dictionary<string, Cell>();
             cellDependencyGraph = new DependencyGraph();
-            using (XmlReader reader = XmlReader.Create(pathToFile))
+            try
             {
-                while (reader.Read())
+                using (XmlReader reader = XmlReader.Create(pathToFile))
                 {
-                    if (reader.IsStartElement())
+                    string name = null;
+                    string contents = null;
+                    while (reader.Read())
                     {
-                        switch (reader.Name) 
+                        if (reader.IsStartElement())
                         {
-                            case "Spreadsheet":
-                                if (version == null)
-                                {
-                                    this.Version = reader["version"];
-                                    Console.WriteLine("version: " + reader["cell"]);
-                                }
-                                break; 
-                            case "Cell":
-                                string name;
-                                reader.Read();
-                                name = reader.Value;
-                                string contents;
-                                reader.Read();
-                                contents = reader.Value;
-                                this.SetContentsOfCell(name, contents);
-                                break;
+                            switch (reader.Name)
+                            {
+                                case "spreadsheet":
+                                    if (version == null)
+                                    {
+                                        this.Version = reader["version"];
+                                        Console.WriteLine("version: " + reader["cell"]);
+                                    }
+                                    break;
+                                case "cell":
+                                    if (name != null)
+                                    {
+                                        this.SetCellContents(name, contents);
+                                    }
+                                    break;
+                                case "name":
+                                    reader.Read();
+                                    name = reader.Value;
+                                    break;
+                                case "contents":
+                                    reader.Read();
+                                    contents = reader.Value;
+                                    break;
+                            }
                         }
                     }
+                    // set contents of last cell
+                    if (name != null)
+                    {
+                        this.SetCellContents(name, contents);
+                    }
                 }
+            }
+            catch
+            {
+                throw new SpreadsheetReadWriteException("Error while reading in file");
             }
         }
 
@@ -99,8 +118,8 @@ namespace SS
         public override object GetCellContents(string name)
         {
             // throw InvalidNameException if name is null or invalid 
-            NameNullCheck(name);
-            RegexVariableCheck(name);
+            RegexVariableAndNullCheck(name);
+            name = base.Normalize(name);
             // if name isn't in cell dicitonary return empty string
             if (!dictionaryOfCells.ContainsKey(name))
             {
@@ -155,8 +174,7 @@ namespace SS
         protected override IList<string> SetCellContents(string name, double number)
         {
             // if name is null or not valid throw InvalidNameException
-            NameNullCheck(name);
-            RegexVariableCheck(name);
+            RegexVariableAndNullCheck(name);
             // if cells has name as a key add number to name
             if (dictionaryOfCells.ContainsKey(name))
             {
@@ -176,7 +194,7 @@ namespace SS
                 dictionaryOfCells[name].value = number;
             }
             // return the cell name and all values that depend on the cell name
-            return new List<string>(GetCellsToRecalculate(name));
+            return new List<string>(RecalculateCells(name));
         }
 
         /// <summary>
@@ -217,8 +235,7 @@ namespace SS
             // if text is null throw ArgumentNullException
             ObjectNullCheck(text);
             // if name is null or invalid throw exception
-            NameNullCheck(name);
-            RegexVariableCheck(name);
+            RegexVariableAndNullCheck(name);
             if (!text.Equals(""))
             {
                 // if cells has name as a key add text to name
@@ -241,7 +258,7 @@ namespace SS
                 }
             }
             // return the cell name and all values that depend on the cell name
-            return new List<string>(GetCellsToRecalculate(name));
+            return new List<string>(RecalculateCells(name)); 
         }
 
         /// <summary>
@@ -288,8 +305,15 @@ namespace SS
             // if formula is null throw ArgumentNullException
             ObjectNullCheck(formula);
             // if name is null or invalid throw exception
-            NameNullCheck(name);
-            RegexVariableCheck(name);
+            RegexVariableAndNullCheck(name);
+            // ensure each cell in formula isValid
+            foreach (string s in formula.GetVariables())
+            {
+                if (!(this.IsValid(s)))
+                {
+                    throw new FormulaFormatException("invalid formula");
+                }
+            }
             // copy of original cell contents to reset value if circular exception is thrown
             object originalContents = null;
             // if cells has name as a key add formula to name and set originalContents before changing
@@ -362,8 +386,7 @@ namespace SS
         protected override IEnumerable<string> GetDirectDependents(string name)
         {
             // if name is null or invalid throw exception
-            NameNullCheck(name);
-            RegexVariableCheck(name);
+            RegexVariableAndNullCheck(name);
             // return enumeration of all values that depend on the cell name
             return cellDependencyGraph.GetDependents(name);
         }
@@ -443,9 +466,15 @@ namespace SS
         public override IList<string> SetContentsOfCell(string name, string content)
         {
             // check for Null and invalidNames
-            NameNullCheck(name);
-            ObjectNullCheck(name);
+            RegexVariableAndNullCheck(name);
             ObjectNullCheck(content);
+            // ensure name is valid
+            if (!(this.IsValid(name)))
+            {
+                throw new InvalidNameException();
+            }
+            // normalize
+            name = base.Normalize(name);
 
             // if contents can be parsed as a double call SetCellContents(string, double) with contentAsDouble
             double contentAsDouble = 0;
@@ -457,17 +486,17 @@ namespace SS
             else if (content.StartsWith("="))
             {
                 // remove "=" from content
-                content = content.Remove(0, 1);
-                Formula formulaFromContent = new Formula(content);
+                string contentWithoutEqualsSign = content.Remove(0, 1);
+                Formula formulaFromContent = new Formula(contentWithoutEqualsSign);
                 SetCellContents(name, formulaFromContent);
             }
             // otherwise call SetCellContent(string, string) to save the string as the cell contents
             else
             {
-            SetCellContents(name, content);
+                SetCellContents(name, content);
             }
             this.Changed = true;
-            return new List<string>(GetCellsToRecalculate(name));
+            return new List<string>(RecalculateCells(name));
         }
 
         /// <summary>
@@ -493,6 +522,8 @@ namespace SS
         /// </summary>
         public override void Save(string filename)
         {
+            try
+            {
             // specific settings for our XML writer
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
@@ -501,7 +532,7 @@ namespace SS
             using (XmlWriter writer = XmlWriter.Create(filename, settings))
             {
                 writer.WriteStartDocument();
-                writer.WriteStartElement("version");
+                writer.WriteStartElement("spreadsheet");
                 writer.WriteAttributeString("version", Version);
                 // write each cell
                 foreach (Cell c in dictionaryOfCells.Values)
@@ -513,7 +544,13 @@ namespace SS
                 // end file
                 writer.WriteEndDocument();
             }
+            //** catch errors if something happens when writing
             this.Changed = false;
+            }
+            catch
+            {
+                throw new SpreadsheetReadWriteException("file does not exist");
+            }
         }
 
         /// <summary>
@@ -523,21 +560,34 @@ namespace SS
         /// </summary>
         public override string GetSavedVersion(string filename)
         {
-            string fileString = "";
-            // use xmlReader has a method to get the version, movetONextAttribute, moveToAttribute, see ms docs
-            using (XmlReader reader = XmlReader.Create(filename))
+            try
             {
-                while (reader.Read())
+                string fileString = "";
+                // use xmlReader has a method to get the version, movetONextAttribute, moveToAttribute, see ms docs
+                using (XmlReader reader = XmlReader.Create(filename))
                 {
-                    if (reader.IsStartElement())
+                    while (reader.Read())
                     {
-                        //fileString = reader.GetAttribute(Version);
-                        fileString = Version;
+                        if (reader.IsStartElement())
+                        {
+                            //reader.MoveToNextAttribute(); // may or may not need
+                            switch (reader.Name)
+                            {
+                                case "Spreadsheet":
+                                return reader["version"];
+                            }
+                        }
                     }
                 }
+                return fileString;
             }
-            return fileString; 
+            catch
+            {
+                // TODO change to correct exception
+                throw new SpreadsheetReadWriteException("Error while reading in file");
+            }
         }
+        //** catch errors if something happens when writing
 
         /// <summary>
         /// If name is null or invalid, throws an InvalidNameException.
@@ -547,9 +597,9 @@ namespace SS
         /// </summary>
         public override object GetCellValue(string name)
         {
+            base.Normalize(name);
             // if name isnull or invlaide throw InvalidNameException
-            NameNullCheck(name);
-            RegexVariableCheck(name);
+            RegexVariableAndNullCheck(name);
             // return value of given cell name if it exists
             if (dictionaryOfCells.ContainsKey(name))
             {
@@ -560,7 +610,41 @@ namespace SS
         }
 
         // helper methods
-        // Func<string, double> lookup
+        // TODO add header comment
+        /// <summary>
+        /// A method that iterates through GetCellsToRecalculate and recalculates each cell if it is a formula and updates the value accordingly 
+        /// in dictionaryOfCells
+        /// </summary>
+        /// 
+        /// <param name="names"> List of names that need to be recalculated </param>
+        /// 
+        /// <returns> Enumerable GetCellsToRecalculate after it has recaluculated the value of any changed cells </returns>
+        public IEnumerable<string> RecalculateCells(ISet<string> names)
+        {
+            // create a list of enumerable GetCellsToRecalculate so it doesn't go through the depth first search in GetCellsToRecalculate twice
+            List<string> copyOfGetCellsToRecalculate = new List<string>(GetCellsToRecalculate(names));
+            // iterate through each cell to recalculate and if it is a formula set its value in teh dictionaryOfCells
+            foreach (string s in copyOfGetCellsToRecalculate)
+            {
+                if (dictionaryOfCells[s].contents is Formula)
+                {
+                    dictionaryOfCells[s].value = ((Formula)dictionaryOfCells[s].contents).Evaluate(DelegateLookupHelper);
+                }
+            }
+            return copyOfGetCellsToRecalculate;
+        }
+
+        /// <summary>
+        /// A convience method for invoking the other version of RecalculateCells.
+        /// See other version for details.
+        /// </summary>
+        /// <param name="names"> name of a given cell whose value needs to be recalculated </param>
+        /// <returns> A list of cells after their values have been recalculated </returns>
+        public IEnumerable<string> RecalculateCells(string names)
+        {
+            return RecalculateCells(new HashSet<string> { names });
+        }
+
         /// <summary>
         /// Delegate lookup, used to lookup variable in dictionaryOfCells
         /// </summary>
@@ -568,41 +652,33 @@ namespace SS
         /// <returns> double value of given cell </returns>
         public double DelegateLookupHelper(string name)
         {
-            if (!(GetCellValue(name) is string))
+            name = base.Normalize(name);
+            if (!(GetCellValue(name) is double))
             {
                 throw new ArgumentException();
             }
-            double result;
-            double.TryParse(dictionaryOfCells[name].contents.ToString(), out result);
-            return result; 
+            return (double)GetCellValue(name);
         }
         /// <summary>
-        /// Throws InvalidNameException if given name is not a valid variable, otherwise returns true.
+        /// Throws InvalidNameException if given name is not a valid variable or is equal to null, otherwise returns true.
         /// </summary>
         /// <param name="name"> string to check if it's a variable </param>
         /// <returns> true if "s" is a variable</returns>
-        public bool RegexVariableCheck(string name)
+        public bool RegexVariableAndNullCheck(string name)
         {
+            // Throws InvalidNameException if given name is equal to null
+            if (name == null)
+            {
+                throw new InvalidNameException();
+            }
             // return true if given string matches correct variable check
-            if (Regex.IsMatch(name, @"^[a-zA-Z_](?:[a-zA-Z_]|\d)*"))
+            if (Regex.IsMatch(name, @"^[a-zA-Z](?:[a-zA-Z]|\d)*"))
             {
                 return true;
             }
             throw new InvalidNameException();
         }
-        /// <summary>
-        /// Throws InvalidNameException if given name is equal to null, otherwise returns false.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public bool NameNullCheck(string name)
-        {
-            if (name == null)
-            {
-                throw new InvalidNameException();
-            }
-            return false;
-        }
+
         /// <summary>
         /// Throws ArgumentNullException if given object is null, otherwise returns false.
         /// </summary>
