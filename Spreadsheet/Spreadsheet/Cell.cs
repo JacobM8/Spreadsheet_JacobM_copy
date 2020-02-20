@@ -38,8 +38,15 @@ namespace SS
         {
             writer.WriteStartElement("cell");
             writer.WriteElementString("name", name);
-           
-            writer.WriteElementString("contents", contents.ToString());
+            // if contents is a Formula append "=" back to the beginning of the contents
+            if(contents is Formula) 
+            { 
+                writer.WriteElementString("contents", "=" + contents.ToString());
+            }
+            else
+            {
+                writer.WriteElementString("contents", contents.ToString());
+            }
             writer.WriteEndElement();
         }
     }

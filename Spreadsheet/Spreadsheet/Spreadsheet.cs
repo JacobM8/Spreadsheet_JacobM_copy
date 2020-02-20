@@ -64,17 +64,26 @@ namespace SS
                         {
                             switch (reader.Name)
                             {
+                                // 4 cases for bringing in data from saved version: spreadsheet, cell, name, contents
                                 case "spreadsheet":
                                     if (version == null)
                                     {
                                         this.Version = reader["version"];
                                         Console.WriteLine("version: " + reader["cell"]);
                                     }
+                                    else
+                                    {
+                                        if (!version.Equals(reader["version"]))
+                                        {
+                                            throw new SpreadsheetReadWriteException("test");
+                                        }
+                                        this.Version = reader["version"];
+                                    }
                                     break;
                                 case "cell":
                                     if (name != null)
                                     {
-                                        this.SetCellContents(name, contents);
+                                        this.SetContentsOfCell(name, contents);
                                     }
                                     break;
                                 case "name":
@@ -91,7 +100,8 @@ namespace SS
                     // set contents of last cell
                     if (name != null)
                     {
-                        this.SetCellContents(name, contents);
+                        this.SetContentsOfCell(name, contents);
+                        
                     }
                 }
             }
@@ -544,7 +554,6 @@ namespace SS
                 // end file
                 writer.WriteEndDocument();
             }
-            //** catch errors if something happens when writing
             this.Changed = false;
             }
             catch
@@ -563,7 +572,7 @@ namespace SS
             try
             {
                 string fileString = "";
-                // use xmlReader has a method to get the version, movetONextAttribute, moveToAttribute, see ms docs
+                // use XmlReader to get spreadsheet name and version
                 using (XmlReader reader = XmlReader.Create(filename))
                 {
                     while (reader.Read())
@@ -586,7 +595,6 @@ namespace SS
                 throw new SpreadsheetReadWriteException("Error while getting saved version");
             }
         }
-        //** catch errors if something happens when writing
 
         /// <summary>
         /// If name is null or invalid, throws an InvalidNameException.
@@ -609,7 +617,6 @@ namespace SS
         }
 
         // helper methods
-        // TODO add header comment
         /// <summary>
         /// A method that iterates through GetCellsToRecalculate and recalculates each cell if it is a formula and updates the value accordingly 
         /// in dictionaryOfCells
@@ -661,6 +668,7 @@ namespace SS
             }
             return (double)GetCellValue(name);
         }
+
         /// <summary>
         /// Throws InvalidNameException if given name is not a valid variable or is equal to null, otherwise returns true.
         /// </summary>
