@@ -573,7 +573,7 @@ namespace SS
                             //reader.MoveToNextAttribute(); // may or may not need
                             switch (reader.Name)
                             {
-                                case "Spreadsheet":
+                                case "spreadsheet":
                                 return reader["version"];
                             }
                         }
@@ -583,8 +583,7 @@ namespace SS
             }
             catch
             {
-                // TODO change to correct exception
-                throw new SpreadsheetReadWriteException("Error while reading in file");
+                throw new SpreadsheetReadWriteException("Error while getting saved version");
             }
         }
         //** catch errors if something happens when writing
@@ -597,7 +596,7 @@ namespace SS
         /// </summary>
         public override object GetCellValue(string name)
         {
-            base.Normalize(name);
+            name = base.Normalize(name);
             // if name isnull or invlaide throw InvalidNameException
             RegexVariableAndNullCheck(name);
             // return value of given cell name if it exists
@@ -605,8 +604,8 @@ namespace SS
             {
                 return dictionaryOfCells[name].value;
             }
-            // else return a FormulaError
-            return new FormulaError();
+            // else return an empty string
+            return "";
         }
 
         // helper methods
@@ -626,9 +625,12 @@ namespace SS
             // iterate through each cell to recalculate and if it is a formula set its value in teh dictionaryOfCells
             foreach (string s in copyOfGetCellsToRecalculate)
             {
-                if (dictionaryOfCells[s].contents is Formula)
+                if (dictionaryOfCells.ContainsKey(s))
                 {
-                    dictionaryOfCells[s].value = ((Formula)dictionaryOfCells[s].contents).Evaluate(DelegateLookupHelper);
+                    if (dictionaryOfCells[s].contents is Formula)
+                    {
+                        dictionaryOfCells[s].value = ((Formula)dictionaryOfCells[s].contents).Evaluate(DelegateLookupHelper);
+                    }
                 }
             }
             return copyOfGetCellsToRecalculate;
