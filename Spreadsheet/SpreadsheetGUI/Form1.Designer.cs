@@ -137,6 +137,8 @@ namespace SpreadsheetGrid_Core
             this.CellValueTextBox.Size = new System.Drawing.Size(250, 31);
             this.CellValueTextBox.TabIndex = 0;
             this.CellValueTextBox.TextChanged += new System.EventHandler(this.CellValueTextBox_TextChanged);
+            this.CellValueTextBox.ReadOnly = true;
+
             // 
             // CellValueLabel
             // 
@@ -177,6 +179,8 @@ namespace SpreadsheetGrid_Core
             this.SelectedCellTextBox.Size = new System.Drawing.Size(250, 31);
             this.SelectedCellTextBox.TabIndex = 5;
             this.SelectedCellTextBox.TextChanged += new System.EventHandler(this.SelectedCellTextBox_TextChanged);
+            this.SelectedCellTextBox.ReadOnly = true;
+
             // 
             // CellContentsLabel
             // 

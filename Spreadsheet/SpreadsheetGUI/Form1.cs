@@ -8,11 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SS;
 
 namespace SpreadsheetGrid_Core
 {
     public partial class Form1 : Form
     {
+        Spreadsheet spreadsheet = new Spreadsheet();
         public Form1()
         {
             this.grid_widget = new SpreadsheetGridWidget();
@@ -148,17 +150,56 @@ namespace SpreadsheetGrid_Core
 
         private void SelectedCellTextBox_TextChanged(object sender, EventArgs e)
         {
-
+            // get column and row location
+            grid_widget.GetSelection(out int col, out int row);
+            // use ascii value to convert column location to a letter
+            char letter = (char)('A' + col);
+            string rowLocation = "" + letter;
+            // append rowLocation and col.ToString() and set to cellLocation
+            string cellLocation = rowLocation + col.ToString();
+            SelectedCellTextBox.Text = cellLocation;
         }
 
         private void CellValueTextBox_TextChanged(object sender, EventArgs e)
         {
+            Console.WriteLine("test");
 
+            // get column and row location
+            grid_widget.GetSelection(out int col, out int row);
+            // use ascii value to convert column location to a letter
+            char letter = (char)('A' + col);
+            string rowLocation = "" + letter;
+            // append rowLocation and col.ToString() and set to cellLocation
+            string cellLocation = rowLocation + col.ToString();
+            // calculate value of cell
+            spreadsheet.GetCellValue(cellLocation);
+            grid_widget.GetValue(col, row, out string value);
+            CellValueTextBox.AppendText(spreadsheet.GetCellValue(cellLocation).ToString());
         }
 
         private void CellContentsTextBox_TextChanged(object sender, EventArgs e)
         {
+            // get column and row location
+            grid_widget.GetSelection(out int col, out int row);
+            // use ascii value to convert column location to a letter
+            char letter = (char)('A' + col);
+            string rowLocation = "" + letter;
+            // set cell location with rowLocation and col.ToString
+            string cellLocation = rowLocation + col.ToString();
+            // setContentsOfCell in our spreadsheet
+            spreadsheet.SetContentsOfCell(cellLocation, CellContentsTextBox.Text);
+            // set cell with same contents as CellContentsTextBox
 
+            // TODO need to be able to take in a formula and clear textbox after a new cell is selected
+            if (CellContentsTextBox.Text.StartsWith("="))
+            {
+                string valueOfFormula = spreadsheet.SetContentsOfCell(cellLocation, CellContentsTextBox.Text).ToString();
+                grid_widget.SetValue(col, row, valueOfFormula);
+            }
+            else
+            {
+            grid_widget.SetValue(col, row, CellContentsTextBox.Text);
+            }
         }
 
         private void SelectedCellLabel_Click_1(object sender, EventArgs e)
