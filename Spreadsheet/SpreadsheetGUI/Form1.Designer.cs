@@ -106,7 +106,6 @@ namespace SpreadsheetGrid_Core
             this.MainControlArea.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.MainControlArea.Size = new System.Drawing.Size(1672, 192);
             this.MainControlArea.TabIndex = 4;
-            this.MainControlArea.Paint += new System.Windows.Forms.PaintEventHandler(this.MainControlArea_Paint);
             // 
             // tableLayoutForSelectedCellValueContents
             // 
@@ -136,7 +135,6 @@ namespace SpreadsheetGrid_Core
             this.CellValueTextBox.Name = "CellValueTextBox";
             this.CellValueTextBox.Size = new System.Drawing.Size(250, 31);
             this.CellValueTextBox.TabIndex = 0;
-            this.CellValueTextBox.TextChanged += new System.EventHandler(this.CellValueTextBox_TextChanged);
             this.CellValueTextBox.ReadOnly = true;
 
             // 
@@ -169,7 +167,7 @@ namespace SpreadsheetGrid_Core
             this.CellContentsTextBox.Name = "CellContentsTextBox";
             this.CellContentsTextBox.Size = new System.Drawing.Size(750, 31);
             this.CellContentsTextBox.TabIndex = 4;
-            this.CellContentsTextBox.TextChanged += new System.EventHandler(this.CellContentsTextBox_TextChanged);
+            this.CellContentsTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CellContentsTextBox_KeyDown);
             // 
             // SelectedCellTextBox
             // 
@@ -178,7 +176,6 @@ namespace SpreadsheetGrid_Core
             this.SelectedCellTextBox.Name = "SelectedCellTextBox";
             this.SelectedCellTextBox.Size = new System.Drawing.Size(250, 31);
             this.SelectedCellTextBox.TabIndex = 5;
-            this.SelectedCellTextBox.TextChanged += new System.EventHandler(this.SelectedCellTextBox_TextChanged);
             this.SelectedCellTextBox.ReadOnly = true;
 
             // 
@@ -222,10 +219,6 @@ namespace SpreadsheetGrid_Core
             this.grid_widget.Name = "grid_widget";
             this.grid_widget.Size = new System.Drawing.Size(1672, 756);
             this.grid_widget.TabIndex = 0;
-            this.grid_widget.Load += new System.EventHandler(this.grid_widget_Load);
-            this.grid_widget.KeyDown += new System.Windows.Forms.KeyEventHandler(this.grid_widget_KeyDown);
-            this.grid_widget.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.grid_widget_KeyPress);
-            this.grid_widget.KeyUp += new System.Windows.Forms.KeyEventHandler(this.grid_widget_KeyUp);
             // 
             // saveToolStripMenuItem
             // 
@@ -252,7 +245,6 @@ namespace SpreadsheetGrid_Core
             this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "SimpleSpreadsheetGUI";
             this.Text = "Sample GUI - Copy/Modify/Profit";
-            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SimpleSpreadsheetGUI_KeyPress);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.MainControlArea.ResumeLayout(false);
