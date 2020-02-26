@@ -23,7 +23,7 @@ namespace SpreadsheetGrid_Core
             InitializeComponent();
 
             // Add event handler and select a start cell
-            grid_widget.SelectionChanged += DisplaySelection;
+            grid_widget.SelectionChanged += grid_widget_Click;
             grid_widget.SetSelection(2, 2, false);
 
 
@@ -64,45 +64,15 @@ namespace SpreadsheetGrid_Core
             Close();
         }
 
+        // Deals with Save menu
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
         }
 
+        // Deals with Open menu
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-        }
-
-        /// <summary>
-        /// Example of how to use a button
-        /// </summary>
-        /// <param name="sender"> not used </param>
-        /// <param name="e"> not used </param>
-        private void sample_button_Click(object sender, EventArgs e)
-        {
-            // prints hello in cell E6 when button1 is pressed
-            grid_widget.SetValue(4, 5, "hello");
-            grid_widget.SetSelection(4, 5);
-        }
-
-        /// <summary>
-        /// Checkbox handler
-        /// </summary>
-        /// <param name="sender"> the checkbox (note the casting operator as)</param>
-        /// <param name="e">not used</param>
-        private void sample_checkbox_CheckedChanged(object sender, EventArgs e)
-        {
-            // sets cell B2 value as "checked" first time the checkbox is selected
-            if ((sender as CheckBox).Checked)
-            {
-                grid_widget.SetValue(1, 1, "checked");
-            }
-            // sets cell B2 value as "not checked" when the checkbox is deselected (the cell value is then either "checked" or "not checked") 
-            else
-            {
-                grid_widget.SetValue(1, 1, "not checked");
-            }
 
         }
 
@@ -121,32 +91,17 @@ namespace SpreadsheetGrid_Core
 
         private void CellContentsTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
+            if (e.KeyCode == Keys.Enter )
             {
                 if (sender is TextBox)
                 {
                     UpdateContentsTextBox();
                     UpdateValueTextBox();
-                    UpdateSelectedCellTextBox();
                 }
             }
         }
 
         // helper methods for CellContentsTextBox_KeyDown
-        /// <summary>
-        /// Updates the SelectedCellTextBox with the appropriate cell name
-        /// </summary>
-        private void UpdateSelectedCellTextBox()
-        {
-            // get column and row location
-            grid_widget.GetSelection(out int col, out int row);
-            // use ascii value to convert column location to a letter
-            char letter = (char)('A' + col);
-            string rowLocation = "" + letter;
-            // append rowLocation and col.ToString() and set to cellLocation
-            string cellLocation = rowLocation + (row + 1).ToString();
-            SelectedCellTextBox.Text = cellLocation;
-        }
         /// <summary>
         /// Updates CellValueTextBox, if a string is entered the text box is updated with a string, if a double is entered the text box is updated with a double,
         /// if a formula is is entered the formula is evaluated then the text box is updated with the result.
@@ -161,7 +116,6 @@ namespace SpreadsheetGrid_Core
             // append rowLocation and col.ToString() and set to cellLocation
             string cellLocation = rowLocation + col.ToString();
             // calculate value of cell
-            spreadsheet.GetCellValue(cellLocation);
             grid_widget.GetValue(col, row, out string value);
             CellValueTextBox.AppendText(spreadsheet.GetCellValue(cellLocation).ToString());
         }
@@ -185,7 +139,6 @@ namespace SpreadsheetGrid_Core
 
         private void SelectedCellLabel_Click_1(object sender, EventArgs e)
         {
-            // TODO need to update name, value, and contents textbox
         }
 
         private void CellValueLabel_Click(object sender, EventArgs e)
@@ -196,6 +149,64 @@ namespace SpreadsheetGrid_Core
         private void CellContentsLabel_Click(object sender, EventArgs e)
         {
 
+        }
+        private void grid_widget_Click(SpreadsheetGridWidget ss)
+        {
+            // TODO need to update name, value, and contents textbox
+            UpdateSelectedCellTextBox();
+            UpdateContentsOnClick();
+            UpdateValuesOnClick();
+            
+
+        }
+        // Helper methods for grid_widget_Click
+        /// <summary>
+        /// Updates the SelectedCellTextBox with the appropriate cell name
+        /// </summary>
+        private void UpdateSelectedCellTextBox()
+        {
+            SelectedCellTextBox.Text = GetCellName();
+        }
+        /// <summary>
+        /// Gets the cell name by using the column and rows
+        /// </summary>
+        /// <returns></returns>
+        private string GetCellName()
+        {
+            // get column and row location
+            grid_widget.GetSelection(out int col, out int row);
+            // use ascii value to convert column location to a letter
+            char letter = (char)('A' + col);
+            string rowLocation = "" + letter;
+            // append rowLocation and col.ToString() and set to cellLocation
+            string cellLocation = rowLocation + (row + 1).ToString();
+            return cellLocation;
+        }
+        /// <summary>
+        /// Updates CellContentsTextBox with the contents when the cell is clicked on
+        /// </summary>
+        private void UpdateContentsOnClick()
+        {
+            grid_widget.GetSelection(out int col, out int row);
+            grid_widget.GetValue(col, row, out string value);
+            CellContentsTextBox.Text = value;
+        }
+
+        /// <summary>
+        /// Updates CellValueTextBox with the contents when the cell is clicked on
+        /// </summary>
+        private void UpdateValuesOnClick()
+        {
+            CellValueTextBox.ResetText();
+            // get column and row location
+            grid_widget.GetSelection(out int col, out int row);
+            // use ascii value to convert column location to a letter
+            char letter = (char)('A' + col);
+            string colLocation = "" + letter;
+            // append rowLocation and col.ToString() and set to cellLocation
+            string cellLocation = "" + colLocation + (row + 1).ToString();
+            // calculate value of cell
+            CellValueTextBox.AppendText(spreadsheet.GetCellValue(cellLocation).ToString());
         }
     }
 }
