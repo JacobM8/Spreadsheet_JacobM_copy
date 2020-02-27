@@ -116,7 +116,6 @@ namespace SpreadsheetGrid_Core
             // append rowLocation and col.ToString() and set to cellLocation
             string cellLocation = rowLocation + col.ToString();
             // calculate value of cell
-            grid_widget.GetValue(col, row, out string value);
             CellValueTextBox.AppendText(spreadsheet.GetCellValue(cellLocation).ToString());
         }
         /// <summary>
@@ -128,9 +127,9 @@ namespace SpreadsheetGrid_Core
             grid_widget.GetSelection(out int col, out int row);
             // use ascii value to convert column location to a letter
             char letter = (char)('A' + col);
-            string rowLocation = "" + letter;
+            string colLocation = "" + letter;
             // set cell location with rowLocation and col.ToString
-            string cellLocation = rowLocation + col.ToString();
+            string cellLocation = colLocation + (row + 1).ToString();
             // setContentsOfCell in our spreadsheet
             spreadsheet.SetContentsOfCell(cellLocation, CellContentsTextBox.Text);
             // set cell with same contents as CellContentsTextBox
@@ -197,16 +196,20 @@ namespace SpreadsheetGrid_Core
         /// </summary>
         private void UpdateValuesOnClick()
         {
-            CellValueTextBox.ResetText();
+            CellValueTextBox.Text = "";
             // get column and row location
             grid_widget.GetSelection(out int col, out int row);
             // use ascii value to convert column location to a letter
             char letter = (char)('A' + col);
+            // set column location as a string instead of a char
             string colLocation = "" + letter;
-            // append rowLocation and col.ToString() and set to cellLocation
-            string cellLocation = "" + colLocation + (row + 1).ToString();
+            // append colLocation and and 1 to row and set to cellLocation
+            row++;
+            string cellLocation = colLocation + row.ToString();
             // calculate value of cell
-            CellValueTextBox.AppendText(spreadsheet.GetCellValue(cellLocation).ToString());
+            string cellValue = spreadsheet.GetCellValue(cellLocation).ToString();
+            // CellValueTextBox.AppendText(spreadsheet.GetCellValue(cellLocation).ToString());
+            CellValueTextBox.Text = spreadsheet.GetCellValue(cellLocation).ToString();
         }
     }
 }
