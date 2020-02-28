@@ -64,7 +64,7 @@ namespace SpreadsheetGrid_Core
         /// </exception>
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="e"> </param>
         private void CellContentsTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             try
