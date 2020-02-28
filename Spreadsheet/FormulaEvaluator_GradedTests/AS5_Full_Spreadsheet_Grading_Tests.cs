@@ -111,14 +111,6 @@ namespace AS5_Grading_Tests
             return result;
         }
 
-        [TestMethod()]
-        [ExpectedException(typeof(CircularException))]
-        public void SelfLoop()
-        {
-            Spreadsheet s = new Spreadsheet(s => true, s => s.ToUpper(), "six");
-            s.SetContentsOfCell("A1", "=a1");
-        }
-
         // Tests IsValid
         [TestMethod()]
         public void IsValidTest1()
