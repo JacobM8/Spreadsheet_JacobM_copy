@@ -9,12 +9,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SS;
+using System.Text.RegularExpressions;
 
 namespace SpreadsheetGrid_Core
 {
     public partial class Form1 : Form
     {
-        Spreadsheet spreadsheet = new Spreadsheet();
+        Spreadsheet spreadsheet = new Spreadsheet(s => true, s => s.ToUpper(), "six");
         public Form1()
         {
             this.grid_widget = new SpreadsheetGridWidget();
@@ -84,7 +85,7 @@ namespace SpreadsheetGrid_Core
             {
                 if (sender is TextBox)
                 {
-                    UpdateContentsTextBox();
+                    UpdateContentsTextBoxOnKeyDown();
                     UpdateValueTextBoxOnKeyDown();
                 }
             }
@@ -105,7 +106,7 @@ namespace SpreadsheetGrid_Core
         /// <summary>
         /// Updates CellContentsTextBox with entered text
         /// </summary>
-        private void UpdateContentsTextBox()
+        private void UpdateContentsTextBoxOnKeyDown()
         {
             // get cell name
             string cellLocation = GetCellName();
@@ -113,31 +114,16 @@ namespace SpreadsheetGrid_Core
             grid_widget.GetSelection(out int col, out int row);
             // setContentsOfCell in our spreadsheet
             spreadsheet.SetContentsOfCell(cellLocation, CellContentsTextBox.Text);
-            // set cell with same contents as CellContentsTextBox
-            grid_widget.SetValue(col, row, CellContentsTextBox.Text);
+            // set cell with cell value
+            grid_widget.SetValue(col, row, spreadsheet.GetCellValue(cellLocation).ToString());
         }
 
-        private void SelectedCellLabel_Click_1(object sender, EventArgs e)
-        {
-        }
-
-        private void CellValueLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void CellContentsLabel_Click(object sender, EventArgs e)
-        {
-
-        }
         private void grid_widget_Click(SpreadsheetGridWidget ss)
         {
             // TODO need to update name, value, and contents textbox
             UpdateSelectedCellTextBox();
             UpdateContentsOnClick();
             UpdateValuesOnClick();
-            
-
         }
         // Helper methods for grid_widget_Click
         /// <summary>
@@ -155,7 +141,7 @@ namespace SpreadsheetGrid_Core
         {
             grid_widget.GetSelection(out int col, out int row);
             grid_widget.GetValue(col, row, out string value);
-            CellContentsTextBox.Text = value;
+            CellContentsTextBox.Text = spreadsheet.GetCellContents(GetCellName()).ToString();
         }
 
         /// <summary>
@@ -170,7 +156,7 @@ namespace SpreadsheetGrid_Core
             char letter = (char)('A' + col);
             // set column location as a string instead of a char
             string colLocation = "" + letter;
-            // append colLocation and and 1 to row and set to cellLocation
+            // append colLocation and add 1 to row and set to cellLocation
             row++;
             string cellLocation = colLocation + row.ToString();
             return cellLocation;

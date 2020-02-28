@@ -147,7 +147,6 @@ namespace SpreadsheetGrid_Core
             this.CellValueLabel.Size = new System.Drawing.Size(110, 25);
             this.CellValueLabel.TabIndex = 1;
             this.CellValueLabel.Text = "Cell Value";
-            this.CellValueLabel.Click += new System.EventHandler(this.CellValueLabel_Click);
             // 
             // SelectedCellLabel
             // 
@@ -158,7 +157,6 @@ namespace SpreadsheetGrid_Core
             this.SelectedCellLabel.Size = new System.Drawing.Size(139, 25);
             this.SelectedCellLabel.TabIndex = 2;
             this.SelectedCellLabel.Text = "Selected Cell";
-            this.SelectedCellLabel.Click += new System.EventHandler(this.SelectedCellLabel_Click_1);
             // 
             // CellContentsTextBox
             // 
@@ -188,7 +186,6 @@ namespace SpreadsheetGrid_Core
             this.CellContentsLabel.Size = new System.Drawing.Size(98, 25);
             this.CellContentsLabel.TabIndex = 3;
             this.CellContentsLabel.Text = "Contents";
-            this.CellContentsLabel.Click += new System.EventHandler(this.CellContentsLabel_Click);
             // 
             // tableLayoutPanel1
             // 

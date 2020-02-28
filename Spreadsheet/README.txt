@@ -19,7 +19,7 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 
 4. References:
 
-    1. 
+    1. https://docs.microsoft.com/en-us/dotnet/framework/winforms/controls/how-to-create-a-read-only-text-box-windows-forms
 
 5. Examples of Good Software Practice:
 
@@ -49,6 +49,10 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
     -*** TODO *** If you worked in a partnership, write two paragraphs.  The first should list one or two examples where the partnership was most effective.  What did you do 
     right and how did it make the coding process faster, and the code better? Include details on how assigning tasks helped. The second paragraph should be about an area of 
     teamwork that you need to improve upon.
+
+11. How We Ensured Correctness of Our Code
+    
+    ****TODO**** how we tested our code
 
 6. Estimated Time: PS5 -  18 hours     
 7. Actual Time:    PS5 -                      
