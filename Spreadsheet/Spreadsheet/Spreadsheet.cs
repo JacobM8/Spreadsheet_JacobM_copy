@@ -497,7 +497,7 @@ namespace SS
             {
                 // remove "=" from content
                 string contentWithoutEqualsSign = content.Remove(0, 1);
-                Formula formulaFromContent = new Formula(contentWithoutEqualsSign, this.Normalize, this.IsValid);
+                Formula formulaFromContent = new Formula(contentWithoutEqualsSign);
                 SetCellContents(name, formulaFromContent);
             }
             // otherwise call SetCellContent(string, string) to save the string as the cell contents
@@ -605,7 +605,7 @@ namespace SS
         public override object GetCellValue(string name)
         {
             name = base.Normalize(name);
-            // if name is null or invlaide throw InvalidNameException
+            // if name isnull or invlaide throw InvalidNameException
             RegexVariableAndNullCheck(name);
             // return value of given cell name if it exists
             if (dictionaryOfCells.ContainsKey(name))
