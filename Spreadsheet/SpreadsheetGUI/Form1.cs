@@ -33,31 +33,13 @@ namespace SpreadsheetGrid_Core
         }
 
         /// <summary>
-        /// Given a spreadsheet, find the current selected cell and
-        /// create a popup that contains the information from that cell
+        /// Creates a new Spreadsheet in a new window
         /// </summary>
-        /// <param name="ss"></param>
-        private void DisplaySelection(SpreadsheetGridWidget ss)
-        {
-            int row, col;
-
-            string value;
-            ss.GetSelection(out col, out row);
-            ss.GetValue(col, row, out value);
-            // if cell is "" (empty) puts the current date and time when clicked on
-            if (value == "")
-            {
-                ss.SetValue(col, row, DateTime.Now.ToLocalTime().ToString("T"));
-                ss.GetValue(col, row, out value);
-                MessageBox.Show("Selection: column " + col + " row " + row + " value " + value);
-            }
-        }
-
-        // Deals with the New menu
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Tell the application context to run the form on the same
-            // thread as the other forms.
+            // Tell the application context to run the form on the same thread as the other forms.
             Spreadsheet_Window.getAppContext().RunForm(new Form1());
         }
 
@@ -79,15 +61,36 @@ namespace SpreadsheetGrid_Core
 
         }
 
+        // Deals with CellContentsTextBox
+        /// <summary>
+        ///     If the Enter/Return key is hit updates the CellContentsTextBox and CellValueTextBox
+        /// <exception cref="CircularException"> 
+        ///   If formula is created with a circular dependency, throw a CircularException
+        /// </exception>
+        /// <exception cref="FormatException"> 
+        ///   If invalid formula is entered, throw a FormatException.
+        /// </exception>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CellContentsTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter )
+            try
             {
-                if (sender is TextBox)
+                // if KeyEventArgs is the Enter/Return key update CellContentsTextBox and CellValueTextBox
+                if (e.KeyCode == Keys.Enter )
                 {
-                    UpdateContentsTextBoxOnKeyDown();
-                    UpdateValueTextBoxOnKeyDown();
+                    if (sender is TextBox)
+                    {
+                        UpdateContentsTextBoxOnKeyDown();
+                        UpdateValueTextBoxOnKeyDown();
+                    }
                 }
+            }
+            // show a message if an exception is thrown
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -97,7 +100,7 @@ namespace SpreadsheetGrid_Core
         /// if a formula is is entered the formula is evaluated then the text box is updated with the result.
         /// </summary>
         private void UpdateValueTextBoxOnKeyDown()
-        {
+        {  
             // get cell name
             string cellLocation = GetCellName();
             // calculate value of cell and set it to CellValueTextBox
@@ -118,9 +121,13 @@ namespace SpreadsheetGrid_Core
             grid_widget.SetValue(col, row, spreadsheet.GetCellValue(cellLocation).ToString());
         }
 
+        // Deals with clicks in the grid_widget
+        /// <summary>
+        /// When the grid_widget is clicked on update the ReadOnly SelectedCellTextBox and CellValueTextBox, and editable CellContentTextBox
+        /// </summary>
+        /// <param name="ss"></param>
         private void grid_widget_Click(SpreadsheetGridWidget ss)
         {
-            // TODO need to update name, value, and contents textbox
             UpdateSelectedCellTextBox();
             UpdateContentsOnClick();
             UpdateValuesOnClick();
