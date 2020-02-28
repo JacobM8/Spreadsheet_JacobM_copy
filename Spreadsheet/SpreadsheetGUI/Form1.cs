@@ -87,7 +87,26 @@ namespace SpreadsheetGrid_Core
         // Deals with Open menu
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            using (OpenFileDialog openFile = new OpenFileDialog())
+            {
+                String filepath = "";
+                String fileContent = "";
 
+                openFile.InitialDirectory = "c:\\";
+                openFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
+                openFile.FilterIndex = 2;
+                openFile.RestoreDirectory = true;
+
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    filepath = openFile.FileName;
+                    Stream myStream = openFile.OpenFile();
+                    using (StreamReader reader = new StreamReader(myStream))
+                    {
+                        fileContent = reader.ReadToEnd();
+                    }
+                }
+            }
         }
 
         /// <summary>
