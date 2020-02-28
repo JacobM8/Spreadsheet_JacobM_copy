@@ -497,7 +497,7 @@ namespace SS
             {
                 // remove "=" from content
                 string contentWithoutEqualsSign = content.Remove(0, 1);
-                Formula formulaFromContent = new Formula(contentWithoutEqualsSign);
+                Formula formulaFromContent = new Formula(contentWithoutEqualsSign, this.Normalize, this.IsValid);
                 SetCellContents(name, formulaFromContent);
             }
             // otherwise call SetCellContent(string, string) to save the string as the cell contents
