@@ -24,8 +24,10 @@ namespace SpreadsheetGrid_Core
 
             // Add event handler and select a start cell
             grid_widget.SelectionChanged += grid_widget_Click;
-            grid_widget.SetSelection(2, 2, false);
-
+            // initial cell set to A1
+            grid_widget.SetSelection(0, 0, false);
+            // set initial value of SelectedCellTextBox to display "A1"
+            SelectedCellTextBox.Text = "A1";
 
         }
 
@@ -76,19 +78,6 @@ namespace SpreadsheetGrid_Core
 
         }
 
-        /// <summary>
-        /// Textbox handler
-        /// </summary>
-        /// <param name="sender"> the textbox </param>
-        /// <param name="e">not used</param>
-        private void sample_textbox_TextChanged(object sender, EventArgs e)
-        {
-            TextBox box = sender as TextBox;
-
-            grid_widget.SetValue(2, 2, box.Text);
-
-        }
-
         private void CellContentsTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter )
@@ -96,7 +85,7 @@ namespace SpreadsheetGrid_Core
                 if (sender is TextBox)
                 {
                     UpdateContentsTextBox();
-                    UpdateValueTextBox();
+                    UpdateValueTextBoxOnKeyDown();
                 }
             }
         }
@@ -106,30 +95,22 @@ namespace SpreadsheetGrid_Core
         /// Updates CellValueTextBox, if a string is entered the text box is updated with a string, if a double is entered the text box is updated with a double,
         /// if a formula is is entered the formula is evaluated then the text box is updated with the result.
         /// </summary>
-        private void UpdateValueTextBox()
+        private void UpdateValueTextBoxOnKeyDown()
         {
-            // get column and row location
-            grid_widget.GetSelection(out int col, out int row);
-            // use ascii value to convert column location to a letter
-            char letter = (char)('A' + col);
-            string rowLocation = "" + letter;
-            // append rowLocation and col.ToString() and set to cellLocation
-            string cellLocation = rowLocation + col.ToString();
-            // calculate value of cell
-            CellValueTextBox.AppendText(spreadsheet.GetCellValue(cellLocation).ToString());
+            // get cell name
+            string cellLocation = GetCellName();
+            // calculate value of cell and set it to CellValueTextBox
+            CellValueTextBox.Text = spreadsheet.GetCellValue(cellLocation).ToString();
         }
         /// <summary>
         /// Updates CellContentsTextBox with entered text
         /// </summary>
         private void UpdateContentsTextBox()
         {
-            // get column and row location
+            // get cell name
+            string cellLocation = GetCellName();
+            // get row and col location
             grid_widget.GetSelection(out int col, out int row);
-            // use ascii value to convert column location to a letter
-            char letter = (char)('A' + col);
-            string colLocation = "" + letter;
-            // set cell location with rowLocation and col.ToString
-            string cellLocation = colLocation + (row + 1).ToString();
             // setContentsOfCell in our spreadsheet
             spreadsheet.SetContentsOfCell(cellLocation, CellContentsTextBox.Text);
             // set cell with same contents as CellContentsTextBox
@@ -166,21 +147,7 @@ namespace SpreadsheetGrid_Core
         {
             SelectedCellTextBox.Text = GetCellName();
         }
-        /// <summary>
-        /// Gets the cell name by using the column and rows
-        /// </summary>
-        /// <returns></returns>
-        private string GetCellName()
-        {
-            // get column and row location
-            grid_widget.GetSelection(out int col, out int row);
-            // use ascii value to convert column location to a letter
-            char letter = (char)('A' + col);
-            string rowLocation = "" + letter;
-            // append rowLocation and col.ToString() and set to cellLocation
-            string cellLocation = rowLocation + (row + 1).ToString();
-            return cellLocation;
-        }
+        
         /// <summary>
         /// Updates CellContentsTextBox with the contents when the cell is clicked on
         /// </summary>
@@ -192,11 +159,11 @@ namespace SpreadsheetGrid_Core
         }
 
         /// <summary>
-        /// Updates CellValueTextBox with the contents when the cell is clicked on
+        /// Gets the cell name by using the column and rows
         /// </summary>
-        private void UpdateValuesOnClick()
+        /// <returns></returns>
+        private string GetCellName()
         {
-            CellValueTextBox.Text = "";
             // get column and row location
             grid_widget.GetSelection(out int col, out int row);
             // use ascii value to convert column location to a letter
@@ -206,9 +173,17 @@ namespace SpreadsheetGrid_Core
             // append colLocation and and 1 to row and set to cellLocation
             row++;
             string cellLocation = colLocation + row.ToString();
-            // calculate value of cell
-            string cellValue = spreadsheet.GetCellValue(cellLocation).ToString();
-            // CellValueTextBox.AppendText(spreadsheet.GetCellValue(cellLocation).ToString());
+            return cellLocation;
+        }
+
+        /// <summary>
+        /// Updates CellValueTextBox with the contents when the cell is clicked on
+        /// </summary>
+        private void UpdateValuesOnClick()
+        {
+            // get cell name
+            string cellLocation = GetCellName();
+            // set ValueTextBox text with value
             CellValueTextBox.Text = spreadsheet.GetCellValue(cellLocation).ToString();
         }
     }
