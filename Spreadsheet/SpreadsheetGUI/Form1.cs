@@ -47,11 +47,23 @@ namespace SpreadsheetGrid_Core
         {
             Close();
         }
-        // Deals with Save menu
+        /// <summary>
+        /// Saves the spreadsheet as a .sprd file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
+            saveFile.FilterIndex = 1;
+            saveFile.RestoreDirectory = true;
+
+            if (saveFile.ShowDialog() == DialogResult.OK)
+            {
+                spreadsheet.Save(saveFile.FileName);
+            }
         }
-        // Deals with Open menu
         /// <summary>
         /// Opens a previously saved file
         /// </summary>
