@@ -605,7 +605,7 @@ namespace SS
         public override object GetCellValue(string name)
         {
             name = base.Normalize(name);
-            // if name isnull or invlaide throw InvalidNameException
+            // if name is null or invlaide throw InvalidNameException
             RegexVariableAndNullCheck(name);
             // return value of given cell name if it exists
             if (dictionaryOfCells.ContainsKey(name))
