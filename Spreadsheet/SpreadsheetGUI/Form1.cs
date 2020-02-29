@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SS;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Security;
+
 namespace SpreadsheetGrid_Core
 {
     public partial class Form1 : Form
@@ -49,9 +52,68 @@ namespace SpreadsheetGrid_Core
         {
         }
         // Deals with Open menu
+        /// <summary>
+        /// Opens a previously saved file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
+            openFile.FilterIndex = 2;
+            openFile.RestoreDirectory = true;
+            if (openFile.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string filepath = openFile.FileName;
+                    using (Stream sr = openFile.OpenFile())
+                    {
+                        grid_widget.Clear();
+                        spreadsheet = new Spreadsheet(filepath, s => true, s => s.ToUpper(), "six");
+                        foreach (string name in spreadsheet.GetNamesOfAllNonemptyCells())
+                        {
+                            // turn into row column from name
+                            GetCellLocation(name, out int row, out int col);
+                            // get cellvalue and put into the grid 
+                            grid_widget.SetValue(col, row, spreadsheet.GetCellValue(name).ToString());
+                        }
+                    }
+                }
+                catch (SecurityException ex)
+                {
+                    MessageBox.Show($"Security error.\n\nError message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}");
+                }
+            }
+        }
+        // helper method for openToolStripMenuItem_Click
+        /// <summary>
+        /// returns the column and row of the given cell. Name must be A-Z(upper or lower case) and 1-99
+        /// </summary>
+        /// <param name="name"> cell location (ex. A1) </param>
+        /// <param name="col"> column number </param>
+        /// <param name="row"> row number </param>
+        private void GetCellLocation(string name, out int col, out int row)
+        {
+            // convert name to char array
+            char[] rowInfo = name.ToCharArray();
+            // onlyRow will get the row letter
+            char onlyRow = rowInfo[0];
+            // set column to the numbers remaining in rowInfo
+            string column = "";
+            for (int i = 1; i < rowInfo.Length; i++)
+            {
+                column += rowInfo[i];
+            }
+            // convert to ints
+            int.TryParse(column, out col);
+            // ascii value used get row number
+            row = char.ToUpper(rowInfo[0]) - 64;
+            // decrement once because grid doesn't start at A)
+            col--;
+            row--;
         }
 
         /// <summary>
