@@ -16,7 +16,7 @@ namespace SpreadsheetGrid_Core
 {
     public partial class Form1 : Form
     {
-        Spreadsheet spreadsheet = new Spreadsheet();
+        Spreadsheet spreadsheet = new Spreadsheet(s => true, s => s.ToUpper(), "six");
         public Form1()
         {
             this.grid_widget = new SpreadsheetGridWidget();
@@ -58,6 +58,11 @@ namespace SpreadsheetGrid_Core
             }
         }
 
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            MessageBox.Show("test");
+        }
+
         // Deals with the New menu
         private void NewToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -89,9 +94,7 @@ namespace SpreadsheetGrid_Core
         // Deals with Open menu
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Stream myStream;
             OpenFileDialog openFile = new OpenFileDialog();
-            //openFile.InitialDirectory = "c:\\";
             openFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
             openFile.FilterIndex = 2;
             openFile.RestoreDirectory = true;
@@ -103,16 +106,14 @@ namespace SpreadsheetGrid_Core
                     using (Stream sr = openFile.OpenFile())
                     {
                         grid_widget.Clear();
-                        spreadsheet = new Spreadsheet(filepath,s=>true, s => s.ToUpper(),"six");
+                        spreadsheet = new Spreadsheet(filepath, s=>true, s => s.ToUpper(), "six");
                         foreach (string name in spreadsheet.GetNamesOfAllNonemptyCells())
                         {
-                            
-                            /// turn into row column from string
-                            /// get cellvalue
-                            /// put into the grid
-                            /// 
+                            // turn into row column from name
+                            GetCellLocation(name, out int row, out int col);
+                            // get cellvalue and put into the grid 
+                            grid_widget.SetValue((col - 1), (row - 1), spreadsheet.GetCellValue(name).ToString());
                         }
-
                     }
                 }
                 catch (SecurityException ex)
@@ -122,6 +123,25 @@ namespace SpreadsheetGrid_Core
                 }
             }
         }
+
+        private void GetCellLocation(string name, out int col, out int row)
+        {
+            // convert name to char array
+            char[] rowInfo = name.ToCharArray();
+            // onlyRow will get the row letter
+            char onlyRow = rowInfo[0];
+            // set column to the numbers remaining in rowInfo
+            string column = "";
+            for (int i = 1; i < rowInfo.Length; i++)
+            {
+                column += rowInfo[i];
+            }
+            // convert to ints
+            int.TryParse(column, out col);
+            // ascii value used get row number
+            row = char.ToUpper(rowInfo[0]) - 64;
+        }
+
         /// private helper method to store in file name 
         /// create another constructor with helper method 
         /// take new spreadsheet and display on grid_widget

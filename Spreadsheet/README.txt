@@ -21,6 +21,7 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 
     1. Open File Dialog MS Docs: https://docs.microsoft.com/en-us/dotnet/framework/winforms/controls/how-to-save-files-using-the-savefiledialog-component
     2. Open File Dialog MS Docs: https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.filedialog.filterindex?view=netframework-4.8#System_Windows_Forms_FileDialog_FilterIndex
+    3. https://stackoverflow.com/questions/20044730/convert-character-to-its-alphabet-integer-position
 
 5. Examples of Good Software Practice:
 
