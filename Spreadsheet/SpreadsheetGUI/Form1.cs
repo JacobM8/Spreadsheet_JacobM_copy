@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SS;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Security;
+
 namespace SpreadsheetGrid_Core
 {
     public partial class Form1 : Form
@@ -42,18 +45,106 @@ namespace SpreadsheetGrid_Core
         // Deals with the Close menu
         private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Close();
+            if (spreadsheet.Changed == false)
+            {
+                switch (MessageBox.Show(this, "Do you want save your project?", "Save before Closing", MessageBoxButtons.YesNo))
+                {
+                    case DialogResult.No:
+                        Close();
+                        break;
+                    case DialogResult.Yes:
+                        SaveFileDialog saveFile = new SaveFileDialog();
+                        saveFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
+                        saveFile.FilterIndex = 1;
+                        saveFile.RestoreDirectory = true;
+
+                        if (saveFile.ShowDialog() == DialogResult.OK)
+                        {
+                            spreadsheet.Save(saveFile.FileName);
+                        }
+                        break;
+                }
+            }
+
+        }
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (spreadsheet.Changed == true)
+            {
+                base.OnFormClosing(e);
+                switch (MessageBox.Show(this, "Do you want save your project?", "Save before Closing", MessageBoxButtons.YesNo))
+                {
+                    case DialogResult.No:
+                        e.Cancel = true;
+                        break;
+                    case DialogResult.Yes:
+                        SaveFileDialog saveFile = new SaveFileDialog();
+                        saveFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
+                        saveFile.FilterIndex = 1;
+                        saveFile.RestoreDirectory = true;
+
+                        if (saveFile.ShowDialog() == DialogResult.OK)
+                        {
+                            spreadsheet.Save(saveFile.FileName);
+                        }
+                        break;
+                }
+            }
         }
         // Deals with Save menu
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
+            saveFile.FilterIndex = 1;
+            saveFile.RestoreDirectory = true;
+
+            if (saveFile.ShowDialog() == DialogResult.OK)
+            {
+                spreadsheet.Save(saveFile.FileName);
+            }
         }
+
         // Deals with Open menu
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            OpenFileDialog openFile = new OpenFileDialog();
+            //openFile.InitialDirectory = "c:\\";
+            openFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
+            openFile.FilterIndex = 2;
+            openFile.RestoreDirectory = true;
+            if (openFile.ShowDialog() == DialogResult.OK)
+            {
 
+                string filepath = openFile.FileName;
+                using (Stream sr = openFile.OpenFile())
+                {
+                    grid_widget.Clear();
+                    spreadsheet = new Spreadsheet(filepath, s => true, s => s.ToUpper(), "six");
+                    foreach (string name in spreadsheet.GetNamesOfAllNonemptyCells())
+                    {
+
+                        /// turn into row column from string
+                        /// get cellvalue
+                        /// put into the grid
+                        /// 
+                    }
+
+                }
+            }
         }
-
+        ///opens the help menu and directs the user on how to navigate the spreadsheet
+        private void HelpMenu_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(this, "- Select the desired cell by clicking on it to view the contents and cell name\n" +
+                "\n- To enter a new value type inside of the cell contents box and press enter to save \n" +
+                "\n **Warning your text will not save unless you press enter**\n" +
+                "\n- To calculate a formula begin with an \"=\" equals sign then enter the rest of the formula\n" +
+                "\n- If cells are arranged in a circular dependency you will be notified of the error\n" +
+                "\n- All other formatting errors will prompt an error message, describing what error occurred" 
+                , "Help Menu",
+                    MessageBoxButtons.OK);
+        }
         /// <summary>
         ///     If the Enter/Return key is hit updates the CellContentsTextBox and CellValueTextBox
         /// <exception cref="CircularException"> 

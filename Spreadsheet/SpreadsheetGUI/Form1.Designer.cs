@@ -52,6 +52,7 @@ namespace SpreadsheetGrid_Core
             this.tableLayoutForSelectedCellValueContents.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
+            this.HelpMenu = new System.Windows.Forms.Button();
             // 
             // menuStrip
             // 
@@ -233,6 +234,7 @@ namespace SpreadsheetGrid_Core
             // 
             // SimpleSpreadsheetGUI
             // 
+            this.Controls.Add(this.HelpMenu);
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1684, 1000);
@@ -251,6 +253,17 @@ namespace SpreadsheetGrid_Core
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
+            // 
+            // HelpMenu
+            // 
+            this.HelpMenu.BackColor = System.Drawing.SystemColors.MenuBar;
+            this.HelpMenu.Location = new System.Drawing.Point(99, 8);
+            this.HelpMenu.Name = "HelpMenu";
+            this.HelpMenu.Size = new System.Drawing.Size(72, 36);
+            this.HelpMenu.TabIndex = 7;
+            this.HelpMenu.Text = "Help Menu";
+            this.HelpMenu.UseVisualStyleBackColor = true;
+            this.HelpMenu.Click += new System.EventHandler(this.HelpMenu_Click);
 
         }
 
@@ -273,8 +286,8 @@ namespace SpreadsheetGrid_Core
         private TextBox SelectedCellTextBox;
         private ToolStripMenuItem saveToolStripMenuItem;
         private ToolStripMenuItem openToolStripMenuItem;
-
+        private Button HelpMenu;
         #endregion
+        }
     }
-}
 
