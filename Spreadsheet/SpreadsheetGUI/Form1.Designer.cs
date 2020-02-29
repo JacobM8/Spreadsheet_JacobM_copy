@@ -132,9 +132,9 @@ namespace SpreadsheetGrid_Core
             // CellValueTextBox
             // 
             this.CellValueTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.CellValueTextBox.Location = new System.Drawing.Point(157, 52);
+            this.CellValueTextBox.Location = new System.Drawing.Point(157, 0);
             this.CellValueTextBox.Name = "CellValueTextBox";
-            this.CellValueTextBox.Size = new System.Drawing.Size(250, 31);
+            this.CellValueTextBox.Size = new System.Drawing.Size(250, 5);
             this.CellValueTextBox.TabIndex = 0;
             this.CellValueTextBox.ReadOnly = true;
 
@@ -257,9 +257,9 @@ namespace SpreadsheetGrid_Core
             // HelpMenu
             // 
             this.HelpMenu.BackColor = System.Drawing.SystemColors.MenuBar;
-            this.HelpMenu.Location = new System.Drawing.Point(99, 8);
+            this.HelpMenu.Location = new System.Drawing.Point(50, 0);
             this.HelpMenu.Name = "HelpMenu";
-            this.HelpMenu.Size = new System.Drawing.Size(72, 36);
+            this.HelpMenu.Size = new System.Drawing.Size(84, 28);
             this.HelpMenu.TabIndex = 7;
             this.HelpMenu.Text = "Help Menu";
             this.HelpMenu.UseVisualStyleBackColor = true;

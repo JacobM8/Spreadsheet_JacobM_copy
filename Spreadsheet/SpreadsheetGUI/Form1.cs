@@ -62,6 +62,7 @@ namespace SpreadsheetGrid_Core
                         {
                             spreadsheet.Save(saveFile.FileName);
                         }
+                        Close();
                         break;
                 }
             }
@@ -75,7 +76,7 @@ namespace SpreadsheetGrid_Core
                 switch (MessageBox.Show(this, "Do you want save your project?", "Save before Closing", MessageBoxButtons.YesNo))
                 {
                     case DialogResult.No:
-                        e.Cancel = true;
+                        _ = e.CloseReason; 
                         break;
                     case DialogResult.Yes:
                         SaveFileDialog saveFile = new SaveFileDialog();
@@ -87,6 +88,7 @@ namespace SpreadsheetGrid_Core
                         {
                             spreadsheet.Save(saveFile.FileName);
                         }
+                        e.Cancel = true;
                         break;
                 }
             }
