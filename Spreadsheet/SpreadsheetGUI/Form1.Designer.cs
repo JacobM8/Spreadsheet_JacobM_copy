@@ -132,7 +132,7 @@ namespace SpreadsheetGrid_Core
             // CellValueTextBox
             // 
             this.CellValueTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.CellValueTextBox.Location = new System.Drawing.Point(157, 0);
+            this.CellValueTextBox.Location = new System.Drawing.Point(157, 15);
             this.CellValueTextBox.Name = "CellValueTextBox";
             this.CellValueTextBox.Size = new System.Drawing.Size(250, 5);
             this.CellValueTextBox.TabIndex = 0;
