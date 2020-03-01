@@ -115,10 +115,10 @@ namespace SpreadsheetGrid_Core
 
         // Deals with Open menu
         /// <summary>
-                /// Opens a previously saved file
-                /// </summary>
-                /// <param name="sender"></param>
-                /// <param name="e"></param>
+        /// Opens a previously saved file and populates the cells
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
@@ -185,7 +185,7 @@ namespace SpreadsheetGrid_Core
                 "\n **Warning your text will not save unless you press enter**\n" +
                 "\n- To calculate a formula begin with an \"=\" equals sign then enter the rest of the formula\n" +
                 "\n- If cells are arranged in a circular dependency you will be notified of the error\n" +
-                "\n- If you divide by zero, the value will appear as a formula error"+
+                "\n- If you divide by zero, the value will appear as a formula error" +
                 "\n- All other formatting errors will prompt an error message, describing what error occurred"
                 , "Help Menu",
                     MessageBoxButtons.OK);
