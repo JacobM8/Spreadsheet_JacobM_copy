@@ -48,7 +48,7 @@ namespace SpreadsheetGrid_Core
             if (spreadsheet.Changed == true)
             {
                 switch (MessageBox.Show(this, "Do you want save your project?", "Save before Closing", MessageBoxButtons.YesNo))
-                {
+                { 
                     case DialogResult.No:
                         Close();
                         break;
