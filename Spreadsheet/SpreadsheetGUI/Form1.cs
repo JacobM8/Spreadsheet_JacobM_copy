@@ -42,11 +42,21 @@ namespace SpreadsheetGrid_Core
             Spreadsheet_Window.getAppContext().RunForm(new Form1());
         }
 
-        // Deals with the Close menu
+        /// <summary>
+        /// If the user selects the close on the drop down form button and the file is not saved, 
+        /// the method is called and the user is asked whether they would like to save the file or not
+        /// save the file. If the user selects yes, they are directed to the file explorer
+        /// to save the file. If the user selects no, the program terminates and closes the 
+        /// window. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // check if the spreadsheet has been saved
             if (spreadsheet.Changed == true)
             {
+                // on the action of closing the window prompt the user to save
                 switch (MessageBox.Show(this, "Do you want save your project?", "Save before Closing", MessageBoxButtons.YesNo))
                 {
                     case DialogResult.No:
@@ -57,6 +67,7 @@ namespace SpreadsheetGrid_Core
                         saveFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
                         saveFile.FilterIndex = 1;
                         saveFile.RestoreDirectory = true;
+                        // prompt user to save file they created
                         if (saveFile.ShowDialog() == DialogResult.OK)
                         {
                             spreadsheet.Save(saveFile.FileName);
@@ -71,13 +82,19 @@ namespace SpreadsheetGrid_Core
             }
         }
         /// <summary>
-        /// The 
+        /// If the user selects the "X" button and the file is not saved, the method is 
+        /// called and the user is asked whether they would like to save the file or not
+        /// save the file. If the user selects yes, they are directed to the file explorer
+        /// to save the file. If the user selects no, the program terminates and closes the 
+        /// window. 
         /// </summary>
         /// <param name="e"></param>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            // check if the spreadsheet has been saved
             if (spreadsheet.Changed == true)
             {
+                // on the action of closing the window prompt the user to save
                 base.OnFormClosing(e);
                 switch (MessageBox.Show(this, "Do you want save your project?", "Save before Closing", MessageBoxButtons.YesNo))
                 {
@@ -89,7 +106,7 @@ namespace SpreadsheetGrid_Core
                         saveFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
                         saveFile.FilterIndex = 1;
                         saveFile.RestoreDirectory = true;
-
+                        // prompt user to save file they created
                         if (saveFile.ShowDialog() == DialogResult.OK)
                         {
                             spreadsheet.Save(saveFile.FileName);
@@ -99,28 +116,37 @@ namespace SpreadsheetGrid_Core
                 }
             }
         }
-        // Deals with Save menu
+        /// <summary>
+        /// Once the user selects save in the drop down menu. File Explorer is
+        /// then opened and the user can select what type of files they would like to see
+        /// then enter a name for the files and the file is store in their directory of choice.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFile = new SaveFileDialog();
             saveFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
             saveFile.FilterIndex = 1;
+            //verify if the directory exists
             saveFile.RestoreDirectory = true;
-
+            // confirm the file name with the user
             if (saveFile.ShowDialog() == DialogResult.OK)
             {
                 spreadsheet.Save(saveFile.FileName);
             }
         }
-
-        // Deals with Open menu
         /// <summary>
-        /// Opens a previously saved file and populates the cells
+        /// Opens a previously saved file in file explorer. In file explorer it
+        /// allows the users to determine what type of files they want to see. 
+        /// The user can see either all types of files or only .sprd. After the user
+        /// selects the file the cells are populated.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //create a file that is .sprd and allow user to choose files displayed
             OpenFileDialog openFile = new OpenFileDialog();
             openFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
             openFile.FilterIndex = 2;
@@ -130,6 +156,7 @@ namespace SpreadsheetGrid_Core
                 try
                 {
                     string filepath = openFile.FileName;
+                    //open file and loop through all the cells that need to be populated
                     using (Stream sr = openFile.OpenFile())
                     {
                         grid_widget.Clear();
@@ -143,6 +170,7 @@ namespace SpreadsheetGrid_Core
                         }
                     }
                 }
+                // throw a security error if the user selects an invalid file
                 catch (SecurityException ex)
                 {
                     MessageBox.Show($"Security error.\n\nError message: {ex.Message}\n\n" +
@@ -177,7 +205,11 @@ namespace SpreadsheetGrid_Core
             col--;
             row--;
         }
-        ///opens the help menu and directs the user on how to navigate the spreadsheet
+        /// <summary>
+        /// Tells the user how to navigate the program
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HelpMenu_Click(object sender, EventArgs e)
         {
             MessageBox.Show(this, "- Select the desired cell by clicking on it to view the contents and cell name\n" +
@@ -185,7 +217,7 @@ namespace SpreadsheetGrid_Core
                 "\n **Warning your text will not save unless you press enter**\n" +
                 "\n- To calculate a formula begin with an \"=\" equals sign then enter the rest of the formula\n" +
                 "\n- If cells are arranged in a circular dependency you will be notified of the error\n" +
-                "\n- If you divide by zero, the value will appear as a formula error" +
+                "\n- If you divide by zero, the value will appear as a formula error\n" +
                 "\n- All other formatting errors will prompt an error message, describing what error occurred"
                 , "Help Menu",
                     MessageBoxButtons.OK);
@@ -208,6 +240,7 @@ namespace SpreadsheetGrid_Core
                 // if KeyEventArgs is the Enter/Return key update CellContentsTextBox and CellValueTextBox
                 if (e.KeyCode == Keys.Enter)
                 {
+                    
                     if (sender is TextBox)
                     {
                         UpdateContentsTextBoxOnKeyDown();
