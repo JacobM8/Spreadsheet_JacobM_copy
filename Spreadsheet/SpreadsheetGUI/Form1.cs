@@ -45,7 +45,7 @@ namespace SpreadsheetGrid_Core
         // Deals with the Close menu
         private void CloseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (spreadsheet.Changed == false)
+            if (spreadsheet.Changed == true)
             {
                 switch (MessageBox.Show(this, "Do you want save your project?", "Save before Closing", MessageBoxButtons.YesNo))
                 {
@@ -57,16 +57,18 @@ namespace SpreadsheetGrid_Core
                         saveFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
                         saveFile.FilterIndex = 1;
                         saveFile.RestoreDirectory = true;
-
                         if (saveFile.ShowDialog() == DialogResult.OK)
                         {
                             spreadsheet.Save(saveFile.FileName);
                         }
-                        Close();
+
                         break;
                 }
             }
-
+            else
+            {
+                Close();
+            }
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
