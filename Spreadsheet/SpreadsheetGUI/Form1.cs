@@ -252,7 +252,7 @@ namespace SpreadsheetGrid_Core
                 MessageBox.Show(ex.Message);
             }
         }
-        // helper methods for CellContentsTextBox_KeyDown
+        // helper methods for CellContentsTextBox_KeyDown 
         /// <summary>
         /// Updates CellValueTextBox, if a string is entered the text box is updated with a string, if a double is entered the text box is updated with a double,
         /// if a formula is is entered the formula is evaluated then the text box is updated with the result.
