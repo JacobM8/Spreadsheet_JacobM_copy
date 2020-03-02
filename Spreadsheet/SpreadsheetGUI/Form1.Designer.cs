@@ -259,7 +259,7 @@ namespace SpreadsheetGrid_Core
             // HelpMenu
             // 
             this.HelpMenu.BackColor = System.Drawing.SystemColors.MenuBar;
-            this.HelpMenu.Location = new System.Drawing.Point(50, 0);
+            this.HelpMenu.Location = new System.Drawing.Point(272, 0);
             this.HelpMenu.Name = "HelpMenu";
             this.HelpMenu.Size = new System.Drawing.Size(84, 28);
             this.HelpMenu.TabIndex = 7;
@@ -269,7 +269,7 @@ namespace SpreadsheetGrid_Core
             // 
             // Dark
             // 
-            this.Dark.Location = new System.Drawing.Point(133, 0);
+            this.Dark.Location = new System.Drawing.Point(333, 0);
             this.Dark.Name = "Dark";
             this.Dark.Size = new System.Drawing.Size(84, 28);
             this.Dark.TabIndex = 8;
