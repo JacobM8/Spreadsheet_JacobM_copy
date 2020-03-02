@@ -339,20 +339,23 @@ namespace SpreadsheetGrid_Core
         {
             if (backgroundChanged == false)
             {
-                MainControlArea.BackColor = System.Drawing.Color.DarkGray;
+                MainControlArea.BackColor = System.Drawing.Color.Black;
+                tableLayoutForSelectedCellValueContents.BackColor = System.Drawing.Color.Black;
+                tableLayoutPanel1.BackColor = System.Drawing.Color.Black;
                 MainControlArea.ForeColor = System.Drawing.Color.Green;
-                menuStrip.BackColor = System.Drawing.Color.LightGray;
+                menuStrip.BackColor = System.Drawing.Color.Black;
                 grid_widget.BackColor = System.Drawing.Color.Gray;
                 grid_widget.ForeColor = System.Drawing.Color.Green;
                 HelpMenu.ForeColor = System.Drawing.Color.Green;
-                HelpMenu.BackColor = System.Drawing.Color.DarkGray;
+                HelpMenu.BackColor = System.Drawing.Color.Black;
                 Dark.ForeColor = System.Drawing.Color.Green;
-                Dark.BackColor = System.Drawing.Color.DarkGray;
+                Dark.BackColor = System.Drawing.Color.Black;
                 fileToolStripMenuItem.ForeColor = System.Drawing.Color.Green;
-                fileToolStripMenuItem.BackColor = System.Drawing.Color.DarkGray;
+                fileToolStripMenuItem.BackColor = System.Drawing.Color.Black;
                 CellValueLabel.ForeColor = System.Drawing.Color.Green;
                 CellContentsLabel.ForeColor = System.Drawing.Color.Green; 
                 SelectedCellLabel.ForeColor = System.Drawing.Color.Green;
+                grid_widget.ForeColor = SystemColors.ActiveCaption;
                 backgroundChanged = true;
             }
             else
@@ -372,6 +375,8 @@ namespace SpreadsheetGrid_Core
                 Dark.BackColor = System.Drawing.Color.WhiteSmoke;
                 fileToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
                 fileToolStripMenuItem.BackColor = System.Drawing.Color.White;
+                tableLayoutPanel1.BackColor = System.Drawing.Color.White;
+                tableLayoutForSelectedCellValueContents.BackColor = System.Drawing.Color.DarkSeaGreen; ;
                 backgroundChanged = false;
             }
         }
