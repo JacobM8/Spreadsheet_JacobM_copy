@@ -308,8 +308,6 @@ namespace SpreadsheetGrid_Core
         /// </summary>
         private void UpdateContentsOnClick()
         {
-            grid_widget.GetSelection(out int col, out int row);
-            grid_widget.GetValue(col, row, out string value);
             CellContentsTextBox.Text = spreadsheet.GetCellContents(GetCellName()).ToString();
         }
         /// <summary>
@@ -338,6 +336,53 @@ namespace SpreadsheetGrid_Core
             string cellLocation = GetCellName();
             // set ValueTextBox text with value
             CellValueTextBox.Text = spreadsheet.GetCellValue(cellLocation).ToString();
+        }
+
+        /// <summary>
+        /// Changes color of the SelectedCellTextBox, CellValueTextBox, and CellContentsTextBox to black.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void blackToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CellContentsTextBox.ForeColor = Color.Black;
+            CellValueTextBox.ForeColor = Color.Black;
+            SelectedCellTextBox.ForeColor = Color.Black;
+        }
+
+        /// <summary>
+        /// Changes color of the SelectedCellTextBox, CellValueTextBox, and CellContentsTextBox to red.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void redToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // need to set BackColor on read only text boxes before you can set the ForeColor
+            CellContentsTextBox.ForeColor = Color.Red;
+            CellValueTextBox.BackColor = Color.White;
+            CellValueTextBox.ForeColor = Color.Red;
+            SelectedCellTextBox.BackColor = Color.White;
+            SelectedCellTextBox.ForeColor = Color.Red;
+        }
+
+        /// <summary>
+        /// Changes color of the SelectedCellTextBox, CellValueTextBox, and CellContentsTextBox to blue.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void blueToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // need to set BackColor on read only text boxes before you can set the ForeColor
+            CellContentsTextBox.ForeColor = Color.Blue;
+            CellValueTextBox.BackColor = Color.White;
+            CellValueTextBox.ForeColor = Color.Blue;
+            SelectedCellTextBox.BackColor = Color.White;
+            SelectedCellTextBox.ForeColor = Color.Blue;
+        }
+
+        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+
         }
     }
 }
