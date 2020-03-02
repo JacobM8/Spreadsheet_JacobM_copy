@@ -275,6 +275,7 @@ namespace SpreadsheetGrid_Core
             string cellLocation = GetCellName();
             // get row and col location
             grid_widget.GetSelection(out int col, out int row);
+            backgroundWorker.RunWorkerAsync();
             // setContentsOfCell in our spreadsheet
             spreadsheet.SetContentsOfCell(cellLocation, CellContentsTextBox.Text);
             // set cell with cell value
@@ -427,7 +428,19 @@ namespace SpreadsheetGrid_Core
             SelectedCellTextBox.ForeColor = Color.Blue;
         }
 
-        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        
+        private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            // get cell name
+            string cellLocation = GetCellName();
+            // get row and col location
+            grid_widget.GetSelection(out int col, out int row);
+            // setContentsOfCell in our spreadsheet
+            spreadsheet.SetContentsOfCell(cellLocation, CellContentsTextBox.Text);
+            // set cell with cell value
+            grid_widget.SetValue(col, row, spreadsheet.GetCellValue(cellLocation).ToString());
+        }
+        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
 
         }

@@ -1,4 +1,5 @@
 ﻿using SpreadsheetGrid_Framework;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace SpreadsheetGrid_Core
@@ -58,6 +59,10 @@ namespace SpreadsheetGrid_Core
             this.blackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.blueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.backgroundWorker = new BackgroundWorker(); this.backgroundWorker = new BackgroundWorker();
+            this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
+
+
             // 
             // menuStrip
             // 
@@ -314,7 +319,11 @@ namespace SpreadsheetGrid_Core
             this.blueToolStripMenuItem.Size = new System.Drawing.Size(359, 44);
             this.blueToolStripMenuItem.Text = "Blue";
             this.blueToolStripMenuItem.Click += new System.EventHandler(this.blueToolStripMenuItem_Click);
-
+            // 
+            // backgroundWorker
+            // 
+            this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
+            this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
 
         }
 
@@ -343,6 +352,8 @@ namespace SpreadsheetGrid_Core
         private System.Windows.Forms.ToolStripMenuItem blackToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem blueToolStripMenuItem;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private BackgroundWorker backgroundWorker;
         #endregion
     }
 }
