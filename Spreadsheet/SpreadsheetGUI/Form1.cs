@@ -357,7 +357,10 @@ namespace SpreadsheetGrid_Core
                 CellValueLabel.ForeColor = System.Drawing.Color.Green;
                 CellContentsLabel.ForeColor = System.Drawing.Color.Green; 
                 SelectedCellLabel.ForeColor = System.Drawing.Color.Green;
-                grid_widget.ForeColor = SystemColors.ActiveCaption;
+
+                fontColorToolStripMenuItem.BackColor = System.Drawing.Color.Black;
+                fontColorToolStripMenuItem.ForeColor = System.Drawing.Color.Green;
+
                 backgroundChanged = true;
             }
             else
@@ -373,6 +376,8 @@ namespace SpreadsheetGrid_Core
                 Dark.ForeColor = System.Drawing.Color.Black;
                 HelpMenu.ForeColor = System.Drawing.Color.Black;
                 HelpMenu.BackColor = System.Drawing.Color.WhiteSmoke;
+                fontColorToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
+                fontColorToolStripMenuItem.BackColor = System.Drawing.Color.WhiteSmoke;
                 Dark.ForeColor = System.Drawing.Color.Black;
                 Dark.BackColor = System.Drawing.Color.WhiteSmoke;
                 fileToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
