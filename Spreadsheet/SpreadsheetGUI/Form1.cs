@@ -18,6 +18,7 @@ namespace SpreadsheetGrid_Core
     public partial class Form1 : Form
     {
         Spreadsheet spreadsheet = new Spreadsheet(s => true, s => s.ToUpper(), "six");
+        bool backgroundChanged = false;
         public Form1()
         {
             this.grid_widget = new SpreadsheetGridWidget();
@@ -29,6 +30,7 @@ namespace SpreadsheetGrid_Core
             grid_widget.SetSelection(0, 0, false);
             // set initial value of SelectedCellTextBox to display "A1"
             SelectedCellTextBox.Text = "A1";
+            
         }
 
         /// <summary>
@@ -63,22 +65,25 @@ namespace SpreadsheetGrid_Core
                         Close();
                         break;
                     case DialogResult.Yes:
-                        SaveFileDialog saveFile = new SaveFileDialog();
-                        saveFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
-                        saveFile.FilterIndex = 1;
-                        saveFile.RestoreDirectory = true;
-                        // prompt user to save file they created
-                        if (saveFile.ShowDialog() == DialogResult.OK)
-                        {
-                            spreadsheet.Save(saveFile.FileName);
-                        }
-
+                        saveContent(sender,e);
                         break;
                 }
             }
             else
             {
                 Close();
+            }
+        }
+        private void saveContent(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFile = new SaveFileDialog();
+            saveFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
+            saveFile.FilterIndex = 1;
+            saveFile.RestoreDirectory = true;
+            // prompt user to save file they created
+            if (saveFile.ShowDialog() == DialogResult.OK)
+            {
+                spreadsheet.Save(saveFile.FileName);
             }
         }
         /// <summary>
@@ -125,16 +130,7 @@ namespace SpreadsheetGrid_Core
         /// <param name="e"></param>
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFile = new SaveFileDialog();
-            saveFile.Filter = "sprd files (*.sprd)|*.sprd| All files(*.*)|*.*";
-            saveFile.FilterIndex = 1;
-            //verify if the directory exists
-            saveFile.RestoreDirectory = true;
-            // confirm the file name with the user
-            if (saveFile.ShowDialog() == DialogResult.OK)
-            {
-                spreadsheet.Save(saveFile.FileName);
-            }
+            saveContent(sender, e);
         }
         /// <summary>
         /// Opens a previously saved file in file explorer. In file explorer it
@@ -338,6 +334,46 @@ namespace SpreadsheetGrid_Core
             string cellLocation = GetCellName();
             // set ValueTextBox text with value
             CellValueTextBox.Text = spreadsheet.GetCellValue(cellLocation).ToString();
+        }
+        private void DarkMode_Enter(object sender, EventArgs e)
+        {
+            if (backgroundChanged == false)
+            {
+                MainControlArea.BackColor = System.Drawing.Color.DarkGray;
+                MainControlArea.ForeColor = System.Drawing.Color.Green;
+                menuStrip.BackColor = System.Drawing.Color.LightGray;
+                grid_widget.BackColor = System.Drawing.Color.Gray;
+                grid_widget.ForeColor = System.Drawing.Color.Green;
+                HelpMenu.ForeColor = System.Drawing.Color.Green;
+                HelpMenu.BackColor = System.Drawing.Color.DarkGray;
+                Dark.ForeColor = System.Drawing.Color.Green;
+                Dark.BackColor = System.Drawing.Color.DarkGray;
+                fileToolStripMenuItem.ForeColor = System.Drawing.Color.Green;
+                fileToolStripMenuItem.BackColor = System.Drawing.Color.DarkGray;
+                CellValueLabel.ForeColor = System.Drawing.Color.Green;
+                CellContentsLabel.ForeColor = System.Drawing.Color.Green; 
+                SelectedCellLabel.ForeColor = System.Drawing.Color.Green;
+                backgroundChanged = true;
+            }
+            else
+            {
+                MainControlArea.BackColor = System.Drawing.Color.DarkSeaGreen;
+                grid_widget.BackColor = System.Drawing.SystemColors.MenuHighlight;
+                MainMenuStrip.BackColor = System.Drawing.Color.WhiteSmoke;
+                HelpMenu.ForeColor = System.Drawing.Color.Black;
+                CellValueLabel.ForeColor = System.Drawing.Color.Black;
+                CellContentsLabel.ForeColor = System.Drawing.Color.Black;
+                SelectedCellLabel.ForeColor = System.Drawing.Color.Black;
+                grid_widget.ForeColor = System.Drawing.Color.Black;
+                Dark.ForeColor = System.Drawing.Color.Black;
+                HelpMenu.ForeColor = System.Drawing.Color.Black;
+                HelpMenu.BackColor = System.Drawing.Color.WhiteSmoke;
+                Dark.ForeColor = System.Drawing.Color.Black;
+                Dark.BackColor = System.Drawing.Color.WhiteSmoke;
+                fileToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
+                fileToolStripMenuItem.BackColor = System.Drawing.Color.White;
+                backgroundChanged = false;
+            }
         }
     }
 }

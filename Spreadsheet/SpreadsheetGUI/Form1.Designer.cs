@@ -31,6 +31,7 @@ namespace SpreadsheetGrid_Core
         /// </summary>
         private void InitializeComponent()
         {
+            this.Dark = new System.Windows.Forms.Button();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -234,6 +235,7 @@ namespace SpreadsheetGrid_Core
             // 
             // SimpleSpreadsheetGUI
             // 
+            this.Controls.Add(this.Dark);
             this.Controls.Add(this.HelpMenu);
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -264,6 +266,16 @@ namespace SpreadsheetGrid_Core
             this.HelpMenu.Text = "Help Menu";
             this.HelpMenu.UseVisualStyleBackColor = true;
             this.HelpMenu.Click += new System.EventHandler(this.HelpMenu_Click);
+            // 
+            // Dark
+            // 
+            this.Dark.Location = new System.Drawing.Point(133, 0);
+            this.Dark.Name = "Dark";
+            this.Dark.Size = new System.Drawing.Size(84, 28);
+            this.Dark.TabIndex = 8;
+            this.Dark.Text = "Dark Mode";
+            this.Dark.UseVisualStyleBackColor = true;
+            this.Dark.Click += new System.EventHandler(this.DarkMode_Enter);
 
         }
 
@@ -287,7 +299,8 @@ namespace SpreadsheetGrid_Core
         private ToolStripMenuItem saveToolStripMenuItem;
         private ToolStripMenuItem openToolStripMenuItem;
         private Button HelpMenu;
+        private Button Dark;
         #endregion
-        }
+    }
     }
 
