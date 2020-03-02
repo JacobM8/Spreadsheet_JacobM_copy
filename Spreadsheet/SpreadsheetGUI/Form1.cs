@@ -41,7 +41,6 @@ namespace SpreadsheetGrid_Core
             // Tell the application context to run the form on the same thread as the other forms.
             Spreadsheet_Window.getAppContext().RunForm(new Form1());
         }
-
         /// <summary>
         /// If the user selects the close on the drop down form button and the file is not saved, 
         /// the method is called and the user is asked whether they would like to save the file or not
@@ -178,7 +177,6 @@ namespace SpreadsheetGrid_Core
                 }
             }
         }
-
         /// <summary>
         /// returns the column and row of the given cell. Name must be A-Z(upper or lower case) and 1-99
         /// </summary>
@@ -254,7 +252,6 @@ namespace SpreadsheetGrid_Core
                 MessageBox.Show(ex.Message);
             }
         }
-
         // helper methods for CellContentsTextBox_KeyDown
         /// <summary>
         /// Updates CellValueTextBox, if a string is entered the text box is updated with a string, if a double is entered the text box is updated with a double,
@@ -267,7 +264,6 @@ namespace SpreadsheetGrid_Core
             // calculate value of cell and set it to CellValueTextBox
             CellValueTextBox.Text = spreadsheet.GetCellValue(cellLocation).ToString();
         }
-
         /// <summary>
         /// Updates CellContentsTextBox with entered text
         /// </summary>
@@ -282,7 +278,6 @@ namespace SpreadsheetGrid_Core
             // set cell with cell value
             grid_widget.SetValue(col, row, spreadsheet.GetCellValue(cellLocation).ToString());
         }
-
         /// <summary>
         /// When the grid_widget is clicked on update the ReadOnly SelectedCellTextBox and CellValueTextBox, and editable CellContentTextBox
         /// </summary>
@@ -293,7 +288,6 @@ namespace SpreadsheetGrid_Core
             UpdateContentsOnClick();
             UpdateValuesOnClick();
         }
-
         // Helper methods for grid_widget_Click
         /// <summary>
         /// Updates the SelectedCellTextBox with the appropriate cell name
@@ -302,7 +296,6 @@ namespace SpreadsheetGrid_Core
         {
             SelectedCellTextBox.Text = GetCellName();
         }
-
         /// <summary>
         /// Updates CellContentsTextBox with the contents when the cell is clicked on
         /// </summary>
@@ -337,7 +330,6 @@ namespace SpreadsheetGrid_Core
             // set ValueTextBox text with value
             CellValueTextBox.Text = spreadsheet.GetCellValue(cellLocation).ToString();
         }
-
         /// <summary>
         /// Changes color of the SelectedCellTextBox, CellValueTextBox, and CellContentsTextBox to black.
         /// </summary>
@@ -349,7 +341,6 @@ namespace SpreadsheetGrid_Core
             CellValueTextBox.ForeColor = Color.Black;
             SelectedCellTextBox.ForeColor = Color.Black;
         }
-
         /// <summary>
         /// Changes color of the SelectedCellTextBox, CellValueTextBox, and CellContentsTextBox to red.
         /// </summary>
@@ -364,7 +355,6 @@ namespace SpreadsheetGrid_Core
             SelectedCellTextBox.BackColor = Color.White;
             SelectedCellTextBox.ForeColor = Color.Red;
         }
-
         /// <summary>
         /// Changes color of the SelectedCellTextBox, CellValueTextBox, and CellContentsTextBox to blue.
         /// </summary>
