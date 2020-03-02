@@ -54,13 +54,17 @@ namespace SpreadsheetGrid_Core
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             this.HelpMenu = new System.Windows.Forms.Button();
+            this.fontColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.blackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.blueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             // 
             // menuStrip
             // 
             this.menuStrip.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
             this.menuStrip.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem, this.fontColorToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(1684, 40);
@@ -259,7 +263,7 @@ namespace SpreadsheetGrid_Core
             // HelpMenu
             // 
             this.HelpMenu.BackColor = System.Drawing.SystemColors.MenuBar;
-            this.HelpMenu.Location = new System.Drawing.Point(272, 0);
+            this.HelpMenu.Location = new System.Drawing.Point(115, 0);
             this.HelpMenu.Name = "HelpMenu";
             this.HelpMenu.Size = new System.Drawing.Size(84, 28);
             this.HelpMenu.TabIndex = 7;
@@ -269,13 +273,48 @@ namespace SpreadsheetGrid_Core
             // 
             // Dark
             // 
-            this.Dark.Location = new System.Drawing.Point(333, 0);
+            this.Dark.Location = new System.Drawing.Point(199, 0);
             this.Dark.Name = "Dark";
             this.Dark.Size = new System.Drawing.Size(84, 28);
             this.Dark.TabIndex = 8;
             this.Dark.Text = "Dark Mode";
             this.Dark.UseVisualStyleBackColor = true;
             this.Dark.Click += new System.EventHandler(this.DarkMode_Enter);
+
+            // 
+            // fontColorToolStripMenuItem
+            // 
+            this.fontColorToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.blackToolStripMenuItem,
+            this.redToolStripMenuItem,
+            this.blueToolStripMenuItem});
+            this.fontColorToolStripMenuItem.Name = "fontColorToolStripMenuItem";
+            this.fontColorToolStripMenuItem.Size = new System.Drawing.Size(129, 38);
+            this.fontColorToolStripMenuItem.Text = "Font Color";
+            // 
+            // blackToolStripMenuItem
+            // 
+            this.blackToolStripMenuItem.Name = "blackToolStripMenuItem";
+            this.blackToolStripMenuItem.Size = new System.Drawing.Size(359, 44);
+            this.blackToolStripMenuItem.Text = "Black";
+            this.blackToolStripMenuItem.Click += new System.EventHandler(this.blackToolStripMenuItem_Click);
+
+            // 
+            // redToolStripMenuItem
+            // 
+            this.redToolStripMenuItem.Name = "redToolStripMenuItem";
+            this.redToolStripMenuItem.Size = new System.Drawing.Size(359, 44);
+            this.redToolStripMenuItem.Text = "Red";
+            this.redToolStripMenuItem.Click += new System.EventHandler(this.redToolStripMenuItem_Click);
+
+            // 
+            // blueToolStripMenuItem
+            // 
+            this.blueToolStripMenuItem.Name = "blueToolStripMenuItem";
+            this.blueToolStripMenuItem.Size = new System.Drawing.Size(359, 44);
+            this.blueToolStripMenuItem.Text = "Blue";
+            this.blueToolStripMenuItem.Click += new System.EventHandler(this.blueToolStripMenuItem_Click);
+
 
         }
 
@@ -300,7 +339,11 @@ namespace SpreadsheetGrid_Core
         private ToolStripMenuItem openToolStripMenuItem;
         private Button HelpMenu;
         private Button Dark;
+        private System.Windows.Forms.ToolStripMenuItem fontColorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem blackToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem blueToolStripMenuItem;
         #endregion
     }
-    }
+}
 
