@@ -12,13 +12,22 @@ using SS;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Security;
-
+using System.Threading;
+/// <summary>
+/// February 29, 2019
+/// We, Jacob Morrison and James Gibb, certify that we wrote this code from scratch and did not copy it in part or whole from  
+/// another source. Some of the code was provided to us but the Univeristy of Utah College Of Engineering
+/// All references used in the completion of the assignment are cited in my README file. 
+/// </summary>
 namespace SpreadsheetGrid_Core
 {
     public partial class Form1 : Form
     {
         Spreadsheet spreadsheet = new Spreadsheet(s => true, s => s.ToUpper(), "six");
         bool backgroundChanged = false;
+        /// <summary>
+        /// Implements constructor with a grid_widget, components for the GUI, initial starting, and backgroundWorker.
+        /// </summary>
         public Form1()
         {
             this.grid_widget = new SpreadsheetGridWidget();
@@ -30,9 +39,19 @@ namespace SpreadsheetGrid_Core
             grid_widget.SetSelection(0, 0, false);
             // set initial value of SelectedCellTextBox to display "A1"
             SelectedCellTextBox.Text = "A1";
+            // initialize backgroundWorker
+            InitializeBackgroundWorker();
             
         }
-
+        /// <summary>
+        /// Initializes backgroundWorker with a DoWork and RunWorkerCompleted
+        /// </summary>
+        private void InitializeBackgroundWorker()
+        {
+            // Background Process
+            backgroundWorker.DoWork += backgroundWorker_DoWork;
+            backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
+        }
         /// <summary>
         /// Creates a new empty spreadsheet
         /// </summary>
@@ -43,7 +62,6 @@ namespace SpreadsheetGrid_Core
             // Tell the application context to run the form on the same thread as the other forms.
             Spreadsheet_Window.getAppContext().RunForm(new Form1());
         }
-
         /// <summary>
         /// If the user selects the close on the drop down form button and the file is not saved, 
         /// the method is called and the user is asked whether they would like to save the file or not
@@ -123,7 +141,7 @@ namespace SpreadsheetGrid_Core
         }
         /// <summary>
         /// Once the user selects save in the drop down menu. File Explorer is
-        /// then opened and the user can select what type of files they would like to see
+        /// then opened and the user can select what type of file they would like to see
         /// then enter a name for the files and the file is store in their directory of choice.
         /// </summary>
         /// <param name="sender"></param>
@@ -135,7 +153,7 @@ namespace SpreadsheetGrid_Core
         /// <summary>
         /// Opens a previously saved file in file explorer. In file explorer it
         /// allows the users to determine what type of files they want to see. 
-        /// The user can see either all types of files or only .sprd. After the user
+        /// The user can see either all types of files or only '.sprd'. After the user
         /// selects the file the cells are populated.
         /// </summary>
         /// <param name="sender"></param>
@@ -174,7 +192,6 @@ namespace SpreadsheetGrid_Core
                 }
             }
         }
-
         /// <summary>
         /// returns the column and row of the given cell. Name must be A-Z(upper or lower case) and 1-99
         /// </summary>
@@ -216,7 +233,10 @@ namespace SpreadsheetGrid_Core
                 "\n- If you divide by zero, the value will appear as a formula error\n" +
                 "\n- All other formatting errors will prompt an error message, describing what error occurred\n" +
                 "\n- The Font Color dropdown menu allows the user to choose the color for the text inside the textboxes.\n" +
-                "\n- Dark Mode allows the user switch to a dark themed window."
+                "\n- By clicking the button at the top of the GUI labeled \"Dark Mode\" the user can toggle between a lighter " +
+                "and darker theme according to their preference.\n" +
+                "\n- The background worker is displayed as the blue circle until the program finishes executing(we used the.sleep " +
+                "funtion to better show the implementation of our backgroundWorker)\n"
                 , "Help Menu",
                     MessageBoxButtons.OK);
         }
@@ -252,7 +272,6 @@ namespace SpreadsheetGrid_Core
                 MessageBox.Show(ex.Message);
             }
         }
-
         // helper methods for CellContentsTextBox_KeyDown
         /// <summary>
         /// Updates CellValueTextBox, if a string is entered the text box is updated with a string, if a double is entered the text box is updated with a double,
@@ -265,23 +284,14 @@ namespace SpreadsheetGrid_Core
             // calculate value of cell and set it to CellValueTextBox
             CellValueTextBox.Text = spreadsheet.GetCellValue(cellLocation).ToString();
         }
-
         /// <summary>
         /// Updates CellContentsTextBox with entered text
         /// </summary>
         private void UpdateContentsTextBoxOnKeyDown()
         {
-            // get cell name
-            string cellLocation = GetCellName();
-            // get row and col location
-            grid_widget.GetSelection(out int col, out int row);
+            Cursor.Current = Cursors.WaitCursor;
             backgroundWorker.RunWorkerAsync();
-            // setContentsOfCell in our spreadsheet
-            spreadsheet.SetContentsOfCell(cellLocation, CellContentsTextBox.Text);
-            // set cell with cell value
-            grid_widget.SetValue(col, row, spreadsheet.GetCellValue(cellLocation).ToString());
         }
-
         /// <summary>
         /// When the grid_widget is clicked on update the ReadOnly SelectedCellTextBox and CellValueTextBox, and editable CellContentTextBox
         /// </summary>
@@ -292,7 +302,6 @@ namespace SpreadsheetGrid_Core
             UpdateContentsOnClick();
             UpdateValuesOnClick();
         }
-
         // Helper methods for grid_widget_Click
         /// <summary>
         /// Updates the SelectedCellTextBox with the appropriate cell name
@@ -301,7 +310,6 @@ namespace SpreadsheetGrid_Core
         {
             SelectedCellTextBox.Text = GetCellName();
         }
-
         /// <summary>
         /// Updates CellContentsTextBox with the contents when the cell is clicked on
         /// </summary>
@@ -338,6 +346,11 @@ namespace SpreadsheetGrid_Core
             // set ValueTextBox text with value
             CellValueTextBox.Text = spreadsheet.GetCellValue(cellLocation).ToString();
         }
+        /// <summary>
+        /// Changes the theme of the interface to a dark theme with black and gray colors.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DarkMode_Enter(object sender, EventArgs e)
         {
             if (backgroundChanged == false)
@@ -358,10 +371,8 @@ namespace SpreadsheetGrid_Core
                 CellValueLabel.ForeColor = System.Drawing.Color.Green;
                 CellContentsLabel.ForeColor = System.Drawing.Color.Green; 
                 SelectedCellLabel.ForeColor = System.Drawing.Color.Green;
-
                 fontColorToolStripMenuItem.BackColor = System.Drawing.Color.Black;
                 fontColorToolStripMenuItem.ForeColor = System.Drawing.Color.Green;
-
                 backgroundChanged = true;
             }
             else
@@ -406,7 +417,7 @@ namespace SpreadsheetGrid_Core
         /// <param name="e"></param>
         private void redToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // need to set BackColor on read only text boxes before you can set the ForeColor
+            // need to set ForeColor on read only text boxes before you can set the ForeColor
             CellContentsTextBox.ForeColor = Color.Red;
             CellValueTextBox.BackColor = Color.White;
             CellValueTextBox.ForeColor = Color.Red;
@@ -427,10 +438,15 @@ namespace SpreadsheetGrid_Core
             SelectedCellTextBox.BackColor = Color.White;
             SelectedCellTextBox.ForeColor = Color.Blue;
         }
-
-        
+        /// <summary>
+        /// BackgroundWorker runs UpdateContentsTextBoxOnKeyDown, changes cursor to loading cursor (blue spinning circle) for 2 seconds to show 
+        /// backgroundWorker is running.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            BackgroundWorker worker = (BackgroundWorker)sender;
             // get cell name
             string cellLocation = GetCellName();
             // get row and col location
@@ -439,10 +455,17 @@ namespace SpreadsheetGrid_Core
             spreadsheet.SetContentsOfCell(cellLocation, CellContentsTextBox.Text);
             // set cell with cell value
             grid_widget.SetValue(col, row, spreadsheet.GetCellValue(cellLocation).ToString());
+            // sleep thread to show waiting cursor
+            Thread.Sleep(2000);
         }
+        /// <summary>
+        /// BackgroundWorker automatically stops when it completes its thread, turns the cursor back to default arrow.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-
+            Cursor.Current = Cursors.Default;
         }
     }
 }

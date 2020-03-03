@@ -1,7 +1,12 @@
 ﻿using SpreadsheetGrid_Framework;
 using System.ComponentModel;
 using System.Windows.Forms;
-
+/// <summary>
+/// February 29, 2019
+/// We, Jacob Morrison and James Gibb, certify that we wrote this code from scratch and did not copy it in part or whole from  
+/// another source. Some of the code was provided to us but the Univeristy of Utah College Of Engineering
+/// All references used in the completion of the assignment are cited in my README file. 
+/// </summary>
 namespace SpreadsheetGrid_Core
 {
     partial class Form1
@@ -59,7 +64,7 @@ namespace SpreadsheetGrid_Core
             this.blackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.blueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.backgroundWorker = new BackgroundWorker(); this.backgroundWorker = new BackgroundWorker();
+            this.backgroundWorker = new BackgroundWorker(); 
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
 
 
@@ -352,7 +357,6 @@ namespace SpreadsheetGrid_Core
         private System.Windows.Forms.ToolStripMenuItem blackToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem blueToolStripMenuItem;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private BackgroundWorker backgroundWorker;
         #endregion
     }

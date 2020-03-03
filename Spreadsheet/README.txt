@@ -1,30 +1,54 @@
-Authors:     Jacob Morrison & James Gibb
-Partner:    None
-Date:       February 28, 2020
+Authors:    Jacob Morrison and James Gibb
+Date:       February 29, 2020
 Course:     CS 3500, University of Utah, School of Computing
+GitHub ID:  jamesrgibb
+Repo:       https://github.com/uofu-cs3500-spring20/assignment-six-completed-spreadsheet-j-squared
+Commit #:   The commit identifier that goes along with the final submitted code.
 Assignment: Assignment #6 - Spreadsheet Front-End Graphical User Interface
-Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use in Academic Coursework.
+Copyright:  CS 3500 and Jacob Morrison and James Gibb - This work may not be copied for use in Academic Coursework.
 
 1. Comments to Evaluators:
 
-    
+    I, James Gibb have disability accommodations that allow for flexible deadlines with assignments without penalty. 
+    It was an interesting assignment to interact with the GUI and the grid API. We had issues implementing arrow keys 
+    and the background worker. We were able to make the background worker functional and found some interesting methods in 
+    the DrawingPanel class.
 
 2. Assignment Specific Topics:
 
-   
+- Learning how to follow (somewhat) complex Requirements and Specifications. 
+- Creating GUIs representing the View/Controller part of the MVC architecture.
+- Integrating the Model in the MVC architecture.
+- Using a Task Management System (GitHub Projects) to track assigned work and completion.
+*(Optional, but encouraged) Using pair programming practices, branching, and merging.
 
 3. Consulted Peers:
 
-    
+Varun
+Logan
+Michael
+Jolie
+David Randall
+Nate Koeliker
+Corbin Gurnee
+Misty 
+Jay Morrison
 
 4. References:
 
-    1. https://docs.microsoft.com/en-us/dotnet/framework/winforms/controls/how-to-create-a-read-only-text-box-windows-forms
-    2. https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.form.formclosing?view=netframework-4.8
-    3. https://stackoverflow.com/questions/1669318/override-standard-close-x-button-in-a-windows-form
-    4. https://stackoverflow.com/questions/2357855/round-double-in-two-decimal-places-in-c
+    1. MS Docs Creating Read Only Text-Box: https://docs.microsoft.com/en-us/dotnet/framework/winforms/controls/how-to-create-a-read-only-text-box-windows-forms
+    2. MS Docs Forms and Frameworks: https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.form.formclosing?view=netframework-4.8
+    3. Close events using X: https://stackoverflow.com/questions/1669318/override-standard-close-x-button-in-a-windows-form
+    4. Rounding to two decimals with currency: https://stackoverflow.com/questions/2357855/round-double-in-two-decimal-places-in-c
+    5. MS Docs  Drawing Color: https://docs.microsoft.com/en-us/dotnet/api/system.drawing.color?view=netframework-4.8
+    6. MS Doc Windows.color: https://docs.microsoft.com/en-us/dotnet/api/system.windows.media.colors?view=netframework-4.8
+    7. Use of https://app.pluralsight.com/course-player?clipId=c6d597ba-a69d-4536-a3a8-9520b998b5ca
+
 5. Examples of Good Software Practice:
 
+    We created several helper methods to avoid re-using code and for easy reference. We commented our code clearly, to help
+    others navigate and understand the code better. We implemented Liskovs method through the different spreadsheet and grid_widget 
+    objects to accomplish the goals of the assingment.
 
 6. GitHub Repo and Commit Number
 
@@ -33,313 +57,68 @@ Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use i
 
 7. Partnership Information
 
-    - *** TODO *** The name of both you and your partner should of course appear on any code you create, as well as at the top of the README document. 
-    Create a short section in the README called Partnership which briefly describes the contributions of each member.  If all code was completed via pair 
-    programming, state as much.  If each partner completed (some small) different sections of work, also indicated this (see Branching below). 
+    James Gibb completed the save, open, and dark mode functions with little help from Jacob.
+    Jacob Morrison completed the helper methods getCellLocation, getCellName, and the font color. 
+    The rest of the methods were completed via paired programming.
 
 8. Branching
     
-    - *** TODO *** Detail any branches that were made so that each partner could work on separate functionality.  Describe the merge process and any challenges involved in it.  
-    Make sure to list the commit numbers. 
+    James made the following branches helpMenu, SaveFile, OpenFunction, AdditionalFeature
+    Jacob made the following branches formulaFormatErrorInTextBox, BGWorker, AddFeatureFillAndColor
+    
+    -There were couple of instances were we had trouble merging into the master branch. We discovered our problem was uncommited changes by one of us. There 
+    was an instance were had reverted and solving that took an hour or so. Overall this assignment helped us get better at using git.
 
-9. Additional Features and Design Decisions
+    Dark Mode: dc0e8e2b76ab1dfe95f271791b813ecc94e5415c
+    Changed Font Color: 853a6cfb138fc424e34eda0d47c9f5c0c9677676
+    Open and Divide by Zero: 6c6ca8ea81bfefcb6e2022a52ee71d086648d096
+    Save and Exit: 4740e0b1f179d7be002ad5df88215e00db89787e
+    Close Menu: e33ffcae3ffa4848641cf43be69486920a0a6507
+    Help Menu: 9858b21960f4dad4f8d3e2ed0872b95555a6f3c7
+    Circular Exceptions: cdad45285da742917ebc291827a87863d59d527a
+    Click and Key Down: d99709efba427f2df948b656c115a9a811738686
+    Get Cell Name: 2ca1be26c989ccc1ba8926fee60c77de36cea869
+    Table of Contents: 72cf531630e9266bd9a6b3a31eee0d6a346ce1b8
  
-    - *** TODO *** In clear prose, describe to the TAs the list of design choices you made as well as your added features.  This should include how to utilize the features.
+9. Additional Features and Design Decisions
+
+    The spreadsheet was designed similar to the Excel Application, with a green background. We chose to design the layout for the
+    Cell Label, Cell Value, Cell Contents ordered vertically. The background worker is displayed as the blue circle until the program
+    finishes executing (we used the .sleep funtion to better show the implementation of our backgroundWorker). We used several helper 
+    methods with the background worker to ensure it worked efficiently and our code was well organized. We also used several helper 
+    methods throughout the GUI application to get and set the appropriate values with the cell, as well as notify the user of any possible 
+    input errors. In addition to the functionality of the Spreadsheet GUI, we implemented two extra features:
+    
+    1. Changes the color of the font according to the users preference, this is done by clicking the drop down menu titled Font Color.
+       The chosen color is then populated as the new font color.
+    2. Also we impelented a dark mode for the entire GUI. By clicking the button at the top of the GUI labeled "Dark Mode" the user can
+       toggle between a lighter and darker theme according to their preference.
+    
 
 10. Best (Team) Practices
 
-    -*** TODO *** If you worked in a partnership, write two paragraphs.  The first should list one or two examples where the partnership was most effective.  What did you do 
-    right and how did it make the coding process faster, and the code better? Include details on how assigning tasks helped. The second paragraph should be about an area of 
-    teamwork that you need to improve upon.
+    Our partnership worked effectively from the beginning by doing thorough code reviews to make a few changes to start off with a solid foundation. We were also
+    efficent in helping each other identify when we can implement helper methods, use better naming conventions, and include interline comments when a function
+    is completed. 
+    One area of improvement that would have helped us save time and be more efficient was moving on from a problem when we couldn't find a solution. One example is
+    we tried to implement the ability to move around the grid with arrow keys but could not figure out a way even after talking to multiple TAs. We estimated that we
+    spent 7 hours on trying to figure out the arrow keys. We could have stopped earlier to move on to other portions of our assignment. 
 
 11. How We Ensured Correctness of Our Code
-    
-    ****TODO**** how we tested our code
+    
+    We opted to test our code manually as we completed each method. After a method was completed we tested each method for correctness and completeness. 
+    We did this by testing for edge cases and ensuring that errors were thrown in the appropriate areas. The GUI was tested manually after each 
+    implementation of a new feature. We also tested for responsiveness of the background worker, we tested different sizes of files to see how the program would 
+    handle large files. We also tested the background worker's ability to work independently of the spreadsheet by testing if the GUI was able to move 
+    and respond while calculating large values.
 
-6. Estimated Time: PS5 -  18 hours     
-7. Actual Time:    PS5 -                      
-    Learning:                       
-    Programming:          
-    Debugging:              
+6. Estimated Time: PS5 -  20 hours   
 
-------------------------------------------------------------------------------------------------------
-
-Author:     Jacob Morrison
-Partner:    None
-Date:       February 14, 2020
-Course:     CS 3500, University of Utah, School of Computing
-Assignment: Assignment #5 - Spreadsheet Model
-Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use in Academic Coursework.
-
-1. Comments to Evaluators:
-
-    I spent an additional 5 hours fixing my code from assignment 4. The whiteboard exercise was very beneficial to gain a better understanding of the overal concepts of each
-    class and how thier APIs function. This assignment posed new challenges by learning how to save a file and writing XML.
-
-2. Assignment Specific Topics:
-
-    Refactor existing code
-    Whiteboarding
-    APIs
-    XML
-    Saving files
-
-3. Consulted Peers:
-
-    Julie (TA)
-    Logan (TA)
-    Varun (TA)
-    Michael (TA)
-    Arindam (TA)
-    James (peer)
-    Crobin (peer)
-    Jay (peer)
-    Curtis Casados (peer)
-
-4. References:
-
-    1. Calling the base constructor in C# - https://stackoverflow.com/questions/12051/calling-the-base-constructor-in-c-sharp
-    2. base (C# Reference) - https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/base
-    3. How to read from a text file (C# Programming Guide) - https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/file-system/how-to-read-from-a-text-file
-    4. XML Writing Class C# - https://docs.microsoft.com/en-us/dotnet/api/system.xml.xmlwriter?view=netframework-4.8
-
-5. Examples of Good Software Practice:
-
-    On this assignment one of the good software practices I followed was DRY, I noticed times when I was implmenting 
-    functions where there was code that was extremely similar so I was able to find a way to reduce the code and 
-    implement helper methods. Following DRY helps me keep my code more readable and hopefully will be easier to 
-    maintain with the final few weeks of the program.
-
-    I also wrote many well documented and descriptive comments, including going into past assignments to add more.
-    The reason behind going back is to help make the code easier to read especially when I need to go back and fix
-    bugs from the previous assignments. I also worked on using more descriptive names for my data structures and 
-    variables. This also helps with readability and making it more simple and intuitive to understand what is 
-    being manipulated in each function.
-
-6. Estimated Time: PS5 -  10 hours     
-7. Actual Time:    PS5 -  13 hours                    
-    Learning:             2 hours          
-    Programming:          6 hours
-    Debugging:            5 hours (5 hours spent fixing assignment 4)   
+7. Actual Time:    PS5 -  30                   
+    Learning:             5 hours               
+    Programming:          10 hours
+    Debugging:            15 hours
 
 ------------------------------------------------------------------------------------------------------
 
-Author:     Jacob Morrison
-Partner:    None
-Date:       February 7, 2020
-Course:     CS 3500, University of Utah, School of Computing
-Assignment: Assignment #4 - Onward To Spreadsheet
-Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use in Academic Coursework.
 
-1. Comments to Evaluators:
-
-    I spent more time than I anticipated on fixing bugs in assignment 2 and 3, it took me a total of 3.5 hours to do that.
-    On this assignment I focused more on writing my tests before implementing the functions. There were still times where I 
-    could have written more test cases before I wrote the code for the function. Doing this helped me understand a couple t
-
-2. Assignment Specific Topics:
-
-    Learn to follow (somewhat) complex Requirements and Specifications. 
-    Understand object hierarchy (i.e., a string is an object, but so is a formula).
-    Method Overloading.
-    DRY software.
-    Recursions, abstract classes, namespaces, testing, and code coverage.
-    Start to define MVC.
-
-3. Consulted Peers:
-
-    Logan (TA)
-    Arindam (TA)
-    Michael (TA)
-    Haley (peer)
-    Misty (peer)
-    James (peer)
-    Corbin (peer)
-    Piazza
-
-4. References:
-
-    1. Interfaces (C# Programming Guide) - https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/interfaces/
-    2. ISet<T> Interface - https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iset-1?view=netframework-4.8
-
-5. Examples of Good Software Practice:
-
-    Testing Strategies: On this assignment I focused on writing my test cases before writing the code for a specific function.
-    I did get carried away when implementing the SetCellContents methods and could have done a better job at writing more test 
-    functions before implementation. Writing the tests prior to the function helped me understand on a deeper level the specific 
-    functionality of each function which resulted in the ability to implment them faster. One area I can improve in my test 
-    writing is focusing on all of the if statements and ensure I have a test case for each possible outcome. I expect I will 
-    improve here on the next assignment. 
-
-    DRY: Don't repeat yourself/your code. On previous assignments there were functions were I repeated code and points were
-    deducted. On this assignment I focused on noticing when I wrote similar code an made a helper method. Paying attention to 
-    this good software practice helps me keep my methods shorter and more readable because I use descriptive names. 
-
-    Well named, commented, short methods that do a specific job and return a specific result: Having well documented code
-    including XML comments, comments throughout the functions, and having descriptive names for data structures and functions
-    has always been something that I felt I have been good at. Throughout the last few assignments I have focused on writing more 
-    shorter helper methods and giving them specific descriptive names. Working on this assignment and fixing bugs in the 
-    previous two assignments have been good practice to include more helper methods. This will be a focus on the future assignments
-    so I don't have to go back and do it later. 
-
-6. Estimated Time: PS4 - 12 hours     
-7. Actual Time:    PS4 - 14 hours                    
-    Learning:            .5            
-    Programming:         6 
-    Debugging:           7.5 hours   (4 hours fixing code from assignment 2 and 3)
-    Total:              
-
-------------------------------------------------------------------------------------------------------
-
-Author:     Jacob Morrison
-Partner:    None
-Date:       January 31, 2020
-Course:     CS 3500, University of Utah, School of Computing
-Assignment: Assignment #3 - Formula
-Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use in Academic Coursework.
-
-1. Comments to Evaluators:
-
-    This was a much more difficult assignment, and many of my test were provided from assignment and ownership
-    of those test do not belong to me and belong to Jim de St Germain and the University College of Engineering.
-    Those test are clearly marked in FormulaTests.cs
-    
-
-2. Assignment Specific Topics:
-
-    Delegates
-    more
-    
-
-3. Consulted Peers:
-
-    Logan (TA)
-    Jolie (TA)
-    Varun (TA)
-    Jay Morrison (Dad)
-    James Gibb (peer)
-
-
-4. References:
-
-    1. yield (C# Reference) - https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/yield
-    2. C# | Array Of Strings - https://www.geeksforgeeks.org/c-sharp-arrays-of-strings/
-    3. How can I check if a string is a number - https://stackoverflow.com/questions/6733652/how-can-i-check-if-a-string-is-a-number
-    4. Convert Scientific Notation String to Float C# - https://stackoverflow.com/questions/64639/convert-from-scientific-notation-string-to-float-in-c-sharp
-    5. How do I use Assert to verify that an exception has been thrown? - https://stackoverflow.com/questions/933613/how-do-i-use-assert-to-verify-that-an-exception-has-been-thrown
-    6. C# Array vs List - https://www.educba.com/c-sharp-array-vs-list/
-    7. How to concatenate multiple strings (C# Guide) - https://docs.microsoft.com/en-us/dotnet/csharp/how-to/concatenate-multiple-strings
-    8. Trimming and Removing Characters from Strings in .NET - https://docs.microsoft.com/en-us/dotnet/standard/base-types/trimming
-    9. Convert char to int in C# - https://stackoverflow.com/questions/239103/convert-char-to-int-in-c-sharp
-    10. Double.Parse Method - https://docs.microsoft.com/en-us/dotnet/api/system.double.parse?view=netframework-4.8#System_Double_Parse_System_String_System_Globalization_NumberStyles_
-    11. Convert scientific notation number to real number in c# - https://www.codeproject.com/Questions/761432/Convert-scientific-notation-number-to-real-number
-
-5. Estimated Time: PS3 - 15 hours     
-6. Actual Time:    PS3 -                     
-    Learning:            .5 hours            
-    Programming:         6.5 hours
-    Debugging:           11 hours
-    Total:              18 (assignment not passing all tests, more work to be done)
-
-------------------------------------------------------------------------------------------------------
-
-Author:     Jacob Morrison
-Partner:    None
-Date:       January 24, 2020
-Course:     CS 3500, University of Utah, School of Computing
-Assignment: Assignment #2 - DependencyGraph
-Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use in Academic Coursework.
-
-1. Comments to Evaluators:
-
-    I overestimated the amount of time this assignment would take. I spent more time than the previous
-    assignment learning new topics such as Dictionarys and their methods. Overall, really enjoyed this
-    assignment and thinking deeply about dependents and dependees
-
-2. Assignment Specific Topics:
-
-    Dependency Graphs (Dictionaries)
-    APIs
-    Good Software Engineering Practices
-
-3. Consulted Peers:
-
-    Varun (TA)
-    Jolie (TA)
-    Logan (TA)
-    Michael (TA)
-    Hailey (peer)
-    James Gibb(peer)
-    Corbin Gurnee(peer)
-    Piazza
-
-4. References:
-
-    1. Reprsenting Graphs in C# - http://www.vcskicks.com/representing-graphs.php
-    2. Dependency Graph - https://en.wikipedia.org/wiki/Dependency_graph
-    3. Graph Representation - https://courses.csail.mit.edu/6.006/spring11/exams/notes2-2.pdf
-    4. C# Dictionary With Examples - https://www.geeksforgeeks.org/c-sharp-dictionary-with-examples/
-    5. C# Count, Dictionary - https://www.dotnetperls.com/count-dictionary
-    6. C# IEnumerable Examples - http://www.dotnetperls.com/ienumerable
-
-5. Estimated Time: PS2 - 15 hours     
-6. Actual Time:    PS2 - 10 hours                     
-    Learning:       4 hours              
-    Programming:    1 hours
-    Debugging:      5 hours
-    Total:          10 hours
-
-------------------------------------------------------------------------------------------------------
-
-Author:     Jacob Morrison
-Partner:    None
-Date:       January 24, 2020
-Course:     CS 3500, University of Utah, School of Computing
-Solution:   Spreadsheet
-Copyright:  CS 3500 and [Jacob Morrison] - This work may not be copied for use in Academic Coursework.
-
-1. Comments to Evaluators:
-
-Great assignment, I enjoyed becoming familiar with Visual Studio and C#, and learning how to use delegates and regex.
-
-2. Assignment Specific Topics:
-
-Delegates
-DLLs (libraries)
-
-3. Consulted Peers:
-
-List any peers (or other people) in the class (or outside for that matter) that you talked with 
-about the project for more than one minute.
-
-Logan Terry (TA)
-Jolie Uk (TA)
-Michael (TA)
-Jay Morrison (Dad) - Software Engineer
-James Gibb (Peer)
-Piazza
-
-4. References:
-
-    PS1:
-    1. Stack <T> Class - https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.stack-1?view=netframework-4.8
-    2. C# | Boolean.Equals(Boolean) Method - https://www.geeksforgeeks.org/c-sharp-boolean-equalsboolean-method/
-    3. How to correctly add documentation in my c# code (similar to javadoc) - https://stackoverflow.com/questions/56082307/how-to-correctly-add-documentation-in-my-c-sharp-code-similar-to-javadoc
-    4. First look at the Visual Studio Debugger - https://docs.microsoft.com/en-us/visualstudio/debugger/debugger-feature-tour?view=vs-2019
-    5. Argument Exception Class - https://docs.microsoft.com/en-us/dotnet/api/system.argumentexception?view=netframework-4.8
-    6. Extension Methods (C# Programming Guide) - https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/extension-methods
-    7. How do I skip an iteration of a `foreach` loop - https://stackoverflow.com/questions/654113/how-do-i-skip-an-iteration-of-a-foreach-loop
-    8. Regular-expressions.info - https://www.regular-expressions.info/
-    9. Regex.Match Method - https://docs.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.regex.match?view=netframework-4.8
-    10. Regular Expressions 101 - https://regex101.com/
-
-    PS2:
-    1. 
-
-5. Estimated Time: PS1 - 12 hours     
-6. Actual Time:
-                   PS1:               
-    Learning:       2         
-    Programming:    4
-    Debugging:      6
-    Total:          12 hours
